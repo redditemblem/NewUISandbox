@@ -1,0 +1,78 @@
+div.homeViewContainer{
+    display: flex;
+    flex-flow: column nowrap;
+    background-image: url('../../../../../public/img/background.png');
+    background-repeat: repeat;
+    padding-bottom: 32px;
+}
+
+div.decorativeTriangleTop{
+    position: absolute;
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(to right bottom, var(--mat-sys-primary) 49.9%, transparent 50%);
+}
+
+div.flexRow {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 8px;
+    padding: 75px 8px 0px 8px;
+    z-index: 1;
+}
+
+div.flexColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 32px;
+    padding: 50px 8px 0px 8px;
+    z-index: 1;
+}
+
+div.logoColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-grow: 1;
+    align-items: center;
+}
+
+div.logoRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+div.teamListingColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+}
+
+div.noResultsRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+div.noResultsColumn{
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+div.informationSectionRow {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 50px 8px 0px 8px;
+}
+
+div.informationSectionColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 50px 8px 0px 8px;
+}
+
+div.informationColumn{
+    display: flex;
+    flex-flow: column nowrap;
+}

@@ -1,0 +1,12 @@
+.flexRow{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+.flexColumn{
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    row-gap: 8px;
+}

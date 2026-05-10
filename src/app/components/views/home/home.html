@@ -1,0 +1,62 @@
+<div class="decorativeTriangleTop"></div>
+<div class="decorativeTriangleBottom"></div>
+<div class="homeViewContainer">
+    <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'flexColumn' : 'flexRow'">
+        <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'logoRow' : 'logoColumn'">
+            <div style="width: 450px; height: 250px; background-color: #CEFC86; text-align: center;">
+                This will be the logo!
+                Screen width is <= 900px: {{breakpointService.isScreenSmallWidth()}}
+            </div>
+            <button (click)="themeService.setThemeMode(themeService.isDarkMode() ? 'light' : 'dark')">Toggle Theme</button>
+        </div>
+        <div class="teamListingColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
+            @if (teamListService.isLoading()){
+                <loading-icon />
+            }
+            @else if (teamListService.errorMessage().length > 0){
+                <div class="noResultsRow">
+                    <p class="noResultsColumn pixelFont">
+                        {{teamListService.errorMessage()}}
+                    </p>
+                </div>
+            }
+            @else {
+                @for (team of teamListService.teamsList(); track $index){
+                    <team-listing [team]="team" />
+                }
+                @empty{
+                    <div class="noResultsRow">
+                        <p class="noResultsColumn pixelFont">
+                            There are no teams available.
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
+        <div class="informationColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+            <h1 class="pixelFont">Information</h1>
+            <p>Reddit Emblem Maps is a web-based display for games run by the Reddit Emblem community on Discord!</p>
+            <h2 class="pixelFont">Resources</h2>
+            <ul>
+                <li><a href="https://docs.google.com/document/d/150h2pxQbrd3uZOKM_r3iniCRBPtnfIJbSTnWlm-pRUM/edit?usp=sharing">Reddit Emblem Maps Documentation</a></li>
+                <li><a href="https://github.com/redditemblem/RedditEmblemAPI">API Github Repository</a></li>
+                <li><a href="https://github.com/redditemblem/redditemblem.github.io">Webapp Github Repository</a></li>
+            </ul>
+            <h2 class="pixelFont">Example</h2>
+            <p>Maps has a developer sandbox called "Team Example" that shows off a variety of its functionality.</p>
+            <ul>
+                <li><a href="https://docs.google.com/spreadsheets/d/10OGJGY4RcLemNcdoGVTrwoc6qJQyv5ONMK09VUyFptc/edit?usp=sharing">Team Example Google Spreadsheet</a></li>
+            </ul>
+            <team-listing [team]="teamExample" />
+        </div>
+        <div class="informationColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+            <h2 class="pixelFont">Credits</h2>
+            <ul>
+                <li><a href="https://www.transparenttextures.com/">Website background texture "Az Subtle" by Anli</a></li>
+                <li><a href="https://www.dafont.com/mac-s-minecraft.font">"Mac's Minecraft" pixel font</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
