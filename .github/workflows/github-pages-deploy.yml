@@ -21,7 +21,7 @@ jobs:
           build_configuration: production
           base_href: /NewUISandbox/
           deploy_branch: live
-          angular_dist_build_folder: dist/RedditEmblemMapsUI
+          angular_dist_build_folder: dist/RedditEmblemMapsUI/browser
 
 permissions:
   contents: write # Allow write permission to GITHUB_TOKEN to commit to deploy branch.
