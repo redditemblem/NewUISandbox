@@ -1,6 +1,6 @@
 //Equivalent to Adjutant.cs
 export interface Adjutant {
     name: string,
-    spriteUrl: string,
-    textFields: string[]
+    spriteUrl?: string,
+    textFields?: string[]
 }

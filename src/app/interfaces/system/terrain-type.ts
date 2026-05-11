@@ -3,13 +3,13 @@ import { TerrainTypeStats } from "./terrain-type-stats";
 //Equivalent to TerrainType.cs
 export interface TerrainType {
     name: string,
-    statGroups: TerrainTypeStats[],
-    warpType: WarpType,
-    warpCost: number,
-    cannotStopOn: boolean,
-    blocksItems: boolean,
-    textFields: string[],
-    canRestrictAffiliations: boolean
+    statGroups?: TerrainTypeStats[],
+    warpType?: WarpType,
+    warpCost?: number,
+    cannotStopOn?: boolean,
+    blocksItems?: boolean,
+    textFields?: string[],
+    canRestrictAffiliations?: boolean
 }
 
 export enum WarpType {

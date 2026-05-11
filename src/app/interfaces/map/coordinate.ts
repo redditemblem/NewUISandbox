@@ -4,3 +4,9 @@ export interface Coordinate {
     y: number,
     asText: string
 }
+
+//Equivalent to CoordinateFormat enum
+export enum CoordinateFormat {
+    XY = 0,
+    Alphanumerical = 1
+}

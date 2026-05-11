@@ -1,3 +1,5 @@
+import { CoordinateFormat } from "./coordinate";
+
 //Equivalent to MapConstantsConfig.cs
 export interface MapConstants {
     tileSize: number,
@@ -8,10 +10,4 @@ export interface MapConstants {
     calculatePairedUnitRanges: boolean,
     itemMaxRangeAllowedForCalculation: number,
     unitMovementStatName: string
-}
-
-//Equivalent to CoordinateFormat enum
-export enum CoordinateFormat {
-    XY = 0,
-    Alphanumerical = 1
 }

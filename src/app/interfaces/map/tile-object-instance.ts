@@ -1,5 +1,5 @@
+import { HealthPoints } from "../system/health-points";
 import { Coordinate } from "./coordinate";
-import { HealthPoints } from "./health-points";
 
 //Equivalent to TileObjectInstance.cs
 export interface TileObjectInstance {

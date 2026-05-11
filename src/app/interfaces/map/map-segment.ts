@@ -1,5 +1,5 @@
-import { NumberDictionary } from "./dictionaries";
-import { Range } from "./range";
+import { NumberDictionary } from "../common/dictionaries";
+import { Range } from "../common/range";
 import { Tile } from "./tile";
 import { TileObjectInstance } from "./tile-object-instance";
 

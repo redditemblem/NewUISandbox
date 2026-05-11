@@ -1,4 +1,4 @@
-import { StringDictionary } from "../dictionaries";
+import { StringDictionary } from "../common/dictionaries";
 import { InterfaceLabels } from "./interface-labels";
 import { Class } from "./class";
 import { SystemConstants } from "./system-constants";

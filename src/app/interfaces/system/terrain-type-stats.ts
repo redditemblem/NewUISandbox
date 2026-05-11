@@ -1,4 +1,4 @@
-import { StringDictionary } from "../dictionaries";
+import { StringDictionary } from "../common/dictionaries";
 
 //Equivalent to TerrainTypeStats.cs
 export interface TerrainTypeStats {

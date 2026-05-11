@@ -4,16 +4,16 @@ import { ItemRange } from "./item-range";
 //Equivalent to Item.cs
 export interface Item {
     name: string,
-    spriteUrl: string,
+    spriteUrl?: string,
     category: string,
-    weaponRank: string,
-    isAlwaysUsable: boolean,
-    utilizedStats: string[],
-    targetedStats: string[],
-    dealsDamage: boolean,
+    weaponRank?: string,
+    isAlwaysUsable?: boolean,
+    utilizedStats?: string[],
+    targetedStats?: string[],
+    dealsDamage?: boolean,
     maxUses: number,
-    equippedSkills: UnitSkill[],
+    equippedSkills?: UnitSkill[],
     range: ItemRange,
-    textFields: string[],
+    textFields?: string[],
     graphicUrl?: string
 }

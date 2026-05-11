@@ -7,7 +7,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
   providedIn: 'root',
 })
 export class TeamListService {
-  private readonly apiUrl = 'https://localhost:44323/api/teamList';
+  private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/teamList';
 
   private loading = signal<boolean>(true);
   readonly isLoading = this.loading.asReadonly();

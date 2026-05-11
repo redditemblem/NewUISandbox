@@ -1,11 +1,11 @@
 //Equivalent to StatusCondition.cs
 export interface StatusCondition {
     name: string,
-    spriteUrl: string,
-    type: StatusConditionType,
-    turns: number,
-    textFields: string[],
-    isEffectConfigured: boolean
+    spriteUrl?: string,
+    type?: StatusConditionType,
+    turns?: number,
+    textFields?: string[],
+    isEffectConfigured?: boolean
 }
 
 export enum StatusConditionType {

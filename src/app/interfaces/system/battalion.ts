@@ -1,13 +1,13 @@
-import { StringDictionary } from "../dictionaries";
+import { StringDictionary } from "../common/dictionaries";
 
 //Equivalent to Battalion.cs
 export interface Battalion {
     name: string,
-    gambit: string,
-    spriteUrl: string,
-    maxEndurance: number,
-    rank: string,
-    stats: StringDictionary<number>,
-    statModifiers: StringDictionary<number>,
-    textFields: string[]
+    gambit?: string,
+    spriteUrl?: string,
+    maxEndurance?: number,
+    rank?: string,
+    stats?: StringDictionary<number>,
+    statModifiers?: StringDictionary<number>,
+    textFields?: string[]
 }
