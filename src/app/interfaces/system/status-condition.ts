@@ -1,7 +1,7 @@
 //Equivalent to StatusCondition.cs
 export interface StatusCondition {
     name: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     type?: StatusConditionType,
     turns?: number,
     textFields?: string[],

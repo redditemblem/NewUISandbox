@@ -4,7 +4,7 @@ import { StringDictionary } from "../common/dictionaries";
 export interface Battalion {
     name: string,
     gambit?: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     maxEndurance?: number,
     rank?: string,
     stats?: StringDictionary<number>,

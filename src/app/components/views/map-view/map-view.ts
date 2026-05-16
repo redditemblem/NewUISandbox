@@ -9,10 +9,11 @@ import { BreakpointService } from '../../../services/breakpoint-service';
 import { ThemeService } from '../../../services/theme-service';
 import { TeamDataService } from '../../../services/team-data-service';
 import { ActivatedRoute } from '@angular/router';
+import { MatFabButton } from '@angular/material/button';
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenav, MatSidenavContainer, MatSidenavContent, MatTab, MatTabGroup, MatTabLabel, MapLinksSidenav, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav],
+  imports: [MatSidenav, MatSidenavContainer, MatSidenavContent, MatTab, MatTabGroup, MatTabLabel, MatFabButton, MapLinksSidenav, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })

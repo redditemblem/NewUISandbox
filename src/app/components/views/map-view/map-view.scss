@@ -1,8 +1,41 @@
+@use '@angular/material' as mat;
+
 mat-sidenav-container {
     height: 100vh;
     width: 100vw;
 }
 
 mat-sidenav {
-    min-width: 375px;
+    anchor-name: --sidenav-anchor;
+    min-width: 450px;
+    border-radius: 0px;
+    box-shadow: 2px 0px 5px 1px gray;
+}
+
+mat-sidenav-content {
+    padding-left: 8px;
+    padding-right: 8px;
+    background-image: url('../../../../../public/img/background.png');
+    background-repeat: repeat;
+}
+
+mat-tab-group.segmentTabs {
+    @include mat.tabs-overrides((
+        container-height: 56px,
+        label-text-font: macExtMinecraft
+    ));
+
+    & mat-tab-header {
+        background-color: var(--mat-sys-background);
+        margin-left: 48px;
+    }
+}
+
+button.sidenavExpandButton {
+    position: absolute;
+    position-anchor: --sidenav-anchor;
+    position-area: x-end y-start;
+    position-visibility: always;
+    z-index: 99;
+    border-radius: 0px 10px 10px 0px;
 }

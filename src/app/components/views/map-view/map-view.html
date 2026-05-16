@@ -1,33 +1,46 @@
+<button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side">
-    <mat-tab-group>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                L
-            </ng-template>
-            <map-links-sidenav />
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                U
-            </ng-template>
-            <map-units-sidenav />
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                T
-            </ng-template>
-            <map-tiles-sidenav />
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                DR
-            </ng-template>
-            <map-dice-roller-sidenav />
-        </mat-tab>
-    </mat-tab-group>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <button (click)="sidenav.toggle()">Toggle sidenav</button>
-  </mat-sidenav-content>
+    <mat-sidenav #sidenav [mode]="breakpointService.isScreenSmallWidth() ? 'push' : 'side'" opened>
+        <mat-tab-group>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    U
+                </ng-template>
+                <map-units-sidenav />
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    T
+                </ng-template>
+                <map-tiles-sidenav />
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    I
+                </ng-template>
+                Image download
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    L
+                </ng-template>
+                <map-links-sidenav />
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    DR
+                </ng-template>
+                <map-dice-roller-sidenav />
+            </mat-tab>
+        </mat-tab-group>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="segmentTabs">
+            @for (segment of teamDataService.mapData().map?.segments; track $index){
+                <mat-tab [label]="segment.title">
+                    {{segment.title}}
+                </mat-tab>
+            }
+        </mat-tab-group>
+    </mat-sidenav-content>
 </mat-sidenav-container>

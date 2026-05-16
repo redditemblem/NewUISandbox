@@ -3,5 +3,5 @@ export interface HealthPoints {
     current: number,
     maximum: number,
     percentage: number,
-    remainingBars: number
+    remainingBars?: number
 }

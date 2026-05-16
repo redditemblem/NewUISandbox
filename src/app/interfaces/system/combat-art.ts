@@ -4,7 +4,7 @@ import { CombatArtRange } from "./combat-art-range";
 //Equivalent to CombatArt.cs
 export interface CombatArt {
     name: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     weaponRank?: string,
     category?: string,
     utilizedStats?: string[],

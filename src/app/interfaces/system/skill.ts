@@ -1,7 +1,7 @@
 //Equivalent to Skill.cs
 export interface Skill {
     name: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     textFields?: string[],
     isEffectConfigured?: boolean
 }

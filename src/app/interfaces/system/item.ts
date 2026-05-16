@@ -4,7 +4,7 @@ import { ItemRange } from "./item-range";
 //Equivalent to Item.cs
 export interface Item {
     name: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     category: string,
     weaponRank?: string,
     isAlwaysUsable?: boolean,

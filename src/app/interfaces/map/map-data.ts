@@ -7,7 +7,7 @@ export interface MapData {
     map?: MapObject
     system?: SystemInfo
     units?: Unit[],
-    workbookId?: string,
+    workbookID?: string,
     showConvoyLink?: boolean,
     showShopLink?: boolean
 }

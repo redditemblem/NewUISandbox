@@ -4,7 +4,7 @@ import { TileObjectRange } from "./tile-object-range";
 //Equivalent to TileObject.cs
 export interface TileObject {
     name: string
-    spriteUrl?: string,
+    spriteURL?: string,
     size?: number,
     layer?: TileObjectLayer,
     range?: TileObjectRange,

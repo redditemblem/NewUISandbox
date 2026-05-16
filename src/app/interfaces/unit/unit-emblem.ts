@@ -10,4 +10,5 @@ export interface UnitEmblem {
     syncSkills?: UnitSkill[],
     engageSkills?: UnitSkill[],
     engageWeapons?: UnitInventoryItem[]
+    engageAttacks?: string[]
 }

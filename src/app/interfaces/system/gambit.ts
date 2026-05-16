@@ -4,7 +4,7 @@ import { GambitRange } from "./gambit-range";
 //Equivalent to Gambit.cs
 export interface Gambit {
     name: string,
-    spriteUrl?: string,
+    spriteURL?: string,
     maxUses?: number,
     utilizedStats?: string[],
     range: GambitRange,

@@ -14,7 +14,7 @@ export interface Unit {
     name: string,
     unitNumber?: string,
     player?: string,
-    characterApplicationUrl?: string,
+    characterApplicationURL?: string,
     textFields?: string[]
     sprite: UnitSpriteData,
     location: UnitLocationData,
@@ -41,5 +41,5 @@ export interface Unit {
     adjutants?: string[]
 
     //Engage
-    emblem: UnitEmblem
+    emblem?: UnitEmblem
 }

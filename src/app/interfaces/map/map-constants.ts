@@ -4,7 +4,7 @@ import { CoordinateFormat } from "./coordinate";
 export interface MapConstants {
     tileSize: number,
     hasHeaderTopLeft: boolean,
-    HasHeaderBottomRight: boolean,
+    hasHeaderBottomRight: boolean,
     coordinateFormat: CoordinateFormat,
     calculateRanges: boolean,
     calculatePairedUnitRanges: boolean,

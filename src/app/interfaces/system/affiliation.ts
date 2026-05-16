@@ -1,7 +1,7 @@
 //Equivalent to Affiliation.cs
 export interface Affiliation {
     name: string,
-    spriteUrl: string,
+    spriteURL: string,
     flipUnitSprites: boolean,
     textFields: string[]
 }
