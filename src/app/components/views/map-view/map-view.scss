@@ -6,10 +6,12 @@ mat-sidenav-container {
 }
 
 mat-sidenav {
+    @include mat.sidenav-overrides((
+        container-shape: var(--mat-sys-corner-none),
+        container-width: 450px
+    ));
+
     anchor-name: --sidenav-anchor;
-    min-width: 450px;
-    border-radius: 0px;
-    box-shadow: 2px 0px 5px 1px gray;
 }
 
 mat-sidenav-content {
@@ -17,6 +19,10 @@ mat-sidenav-content {
     padding-right: 8px;
     background-image: url('../../../../../public/img/background.png');
     background-repeat: repeat;
+}
+
+mat-tab-group.sidebarTabs {
+    height: 100vh;
 }
 
 mat-tab-group.segmentTabs {
@@ -32,10 +38,18 @@ mat-tab-group.segmentTabs {
 }
 
 button.sidenavExpandButton {
+    @include mat.fab-overrides((
+        container-elevation-shadow: none,
+        focus-container-elevation-shadow: none,
+        hover-container-elevation-shadow: none,
+        extended-focus-container-elevation-shadow: none,
+        extended-hover-container-elevation-shadow: none,
+        container-shape: 0px 10px 10px 0px
+    ));
+    
     position: absolute;
     position-anchor: --sidenav-anchor;
     position-area: x-end y-start;
     position-visibility: always;
     z-index: 99;
-    border-radius: 0px 10px 10px 0px;
 }

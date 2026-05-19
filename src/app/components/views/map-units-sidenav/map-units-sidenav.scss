@@ -18,3 +18,8 @@ mat-form-field {
     width: 32px;
     object-fit: scale-down;
 }
+
+.unitScrollContainer {
+    height: 100%;
+    overflow-y: auto;
+}

@@ -1,2 +1,5 @@
-<img [src]="unit().sprite.portraitURL ? unit().sprite.portraitURL : unit().sprite.spriteURL" class="unitPortraitSprite" />
-<h1 class="pixelFont">{{unit().name}}</h1>
+<img [src]="unit().sprite.portraitURL ? unit().sprite.portraitURL : unit().sprite.spriteURL" class="unitPortraitSprite" [class]="{'smooth': unit().sprite.portraitURL}" />
+<div class="unitNameplateContainer">
+    <div>{{unit().player}}</div>
+    <div class="unitNameplate">{{unit().name}}</div>
+</div>

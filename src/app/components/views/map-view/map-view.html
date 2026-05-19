@@ -1,7 +1,7 @@
 <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
-    <mat-sidenav #sidenav [mode]="breakpointService.isScreenSmallWidth() ? 'push' : 'side'" opened>
-        <mat-tab-group>
+    <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'" class="noScroll">
+        <mat-tab-group class="sidebarTabs">
             <mat-tab>
                 <ng-template mat-tab-label>
                     U

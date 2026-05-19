@@ -90,3 +90,14 @@ img.smooth{
     image-rendering: auto;
     -ms-interpolation-mode: inherit;
 }
+
+//Allow overriding of default scrollable behavior
+.noScroll {
+  .mat-drawer-inner-container {
+    overflow: hidden;
+  }
+
+  .mat-mdc-tab-body-content {
+    overflow: hidden;
+  }
+}

@@ -3,3 +3,18 @@ img.unitPortraitSprite {
     max-width: 275px;
     object-fit: scale-down;
 }
+
+div.unitNameplateContainer {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+div.unitNameplate {
+    display: flex;
+    padding: 24px 0px 20px 24px;
+    border-radius: 8px;
+    background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, linear-gradient(to right, var(--mat-sys-secondary-container), transparent 70%);
+    font-family: macExtMinecraft;
+    font-size: var(--mat-sys-body-large-line-height);
+    line-height: var(--mat-sys-body-large-line-height);
+}
