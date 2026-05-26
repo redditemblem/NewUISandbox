@@ -3,6 +3,7 @@ import { MapData } from '../interfaces/map/map-data';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Unit } from '../interfaces/unit/unit';
+import { Affiliation } from '../interfaces/system/affiliation';
 
 @Injectable({
   providedIn: 'root',
@@ -39,5 +40,11 @@ export class TeamDataService {
 
   getUnitsList() : Unit[] {
     return this.mapData().units ?? [];
+  }
+
+  getAffiliationByName(name: string) : Affiliation | undefined {
+	let dict = this.mapData().system?.affiliations;
+	if(!dict) return undefined;
+	else return dict[name];
   }
 }

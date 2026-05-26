@@ -7,14 +7,43 @@ img.unitPortraitSprite {
 div.unitNameplateContainer {
     display: flex;
     flex-flow: column nowrap;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    div.unitNameplateRow { 
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: flex-end;
+
+        div.unitNameplate {
+            flex-grow: 1;
+            padding: 16px 32px 16px 32px;
+            border-radius: 0px 16px;
+            background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--mat-sys-primary-container), transparent, var(--mat-sys-primary-container));
+            font-family: macExtMinecraft;
+
+            div.nameText {
+                font-size: var(--mat-sys-body-large-line-height);
+                line-height: var(--mat-sys-body-large-line-height);
+            }
+
+            div.levelClassText {
+                padding-left: 16px;
+            }
+        }
+    }
+
+    div.playerNameplate {
+        align-self: flex-end;
+        max-width: 50%;
+        margin-right: 16px;
+        padding: 2px 16px 2px 16px;
+        border-radius: 0px 0px 8px 8px;
+        background-color: var(--mat-sys-secondary-container);
+    }
 }
 
-div.unitNameplate {
-    display: flex;
-    padding: 24px 0px 20px 24px;
-    border-radius: 8px;
-    background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, linear-gradient(to right, var(--mat-sys-secondary-container), transparent 70%);
-    font-family: macExtMinecraft;
-    font-size: var(--mat-sys-body-large-line-height);
-    line-height: var(--mat-sys-body-large-line-height);
+div.expandableUnitInfoContainer {
+    padding-left: 8px;
+    padding-right: 8px;
 }
