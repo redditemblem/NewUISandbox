@@ -1,0 +1,33 @@
+div.headerRow {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    font-family: macExtMinecraft;
+    font-size: .8rem;
+
+    div.labelText {
+        max-width: 40%;
+        align-content: center;
+        padding: 4px 8px 4px 16px;
+        border-radius: 0px 0px 0px 8px;
+        background: var(--mat-sys-primary-container);
+    }
+
+    div.labelTextPoint {
+        width: 16px;
+        background: linear-gradient(to right top, var(--mat-sys-primary-container) 50%, transparent 50%);
+    }
+
+    div.titleText {
+        flex-grow: 1;
+        align-content: center;
+        padding: 4px 8px 4px 8px;
+        box-shadow: inset 0px -2px var(--mat-sys-primary-container);
+        border-radius: 0px 8px 0px 0px;
+    }
+}
+
+p {
+    margin: 4px 16px 0px 16px;
+    font-size: .8rem;
+}

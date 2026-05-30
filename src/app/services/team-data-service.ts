@@ -4,6 +4,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Unit } from '../interfaces/unit/unit';
 import { Affiliation } from '../interfaces/system/affiliation';
+import { Class } from '../interfaces/system/class';
+import { InterfaceLabels } from '../interfaces/system/interface-labels';
 
 @Injectable({
   providedIn: 'root',
@@ -42,9 +44,19 @@ export class TeamDataService {
     return this.mapData().units ?? [];
   }
 
+  getInterfaceLabels() : InterfaceLabels | undefined {
+	return this.mapData().system?.interfaceLabels;
+  }
+
   getAffiliationByName(name: string) : Affiliation | undefined {
 	let dict = this.mapData().system?.affiliations;
-	if(!dict) return undefined;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  getClassByName(name: string) : Class | undefined {
+	let dict = this.mapData().system?.classes;
+	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 }

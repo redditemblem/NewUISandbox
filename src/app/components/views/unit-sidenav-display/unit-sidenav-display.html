@@ -1,39 +1,60 @@
 <img [src]="unit().sprite.portraitURL ? unit().sprite.portraitURL : unit().sprite.spriteURL" class="unitPortraitSprite" [class]="{'smooth': unit().sprite.portraitURL}" />
 <div class="unitNameplateContainer">
     <div class="unitNameplateRow">
-        <button matIconButton>
+        <button matIconButton (click)="toggleUnitInfoExpansion()">
             <img src="img/caret.png" height="32" width="32" />
         </button>
         <div class="unitNameplate">
-            <div class="nameText">{{unit().name}}</div>
-            <div class="levelClassText">
-                @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
-                @if (unit().classes) { {{unit().classes?.at(0)}} }
+            <div class="unitNameplateText">
+                <div class="nameText">{{unit().name}}</div>
+                <div class="levelClassText">
+                    @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
+                    @if (unit().classes) { {{unit().classes?.at(0)}} }
+                </div>
             </div>
-            @if (teamDataService.getAffiliationByName(unit().affiliation)?.spriteURL) {
-                <img [src]="teamDataService.getAffiliationByName(unit().affiliation)?.spriteURL" />
+            @if (getUnitAffiliation()?.spriteURL) {
+                <img [src]="getUnitAffiliation()?.spriteURL" class="nameplateAffiliationSprite"/>
             }
         </div>
     </div>
     @if (unit().player) {
-        <div class="playerNameplate">{{unit().player}}</div>
+        <div class="playerNameplate">
+            <div class="playerNameplateText">{{unit().player}}</div>
+            <div class="playerNameplateRibbons">
+                <div class="leftRibbon"></div>
+                <div class="rightRibbon"></div>
+            </div>
+        </div>
     }
 </div>
-<div class="expandableUnitInfoContainer">
-    @if (unit().textFields) {
-        @for (text of unit().textFields; track $index) {
-            <p>{{text}}</p>
+@if(isUnitInfoExpanded){
+    <div class="expandableUnitInfoContainer">
+        @if (unit().textFields) {
+            @for (text of unit().textFields; track $index) {
+                <p class="unitDescriptionText">{{text}}</p>
+            }
         }
-    }
-    <p>Affiliation: {{unit().affiliation}}</p>
-    <p>Movement Type: {{unit().movementType}}</p>
-    @if (unit().classes) {
-        @for(className of unit().classes; track $index) {
-            <p>Class: {{className}}</p>
+        <text-fields-with-labeled-header label="Affiliation" [title]="unit().affiliation" [textFields]="getUnitAffiliation()?.textFields" />
+        @if (unit().classes) {
+            @for(className of unit().classes; track $index) {
+                <text-fields-with-labeled-header [label]="teamDataService.getInterfaceLabels()?.class" [title]="className" [textFields]="getUnitClass(className)?.textFields" />
+            }
         }
-    }
-    @if (unit().characterApplicationURL) {
-        <p>Character Application: <a [href]="unit().characterApplicationURL">Link</a></p>
-    }
+        <text-fields-with-labeled-header label="Movement Type" [title]="unit().movementType" />
+        @if (unit().characterApplicationURL) {
+            <text-fields-with-labeled-header label="Character App" title="Link" [titleHref]="unit().characterApplicationURL" />
+        }
+    </div>
+}
+<div class="prioritizedStatsContainer">
+    <div class="unitHPContainer">
+        <div class="hpValueRow">
+            <div class="label">HP</div>
+            <div class="values">
+                <span class="current">{{unit().stats.hp.current}}</span>
+                <span class="maximum">/ {{unit().stats.hp.maximum}}</span>
+            </div>
+        </div>
+        <div class="placeholderHPBar"></div>
+    </div>
 </div>
-<div>HP {{unit().stats.hp.current}} / {{unit().stats.hp.maximum}}</div>
