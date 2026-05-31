@@ -2,16 +2,16 @@
 <div class="unitNameplateContainer">
     <div class="unitNameplateRow">
         <button matIconButton (click)="toggleUnitInfoExpansion()">
-            <img src="img/caret.png" height="32" width="32" />
+            <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded}" />
         </button>
         <div class="unitNameplate">
-            <div class="unitNameplateText">
-                <div class="nameText">{{unit().name}}</div>
-                <div class="levelClassText">
+            <hgroup class="unitNameplateText">
+                <h1 class="nameText">{{unit().name}}</h1>
+                <p class="levelClassText">
                     @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
                     @if (unit().classes) { {{unit().classes?.at(0)}} }
-                </div>
-            </div>
+                </p>
+            </hgroup>
             @if (getUnitAffiliation()?.spriteURL) {
                 <img [src]="getUnitAffiliation()?.spriteURL" class="nameplateAffiliationSprite"/>
             }
@@ -57,4 +57,16 @@
         </div>
         <div class="placeholderHPBar"></div>
     </div>
+    @if((unit().stats.experience ?? 0) > 0){
+        <div class="prioritizedStatsItem">
+            <div class="label">Exp</div>
+            <div>{{unit().stats.experience}}</div>
+        </div>
+    }
+    @if((unit().stats.heldCurrency ?? 0) > 0){
+        <div class="prioritizedStatsItem">
+            <div class="label">Money</div>
+            <currency [amount]="unit().stats.heldCurrency" />
+        </div>
+    }
 </div>

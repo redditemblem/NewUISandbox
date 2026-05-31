@@ -1,13 +1,13 @@
 <div class="headerRow">
-    <div class="labelText">{{label()}}</div>
+    <h2 class="labelText">{{label()}}</h2>
     <div class="labelTextPoint"></div>
-    <div class="titleText">
+    <h2 class="titleText">
         @if(titleHref()) {
             <a [href]="titleHref()" target="_blank">{{title()}}</a>
         } @else {
             {{title()}}
         }
-    </div>
+    </h2>
 </div>
 @for (textField of textFields(); track $index) {
     <p>{{textField}}</p>

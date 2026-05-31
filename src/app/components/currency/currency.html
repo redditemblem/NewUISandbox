@@ -1,0 +1,15 @@
+@if(amount()) {
+    @if (constants) {
+        @if (constants.isSymbolLeftAligned) { 
+            {{constants.currencySymbol}}
+            @if(constants.includeSpace) { &nbsp; }
+            {{amount()}}
+        } @else {
+            {{amount()}}
+            @if(constants.includeSpace) { &nbsp; }
+            {{constants.currencySymbol}}
+        }
+    } @else {
+        {{amount()}}
+    }
+}

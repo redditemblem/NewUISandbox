@@ -5,10 +5,11 @@ import { TeamDataService } from '../../../services/team-data-service';
 import { TextFieldsWithLabeledHeader } from "../../text-fields-with-labeled-header/text-fields-with-labeled-header";
 import { Affiliation } from '../../../interfaces/system/affiliation';
 import { Class } from '../../../interfaces/system/class';
+import { Currency } from '../../currency/currency';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

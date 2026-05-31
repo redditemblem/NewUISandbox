@@ -3,14 +3,17 @@ div.headerRow {
     flex-flow: row nowrap;
     align-items: stretch;
     font-family: macExtMinecraft;
-    font-size: .8rem;
+    font-size: .5rem;
 
-    div.labelText {
+    h2.labelText {
         max-width: 40%;
         align-content: center;
+        margin: 0px;
         padding: 4px 8px 4px 16px;
         border-radius: 0px 0px 0px 8px;
         background: var(--mat-sys-primary-container);
+        font-style: normal;
+        font-weight: normal;
     }
 
     div.labelTextPoint {
@@ -18,12 +21,15 @@ div.headerRow {
         background: linear-gradient(to right top, var(--mat-sys-primary-container) 50%, transparent 50%);
     }
 
-    div.titleText {
+    h2.titleText {
         flex-grow: 1;
         align-content: center;
+        margin: 0px;
         padding: 4px 8px 4px 8px;
         box-shadow: inset 0px -2px var(--mat-sys-primary-container);
         border-radius: 0px 8px 0px 0px;
+        font-style: normal;
+        font-weight: normal;
     }
 }
 

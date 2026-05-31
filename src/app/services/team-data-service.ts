@@ -6,6 +6,7 @@ import { Unit } from '../interfaces/unit/unit';
 import { Affiliation } from '../interfaces/system/affiliation';
 import { Class } from '../interfaces/system/class';
 import { InterfaceLabels } from '../interfaces/system/interface-labels';
+import { CurrencyConstants } from '../interfaces/system/currency-constants';
 
 @Injectable({
   providedIn: 'root',
@@ -46,6 +47,10 @@ export class TeamDataService {
 
   getInterfaceLabels() : InterfaceLabels | undefined {
 	return this.mapData().system?.interfaceLabels;
+  }
+
+  getCurrencyConstants() : CurrencyConstants | undefined {
+	return this.mapData().system?.constants.currency;
   }
 
   getAffiliationByName(name: string) : Affiliation | undefined {
