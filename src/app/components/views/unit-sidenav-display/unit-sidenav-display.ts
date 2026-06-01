@@ -6,10 +6,11 @@ import { TextFieldsWithLabeledHeader } from "../../text-fields-with-labeled-head
 import { Affiliation } from '../../../interfaces/system/affiliation';
 import { Class } from '../../../interfaces/system/class';
 import { Currency } from '../../currency/currency';
+import { UnitTag } from '../../unit-tag/unit-tag';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

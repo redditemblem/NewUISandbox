@@ -1,31 +1,39 @@
-<img [src]="unit().sprite.portraitURL ? unit().sprite.portraitURL : unit().sprite.spriteURL" class="unitPortraitSprite" [class]="{'smooth': unit().sprite.portraitURL}" />
-<div class="unitNameplateContainer">
-    <div class="unitNameplateRow">
-        <button matIconButton (click)="toggleUnitInfoExpansion()">
-            <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded}" />
-        </button>
-        <div class="unitNameplate">
-            <hgroup class="unitNameplateText">
-                <h1 class="nameText">{{unit().name}}</h1>
-                <p class="levelClassText">
-                    @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
-                    @if (unit().classes) { {{unit().classes?.at(0)}} }
-                </p>
-            </hgroup>
-            @if (getUnitAffiliation()?.spriteURL) {
-                <img [src]="getUnitAffiliation()?.spriteURL" class="nameplateAffiliationSprite"/>
-            }
-        </div>
+@if(unit().sprite.portraitURL){
+    <div class="unitPortraitContainer">
+        <img [src]="unit().sprite.portraitURL" class="unitPortraitSprite smooth" />
     </div>
+}
+<div class="unitNameplateContainer">
+    <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" />
+    <hgroup class="unitNameplateText">
+        <h1 class="nameText">{{unit().name}}</h1>
+        <p class="levelClassText">
+            @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
+            @if (unit().classes) { {{unit().classes?.at(0)}} }
+        </p>
+    </hgroup>
+    @if (getUnitAffiliation()?.spriteURL) {
+        <img [src]="getUnitAffiliation()?.spriteURL" class="nameplateAffiliationSprite"/>
+    }
+</div>
+<div class="unitButtonsRow">
+    <button matIconButton (click)="toggleUnitInfoExpansion()">
+        <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded}" />
+    </button>
     @if (unit().player) {
-        <div class="playerNameplate">
-            <div class="playerNameplateText">{{unit().player}}</div>
-            <div class="playerNameplateRibbons">
-                <div class="leftRibbon"></div>
-                <div class="rightRibbon"></div>
+        <div class="playerNameplateContainer" [title]="unit().player">
+            <div class="playerNameplate">
+                <div class="text">{{unit().player}}</div>
+                <div class="ribbons">
+                    <div class="leftRibbon"></div>
+                    <div class="rightRibbon"></div>
+                </div>
             </div>
         </div>
     }
+    <button matIconButton>
+        P
+    </button>
 </div>
 @if(isUnitInfoExpanded){
     <div class="expandableUnitInfoContainer">
@@ -70,3 +78,25 @@
         </div>
     }
 </div>
+@if((unit().tags ?? []).length > 0){
+    <div class="tagsRow">
+        <div>
+            TAGS
+        </div>
+        <div class="tagItems">
+            @for(tag of unit().tags; track $index){
+                <unit-tag [tag]="tag" />
+            }
+        </div>
+    </div>
+}
+@if(unit().behavior){
+    <div class="behaviorRow">
+        <div>
+            BEHV
+        </div>
+        <div class="text">
+            <p>{{unit().behavior}}</p>
+        </div>
+    </div>
+}

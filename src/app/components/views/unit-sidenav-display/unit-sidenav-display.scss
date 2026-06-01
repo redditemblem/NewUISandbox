@@ -1,86 +1,110 @@
-img.rotate90 {
-    transform: rotate(90deg);
-}
+div.unitPortraitContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 16px 8px 16px;
 
-img.unitPortraitSprite {
-    max-height: 200px;
-    max-width: 275px;
-    object-fit: scale-down;
+    img.unitPortraitSprite {
+        max-height: 200px;
+        max-width: 400px;
+        object-fit: scale-down;
+    }
 }
 
 div.unitNameplateContainer {
     display: flex;
-    flex-flow: column nowrap;
-    padding: 0px 16px 0px 16px;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+    align-items: center;
+    column-gap: 8px;
+    margin: 0px 16px 0px 16px;
+    padding: 16px 32px 16px 32px;
+    border-radius: 0px 16px;
+    background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--mat-sys-primary-container), transparent, var(--mat-sys-primary-container));
+    font-family: macExtMinecraft;
 
-    div.unitNameplateRow { 
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+
+    img.unitNameplateSprite {
+        max-height: 32px;
+        max-width: 32px;
+        object-fit: scale-down;
+    }
+
+    hgroup.unitNameplateText {
         display: flex;
-        flex-flow: row nowrap;
-        align-items: flex-end;
+        flex-flow: column nowrap;
+        flex-grow: 1;
 
-        div.unitNameplate {
-            display: flex;
-            flex-flow: row nowrap;
-            flex-grow: 1;
-            align-items: center;
-            column-gap: 16px;
-            padding: 16px 32px 16px 32px;
-            border-radius: 0px 16px;
-            background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--mat-sys-primary-container), transparent, var(--mat-sys-primary-container));
-            font-family: macExtMinecraft;
+        h1.nameText {
+            margin: 0px;
+            font-size: var(--mat-sys-body-large-line-height);
+            font-weight: normal;
+            line-height: var(--mat-sys-body-large-line-height);
+        }
 
-            hgroup.unitNameplateText {
-                display: flex;
-                flex-flow: column nowrap;
-                flex-grow: 1;
-
-                h1.nameText {
-                    margin: 0px;
-                    font-size: var(--mat-sys-body-large-line-height);
-                    font-weight: normal;
-                    line-height: var(--mat-sys-body-large-line-height);
-                }
-
-                p.levelClassText {
-                    margin: 0px;
-                    padding-left: 16px;
-                }
-            }
-
-            img.nameplateAffiliationSprite {
-                max-height: 48px;
-                max-width: 36px;
-                object-fit: scale-down;
-            }
+        p.levelClassText {
+            margin: 0px;
+            padding-left: 16px;
         }
     }
 
-    div.playerNameplate {
+    img.nameplateAffiliationSprite {
+        max-height: 48px;
+        max-width: 36px;
+        object-fit: scale-down;
+    }
+}
+
+div.unitButtonsRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding: 0px 16px 8px 16px;
+
+    img.rotate90 {
+        transform: rotate(90deg);
+    }
+
+    div.playerNameplateContainer {
         display: flex;
-        flex-flow: column nowrap;
-        align-self: flex-end;
-        max-width: 50%;
-        margin-right: 16px;
+        flex-flow: row-reverse nowrap;
+        flex: 1;
 
-        div.playerNameplateText {
-            padding: 2px 16px 4px 16px;
-            background: var(--mat-sys-secondary-container);
-            font-size: .8rem;
-        }
-
-        div.playerNameplateRibbons {
+        div.playerNameplate {
             display: flex;
-            flex-flow: row nowrap;
-            height: 12px;
-            
-            div.leftRibbon {
-                flex: 1;
-                background: linear-gradient(to bottom right, var(--mat-sys-secondary-container) 50%, transparent 50%);
+            flex-flow: column nowrap;
+
+            div.text {
+                max-width: 150px;
+                padding: 2px 16px 4px 16px;
+                background: var(--mat-sys-secondary-container);
+                font-size: .8rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-wrap: nowrap;
             }
 
-            div.rightRibbon {
-                flex: 1;
-                background: linear-gradient(to bottom left, var(--mat-sys-secondary-container) 50%, transparent 50%);
+            div.ribbons {
+                display: flex;
+                flex-flow: row nowrap;
+                height: 12px;
+                
+                div.leftRibbon {
+                    flex: 1;
+                    background: linear-gradient(to bottom right, var(--mat-sys-secondary-container) 50%, transparent 50%);
+                }
+
+                div.rightRibbon {
+                    flex: 1;
+                    background: linear-gradient(to bottom left, var(--mat-sys-secondary-container) 50%, transparent 50%);
+                }
             }
         }
     }
@@ -90,7 +114,7 @@ div.expandableUnitInfoContainer {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 16px;
-    padding: 0px 16px 0px 16px;
+    padding: 0px 16px 16px 16px;
 
     p.unitDescriptionText {
         margin: 8px 0px 0px 0px;
@@ -102,7 +126,7 @@ div.prioritizedStatsContainer {
     flex-flow: row wrap;
     justify-content: space-between;
     row-gap: 8px;
-    padding: 0px 16px 0px 16px;
+    padding: 0px 16px 8px 16px;
 }
 
 div.unitHPContainer {
@@ -152,5 +176,35 @@ div.prioritizedStatsItem {
 
     div.label {
         font-family: macExtMinecraft;
+    }
+}
+
+div.tagsRow {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 8px;
+    padding: 0px 16px 8px 16px;
+
+    div.tagItems {
+        display: flex;
+        flex-flow: row wrap;
+        column-gap: 8px;
+        flex: 1;
+    }
+}
+
+div.behaviorRow {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 8px;
+    padding: 0px 16px 8px 16px;
+
+    div.text {
+        display: flex;
+        flex: 1;
+
+        p {
+            margin: 0px;
+        }
     }
 }
