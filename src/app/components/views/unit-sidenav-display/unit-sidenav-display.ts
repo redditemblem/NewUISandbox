@@ -7,10 +7,11 @@ import { Affiliation } from '../../../interfaces/system/affiliation';
 import { Class } from '../../../interfaces/system/class';
 import { Currency } from '../../currency/currency';
 import { UnitTag } from '../../unit-tag/unit-tag';
+import { UnitHpBar } from '../../unit-hp-bar/unit-hp-bar';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

@@ -63,7 +63,7 @@
                 <span class="maximum">/ {{unit().stats.hp.maximum}}</span>
             </div>
         </div>
-        <div class="placeholderHPBar"></div>
+        <unit-hp-bar [percentage]="unit().stats.hp.percentage" />
     </div>
     @if((unit().stats.experience ?? 0) > 0){
         <div class="prioritizedStatsItem">
