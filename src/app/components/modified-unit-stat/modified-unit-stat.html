@@ -1,0 +1,36 @@
+<div class="modifiedStatContainer">
+    <div class="headerRow">
+        <div class="label">
+            <div class="text">{{name()}}</div>
+            <div class="point"></div>
+        </div>
+        <div class="value">
+            @if (values().finalValue !== values().baseValue)
+            {
+                @if (values().invertModifiedDisplayColors)
+                {
+                    @if(values().finalValue < values().baseValue) { <span class="pos">v</span> }
+                    @else { <span class="neg">^</span> }
+                }
+                @else
+                {
+                    @if(values().finalValue > values().baseValue) { <span class="pos">^</span> }
+                    @else { <span class="neg">v</span> }
+                }
+            }
+            {{values().finalValue}}
+        </div>
+    </div>
+    @if (expanded()) {
+        <div class="modifierRow">
+            <div>Base</div>
+            <div>{{values().baseValue}}</div>
+        </div>
+        @for (mod of values().modifiers | keyvalue; track mod.key) {
+            <div class="modifierRow">
+                <div>{{mod.key}}</div>
+                <div>{{mod.value}}</div>
+            </div>
+        }
+    }
+</div>

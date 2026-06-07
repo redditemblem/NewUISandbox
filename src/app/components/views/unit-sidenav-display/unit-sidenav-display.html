@@ -100,3 +100,24 @@
         </div>
     </div>
 }
+<div class="statsHeaderRow">
+    <button matIconButton (click)="toggleStatExpansion()">
+        <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded}" />
+    </button>
+    <h2>Stats</h2>
+</div>
+<div class="statsRow">
+    @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
+        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+    }
+</div>
+<div class="statsRow">
+    @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
+        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+    }
+</div>
+<div class="statsRow">
+    @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
+        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+    }
+</div>

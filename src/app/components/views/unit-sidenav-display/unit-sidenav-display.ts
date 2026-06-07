@@ -8,20 +8,37 @@ import { Class } from '../../../interfaces/system/class';
 import { Currency } from '../../currency/currency';
 import { UnitTag } from '../../unit-tag/unit-tag';
 import { UnitHpBar } from '../../unit-hp-bar/unit-hp-bar';
+import { KeyValuePipe } from '@angular/common';
+import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
 export class UnitSidenavDisplay {
   unit = input.required<Unit>();
 
-  isUnitInfoExpanded = false;
+  public isUnitInfoExpanded : boolean = false;
+  public isStatsInfoExpanded : boolean = false;
 
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
+  }
+
+  ngOnChanges() {
+    //Every time unit() changes, reset expansion statuses
+    this.isUnitInfoExpanded = false;
+    this.isStatsInfoExpanded = false;
+  }
+
+  toggleUnitInfoExpansion() : void { this.isUnitInfoExpanded = !this.isUnitInfoExpanded; }
+  toggleStatExpansion() : void { this.isStatsInfoExpanded = !this.isStatsInfoExpanded; }
+
+  sortModifiedUnitStat() : number {
+    //Don't actually want a real sort here, so just return 0 for all items.
+    return 0;
   }
 
   getUnitAffiliation() : Affiliation | undefined {
@@ -30,9 +47,5 @@ export class UnitSidenavDisplay {
 
   getUnitClass(name: string) : Class | undefined {
     return this.teamDataService.getClassByName(name);
-  }
-
-  toggleUnitInfoExpansion() : void {
-    this.isUnitInfoExpanded = !this.isUnitInfoExpanded;
   }
 }

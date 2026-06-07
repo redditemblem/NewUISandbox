@@ -1,0 +1,46 @@
+div.modifiedStatContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+
+    div.headerRow {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        font-family: macExtMinecraft;
+        font-size: .8rem;
+
+        div.label {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: stretch;
+
+            div.text {
+                display: flex;
+                justify-content: center;
+                width: 75px;
+                padding: 4px 0px 4px 0px;
+                border-radius: 0px 0px 0px 8px;
+                background: var(--mat-sys-primary-container);
+            }
+
+            div.point {
+                width: 16px;
+                background: linear-gradient(to right top, var(--mat-sys-primary-container) 50%, transparent 50%);
+            }
+        }
+
+        div.value:has(.pos) { color: #5CB4EF; }
+        div.value:has(.neg) { color: #d81b62; }
+    }
+
+    div.modifierRow {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        column-gap: 16px;
+        margin-left: 24px;
+        font-size: 0.8rem;
+    }
+}

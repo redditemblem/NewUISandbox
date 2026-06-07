@@ -1,3 +1,7 @@
+img.rotate90 {
+    transform: rotate(90deg);
+}
+
 div.unitPortraitContainer {
     display: flex;
     flex-flow: row nowrap;
@@ -67,10 +71,6 @@ div.unitButtonsRow {
     flex-flow: row nowrap;
     justify-content: space-between;
     padding: 0px 16px 8px 16px;
-
-    img.rotate90 {
-        transform: rotate(90deg);
-    }
 
     div.playerNameplateContainer {
         display: flex;
@@ -206,5 +206,33 @@ div.behaviorRow {
         p {
             margin: 0px;
         }
+    }
+}
+
+div.statsHeaderRow {
+    display: flex;
+    display: row nowrap;
+    align-items: center;
+    padding: 0px 16px 0px 16px;
+
+    h2 {
+        margin: 0px;
+        font-family: macExtMinecraft;
+        font-style: normal;
+        font-weight: normal;
+    }
+}
+div.statsRow {
+    display: flex;
+    flex: 1;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    row-gap: 8px;
+    padding: 0px 16px 16px 16px;
+    
+    modified-unit-stat {
+        display: flex;
+        flex: 0 0 48%;
+        max-width: 50%;
     }
 }
