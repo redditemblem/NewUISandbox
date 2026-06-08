@@ -183,11 +183,18 @@ div.tagsRow {
     display: flex;
     flex-flow: row nowrap;
     column-gap: 8px;
-    padding: 0px 16px 8px 16px;
+    padding: 0px 16px 16px 16px;
+
+    div.tagIcon {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+    }
 
     div.tagItems {
         display: flex;
         flex-flow: row wrap;
+        row-gap: 8px;
         column-gap: 8px;
         flex: 1;
     }
@@ -199,9 +206,17 @@ div.behaviorRow {
     column-gap: 8px;
     padding: 0px 16px 8px 16px;
 
+    div.behaviorIcon {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+    }
+
     div.text {
         display: flex;
+        flex-flow: column nowrap;
         flex: 1;
+        justify-content: center;
 
         p {
             margin: 0px;
@@ -222,6 +237,7 @@ div.statsHeaderRow {
         font-weight: normal;
     }
 }
+
 div.statsRow {
     display: flex;
     flex: 1;

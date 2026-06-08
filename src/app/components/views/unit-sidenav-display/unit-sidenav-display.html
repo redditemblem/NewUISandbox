@@ -31,8 +31,8 @@
             </div>
         </div>
     }
-    <button matIconButton>
-        P
+    <button matIconButton title="Pin this Unit">
+        <img src="img/pin_icon.png" alt="Pin Icon" />
     </button>
 </div>
 @if(isUnitInfoExpanded){
@@ -80,8 +80,8 @@
 </div>
 @if((unit().tags ?? []).length > 0){
     <div class="tagsRow">
-        <div>
-            TAGS
+        <div class="tagIcon">
+            <img src="img/tags_icon.png" height="32" width="32" title="Unit Tags" />
         </div>
         <div class="tagItems">
             @for(tag of unit().tags; track $index){
@@ -92,8 +92,8 @@
 }
 @if(unit().behavior){
     <div class="behaviorRow">
-        <div>
-            BEHV
+        <div class="behaviorIcon">
+            <img src="img/behavior_icon.png" height="32" width="32" title="Unit Behavior" />
         </div>
         <div class="text">
             <p>{{unit().behavior}}</p>

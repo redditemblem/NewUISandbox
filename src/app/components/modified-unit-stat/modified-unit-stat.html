@@ -9,28 +9,33 @@
             {
                 @if (values().invertModifiedDisplayColors)
                 {
-                    @if(values().finalValue < values().baseValue) { <span class="pos">v</span> }
-                    @else { <span class="neg">^</span> }
+                    @if(values().finalValue < values().baseValue) { <img src="img/arrow_down.png" class="pos" /> }
+                    @else { <img src="img/arrow_up.png" class="neg" /> }
                 }
                 @else
                 {
-                    @if(values().finalValue > values().baseValue) { <span class="pos">^</span> }
-                    @else { <span class="neg">v</span> }
+                    @if(values().finalValue > values().baseValue) { <img src="img/arrow_up.png" class="pos" /> }
+                    @else { <img src="img/arrow_down.png" class="neg" /> }
                 }
             }
             {{values().finalValue}}
         </div>
     </div>
     @if (expanded()) {
-        <div class="modifierRow">
-            <div>Base</div>
-            <div>{{values().baseValue}}</div>
-        </div>
-        @for (mod of values().modifiers | keyvalue; track mod.key) {
-            <div class="modifierRow">
-                <div>{{mod.key}}</div>
-                <div>{{mod.value}}</div>
+        <div class="modifiersContainer">
+            <div class="swoopy"></div>
+            <div class="modifierRows">
+                <div class="modifierRow">
+                    <div>Base</div>
+                    <div>{{values().baseValue}}</div>
+                </div>
+                @for (mod of values().modifiers | keyvalue; track mod.key) {
+                    <div class="modifierRow">
+                        <div>{{mod.key}}</div>
+                        <div>{{mod.value}}</div>
+                    </div>
+                }
             </div>
-        }
+        </div> 
     }
 </div>
