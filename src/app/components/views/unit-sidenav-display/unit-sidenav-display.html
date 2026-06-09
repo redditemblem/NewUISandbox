@@ -100,24 +100,44 @@
         </div>
     </div>
 }
+@if((unit().statusConditions ?? []).length > 0) {
+    <div class="statusConditionsRow">
+        <div class="statusConditionIcon">
+            STATUS
+        </div>
+        <div class="statusConditionItems">
+            @for(status of unit().statusConditions; track $index){
+                <unit-status-condition [status]="status" />
+            }
+        </div>
+    </div>
+}
 <div class="statsHeaderRow">
     <button matIconButton (click)="toggleStatExpansion()">
         <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded}" />
     </button>
     <h2>Stats</h2>
 </div>
-<div class="statsRow">
-    @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
-        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+<div class="statsContainer">
+    @if(unit().stats.combat) {
+        <div class="statsRow">
+            @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
+                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+            }
+        </div>
     }
-</div>
-<div class="statsRow">
-    @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
-        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+    @if(unit().stats.system) {
+        <div class="statsRow">
+            @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
+                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+            }
+        </div>
     }
-</div>
-<div class="statsRow">
-    @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
-        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+    @if(unit().stats.general) {
+        <div class="statsRow">
+            @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
+                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+            }
+        </div>
     }
 </div>

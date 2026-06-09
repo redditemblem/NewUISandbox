@@ -1,0 +1,38 @@
+<div id="container">
+    <div id="headerRow">
+        <div id="title">
+            @if ((systemData?.spriteURL ?? "").length > 0) {
+                <img id="sprite" [src]="systemData?.spriteURL" height="12" width="12" />
+            }
+            {{status().name}}
+            @if ((status().remainingTurns ?? 0) > 0) {
+                @if((systemData?.turns ?? 0) > 0) {
+                    ({{status().remainingTurns}}/{{systemData?.turns}} turns)
+                }
+                @else {
+                    ({{status().remainingTurns}} turns)
+                }
+            }
+        </div>
+        <div id="icons">
+            @switch (systemData?.type) 
+            {
+                @case(1) {
+                    +
+                }
+                @case (2) {
+                    -
+                }
+                @case (3) {
+                    n
+                }
+            }
+            @if (systemData?.isEffectConfigured) {
+                E
+            }
+        </div>
+    </div>
+    @for(text of systemData?.textFields; track $index) {
+        <p>{{text}}</p>
+    }
+</div>

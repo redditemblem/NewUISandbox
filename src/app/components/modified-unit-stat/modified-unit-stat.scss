@@ -22,12 +22,14 @@ div.modifiedStatContainer {
                 width: 100px;
                 padding: 4px 0px 4px 0px;
                 border-radius: 0px 0px 0px 8px;
-                background: var(--mat-sys-primary-container);
+                background: var(--mat-sys-secondary-container);
+                box-shadow: 0px 2px var(--mat-sys-tertiary-container);
             }
 
             div.point {
                 width: 16px;
-                background: linear-gradient(to right top, var(--mat-sys-primary-container) 50%, transparent 50%);
+                background: linear-gradient(to right top, var(--mat-sys-secondary-container) 50%, transparent 50%);
+                box-shadow: 0px 2px var(--mat-sys-tertiary-container);
             }
         }
 
@@ -62,13 +64,14 @@ div.modifiedStatContainer {
             flex-flow: column nowrap;
             width: 12px;
             border-radius: 0px 8px 0px 0px;
-            border-right: 4px solid var(--mat-sys-primary-container);
+            border-right: 4px solid var(--mat-sys-tertiary-container);
         }
         
         div.modifierRows {
             display: flex;
             flex-flow: column nowrap;
             flex: 1;
+            row-gap: 2px;
 
             div.modifierRow {
                 display: flex;
@@ -76,6 +79,10 @@ div.modifiedStatContainer {
                 justify-content: space-between;
                 column-gap: 16px;
                 font-size: 0.8rem;
+            }
+
+            div.shaded { 
+                background-color: rgba(132, 132, 132, 0.1);
             }
         }
     }

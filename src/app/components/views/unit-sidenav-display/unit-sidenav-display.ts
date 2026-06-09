@@ -10,10 +10,11 @@ import { UnitTag } from '../../unit-tag/unit-tag';
 import { UnitHpBar } from '../../unit-hp-bar/unit-hp-bar';
 import { KeyValuePipe } from '@angular/common';
 import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
+import { UnitStatusCondition } from '../../unit-status-condition/unit-status-condition';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

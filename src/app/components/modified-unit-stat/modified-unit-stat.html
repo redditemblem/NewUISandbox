@@ -30,7 +30,7 @@
                     <div>{{values().baseValue}}</div>
                 </div>
                 @for (mod of values().modifiers | keyvalue; track mod.key) {
-                    <div class="modifierRow">
+                    <div class="modifierRow" [ngClass]="{'shaded': $even}">
                         <div>{{mod.key}}</div>
                         <div>{{mod.value}}</div>
                     </div>
