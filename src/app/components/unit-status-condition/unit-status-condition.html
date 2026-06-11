@@ -1,34 +1,41 @@
 <div id="container">
     <div id="headerRow">
-        <div id="title">
-            @if ((systemData?.spriteURL ?? "").length > 0) {
-                <img id="sprite" [src]="systemData?.spriteURL" height="12" width="12" />
-            }
-            {{status().name}}
-            @if ((status().remainingTurns ?? 0) > 0) {
-                @if((systemData?.turns ?? 0) > 0) {
-                    ({{status().remainingTurns}}/{{systemData?.turns}} turns)
+        <div id="titleContainer">
+            <div id="title">
+                @if ((systemData?.spriteURL ?? "").length > 0) {
+                    <img id="sprite" [src]="systemData?.spriteURL" height="12" width="12" />
                 }
-                @else {
-                    ({{status().remainingTurns}} turns)
+                {{status().name}}
+                @if ((status().remainingTurns ?? 0) > 0) {
+                    @if((systemData?.turns ?? 0) > 0) {
+                        ({{status().remainingTurns}}/{{systemData?.turns}} turns)
+                    }
+                    @else {
+                        ({{status().remainingTurns}} turns)
+                    }
                 }
-            }
+            </div>
+            <p>
+                @for (stat of status().additionalStats | keyvalue; track stat.key) {
+                    {{stat.value}} {{stat.key}}@if(!$last){, }
+                }
+            </p>
         </div>
         <div id="icons">
-            @switch (systemData?.type) 
+            @if (systemData?.isEffectConfigured) {
+                <img src="img/gear_icon.png" width="20" height="20" title="Effect Configured" />
+            }
+            @switch (systemData?.type ?? 0) 
             {
                 @case(1) {
-                    +
+                    <img src="img/positive_icon.png" width="20" height="20" title="Positive Status" />
                 }
                 @case (2) {
-                    -
+                    <img src="img/negative_icon.png" width="20" height="20" title="Negative Status" />
                 }
                 @case (3) {
-                    n
+                    <img src="img/neutral_icon.png" width="20" height="20" title="Neutral Status"/>
                 }
-            }
-            @if (systemData?.isEffectConfigured) {
-                E
             }
         </div>
     </div>

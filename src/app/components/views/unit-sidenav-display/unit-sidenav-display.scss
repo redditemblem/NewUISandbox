@@ -244,37 +244,64 @@ div.statusConditionsRow {
     }
 }
 
-div.statsHeaderRow {
-    display: flex;
-    display: row nowrap;
-    align-items: center;
-    padding: 0px 16px 8px 16px;
-
-    h2 {
-        margin: 0px;
-        font-family: macExtMinecraft;
-        font-style: normal;
-        font-weight: normal;
-    }
-}
-
-div.statsContainer {
+#statsSectionContainer {
     display: flex;
     flex-flow: column nowrap;
     padding: 0px 16px 16px 16px;
-    row-gap: 24px;
 
-    div.statsRow {
+    #statsHeaderRow {
         display: flex;
-        flex: 1;
-        flex-flow: row wrap;
-        justify-content: space-between;
-        row-gap: 8px;
+        display: row nowrap;
+        align-items: center;
+        column-gap: 8px;
+        margin-bottom: 8px;
 
-        modified-unit-stat {
+        h2 {
+            margin: 0px;
+            font-family: macExtMinecraft;
+            font-style: normal;
+            font-weight: normal;
+        }
+    }
+
+    #statRowsContainer {
+        display: flex;
+        flex-flow: column nowrap;
+        row-gap: 24px;
+
+        div.statRow {
             display: flex;
-            flex: 0 0 48%;
-            max-width: 50%;
+            flex: 1;
+            flex-flow: row wrap;
+            justify-content: space-between;
+            row-gap: 8px;
+
+            modified-unit-stat {
+                display: flex;
+                flex: 0 0 48%;
+                max-width: 50%;
+            }
+        }
+    }
+}
+
+#inventorySectionContainer{
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0px 16px 16px 16px;
+
+    #inventoryHeaderRow {
+        display: flex;
+        display: row nowrap;
+        align-items: center;
+        column-gap: 8px;
+        margin-bottom: 8px;
+
+        h2 {
+            margin: 0px;
+            font-family: macExtMinecraft;
+            font-style: normal;
+            font-weight: normal;
         }
     }
 }

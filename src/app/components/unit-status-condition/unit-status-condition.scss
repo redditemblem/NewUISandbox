@@ -4,38 +4,48 @@
     padding: 8px;
     border: 2px solid var(--mat-sys-primary-container);
     border-radius: 0px 8px 0px 8px;
+    font-size: 0.8rem;
 
     #headerRow {
         display: flex;
         flex-flow: row nowrap;
         flex: 1;
         justify-content: space-between;
-        column-gap: 8px;
+        column-gap: 16px;
 
-        #title {
+        #titleContainer {
             display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            font-family: macExtMinecraft;
-            font-size: 0.8rem;
+            flex-flow: column nowrap;
 
-            #sprite {
-                max-height: 12px;
-                max-width: 12px;
-                object-fit: scale-down;
-                margin-right: 4px;
+            #title {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                font-family: macExtMinecraft;
+                font-size: 0.8rem;
+
+                #sprite {
+                    max-height: 12px;
+                    max-width: 12px;
+                    object-fit: scale-down;
+                    margin-right: 4px;
+                }
+            }
+
+            p {
+                margin: 0px 0px 0px 16px;
             }
         }
 
         #icons {
             display: flex;
             flex-flow: row-reverse nowrap;
-            width: 40px;
+            justify-content: space-between;
+            column-gap: 4px;
         }
     }
 
     p {
-        margin: 0;
-        font-size: 0.8rem;
+        margin: 4px 0px 0px 0px;
     }
 }

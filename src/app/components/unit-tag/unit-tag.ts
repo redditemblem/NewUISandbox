@@ -40,7 +40,7 @@ export class UnitTag {
     this.teamDataService = inject(TeamDataService);
   }
 
-  ngOnInit() {
+  ngOnChanges() {
     this.systemData = this.teamDataService.getTagByName(this.tag());
   }
 }

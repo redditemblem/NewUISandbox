@@ -17,7 +17,7 @@
     }
 </div>
 <div class="unitButtonsRow">
-    <button matIconButton (click)="toggleUnitInfoExpansion()">
+    <button matIconButton (click)="toggleUnitInfoExpansion()" [title]="'Click to ' + (isUnitInfoExpanded ? 'collapse' : 'expand') + ' the additional unit info section'">
         <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded}" />
     </button>
     @if (unit().player) {
@@ -103,7 +103,7 @@
 @if((unit().statusConditions ?? []).length > 0) {
     <div class="statusConditionsRow">
         <div class="statusConditionIcon">
-            STATUS
+            <img src="img/status_icon.png" height="32" width="32" title="Status Conditions" />
         </div>
         <div class="statusConditionItems">
             @for(status of unit().statusConditions; track $index){
@@ -112,32 +112,56 @@
         </div>
     </div>
 }
-<div class="statsHeaderRow">
-    <button matIconButton (click)="toggleStatExpansion()">
-        <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded}" />
-    </button>
-    <h2>Stats</h2>
-</div>
-<div class="statsContainer">
-    @if(unit().stats.combat) {
-        <div class="statsRow">
+<div id="statsSectionContainer">
+    <div id="statsHeaderRow">
+        <button matIconButton (click)="toggleStatExpansion()" [title]="'Click to ' + (isStatsInfoExpanded ? 'collapse' : 'expand') + ' the stats section'">
+            <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded}" />
+        </button>
+        <h2>Stats</h2>
+    </div>
+    <div id="statRowsContainer">
+        @if(unit().stats.combat) {
+        <div class="statRow">
             @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
                 <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
             }
         </div>
-    }
-    @if(unit().stats.system) {
-        <div class="statsRow">
-            @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
-                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+        }
+        @if(unit().stats.system) {
+            <div class="statRow">
+                @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+                }
+            </div>
+        }
+        @if(unit().stats.general) {
+            <div class="statRow">
+                @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+                }
+            </div>
+        }
+    </div>
+</div>
+<mat-divider />
+<div id="inventorySectionContainer">
+    <div id="inventoryHeaderRow">
+        <button matIconButton (click)="toggleInventoryExpansion()" [title]="'Click to ' + (isInventoryExpanded ? 'collapse' : 'expand') + ' the inventory'">
+            <img src="img/caret.png" [class]="{'rotate90': isInventoryExpanded}" />
+        </button>
+        <h2>Inventory</h2>
+    </div>
+    @if (isInventoryExpanded) {
+        @for (subsection of unit().inventory?.subsections; track $index) {
+            @if (getInventorySubsectionLabel($index).length > 0) {
+                <h3>{{getInventorySubsectionLabel($index)}}</h3>
             }
-        </div>
-    }
-    @if(unit().stats.general) {
-        <div class="statsRow">
-            @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
-                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+            @for (item of subsection.items; track $index) {
+                <p>{{item.name}}</p>
             }
-        </div>
+            @if (subsection.emptySlotCount > 0){
+                <p>x{{subsection.emptySlotCount}} Empty Slots</p>
+            }
+        }
     }
 </div>

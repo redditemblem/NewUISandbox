@@ -1,10 +1,10 @@
-<div class="modifiedStatContainer">
-    <div class="headerRow">
-        <div class="label">
-            <div class="text">{{name()}}</div>
-            <div class="point"></div>
+<div id="modifiedStatContainer">
+    <div id="headerRow">
+        <div id="label">
+            <div id="text">{{name()}}</div>
+            <div id="point"></div>
         </div>
-        <div class="value">
+        <div id="value">
             @if (values().finalValue !== values().baseValue)
             {
                 @if (values().invertModifiedDisplayColors)
@@ -22,17 +22,17 @@
         </div>
     </div>
     @if (expanded()) {
-        <div class="modifiersContainer">
-            <div class="swoopy"></div>
-            <div class="modifierRows">
+        <div id="modifiersContainer">
+            <div id="swoopy"></div>
+            <div id="modifierRows">
                 <div class="modifierRow">
-                    <div>Base</div>
-                    <div>{{values().baseValue}}</div>
+                    <p>Base</p>
+                    <p>{{values().baseValue}}</p>
                 </div>
                 @for (mod of values().modifiers | keyvalue; track mod.key) {
                     <div class="modifierRow" [ngClass]="{'shaded': $even}">
-                        <div>{{mod.key}}</div>
-                        <div>{{mod.value}}</div>
+                        <p>{{mod.key}}</p>
+                        <p>{{mod.value}}</p>
                     </div>
                 }
             </div>
