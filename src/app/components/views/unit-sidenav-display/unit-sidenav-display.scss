@@ -304,4 +304,17 @@ div.statusConditionsRow {
             font-weight: normal;
         }
     }
+
+    h3 {
+        margin: 0px 0px 8px 0px;
+        font-family: macExtMinecraft;
+        font-style: normal;
+        font-weight: normal;
+    }
+
+    #subsectionItemsContainer {
+        display: flex;
+        flex-flow: column nowrap;
+        row-gap: 8px;
+    }
 }

@@ -156,12 +156,14 @@
             @if (getInventorySubsectionLabel($index).length > 0) {
                 <h3>{{getInventorySubsectionLabel($index)}}</h3>
             }
-            @for (item of subsection.items; track $index) {
-                <p>{{item.name}}</p>
-            }
-            @if (subsection.emptySlotCount > 0){
-                <p>x{{subsection.emptySlotCount}} Empty Slots</p>
-            }
+            <div id="subsectionItemsContainer">
+                @for (item of subsection.items; track $index) {
+                    <inventory-item [item]="item" />
+                }
+                @if (subsection.emptySlotCount > 0){
+                    <p>x{{subsection.emptySlotCount}} Empty Slots</p>
+                }
+            </div>
         }
     }
 </div>

@@ -1,0 +1,26 @@
+<div id="itemContainer">
+    <div id="headerRow">
+        <div id="textContainer">
+            <div id="name">
+                @if((systemData?.spriteURL ?? "").length > 0){
+                    <img [src]="systemData?.spriteURL" />
+                }
+                <div>
+                    {{item().name}} @if((item().uses ?? 0) > 0){ ({{item().uses}}) }
+                </div>
+            </div>
+            <div id="rankCategory">
+                @if((systemData?.weaponRank ?? "").length > 0)
+                { 
+                    {{systemData?.weaponRank}} - 
+                }
+                {{systemData?.category}} {{formatUtilizedStatsText()}}
+            </div>
+        </div>
+        <div>
+            @if(item().isPrimaryEquipped || item().isSecondaryEquipped) {
+                <img src="img/star_icon.png" height="20" width="20" title="Equipped" />
+            }
+        </div>
+    </div>
+</div>

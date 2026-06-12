@@ -9,6 +9,7 @@ import { InterfaceLabels } from '../interfaces/system/interface-labels';
 import { CurrencyConstants } from '../interfaces/system/currency-constants';
 import { Tag } from '../interfaces/system/tag';
 import { StatusCondition } from '../interfaces/system/status-condition';
+import { Item } from '../interfaces/system/item';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +64,12 @@ export class TeamDataService {
 
   getClassByName(name: string) : Class | undefined {
 	let dict = this.mapData().system?.classes;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  getItemByName(name: string) : Item | undefined {
+	let dict = this.mapData().system?.items;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

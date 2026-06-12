@@ -12,11 +12,11 @@ import { KeyValuePipe } from '@angular/common';
 import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
 import { UnitStatusCondition } from '../../unit-status-condition/unit-status-condition';
 import { MatDivider } from '@angular/material/divider';
-import { InterfaceLabels } from '../../../interfaces/system/interface-labels';
+import { InventoryItem } from '../../inventory-item/inventory-item';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
