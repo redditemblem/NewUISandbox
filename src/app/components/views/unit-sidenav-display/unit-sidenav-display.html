@@ -153,15 +153,17 @@
     </div>
     @if (isInventoryExpanded) {
         @for (subsection of unit().inventory?.subsections; track $index) {
-            @if (getInventorySubsectionLabel($index).length > 0) {
-                <h3>{{getInventorySubsectionLabel($index)}}</h3>
-            }
-            <div id="subsectionItemsContainer">
+            <div id="subsectionContainer">
+                @if (getInventorySubsectionLabel($index).length > 0) {
+                    <h3>{{getInventorySubsectionLabel($index)}}</h3>
+                }
                 @for (item of subsection.items; track $index) {
                     <inventory-item [item]="item" />
                 }
                 @if (subsection.emptySlotCount > 0){
-                    <p>x{{subsection.emptySlotCount}} Empty Slots</p>
+                    <div id="emptySlots">
+                        x{{subsection.emptySlotCount}} Empty Slots
+                    </div>
                 }
             </div>
         }

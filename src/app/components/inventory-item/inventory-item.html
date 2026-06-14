@@ -1,4 +1,4 @@
-<div id="itemContainer">
+<div id="itemContainer" (click)="toggleExpansion()" >
     <div id="headerRow">
         <div id="textContainer">
             <div id="name">
@@ -8,6 +8,20 @@
                 <div>
                     {{item().name}} @if((item().uses ?? 0) > 0){ ({{item().uses}}) }
                 </div>
+                @if ((item().engravings ?? []).length > 0) {
+                    @for(engraving of item().engravings; track engraving) {
+                        @if((getEngravingByName(engraving)?.spriteURL ?? "").length > 0) {
+                            <img [src]="getEngravingByName(engraving)?.spriteURL" [title]="engraving"/>
+                        }
+                    }
+                }
+                @if ((item().tags ?? []).length > 0) {
+                    @for(tag of item().tags; track tag) {
+                        @if((getTagByName(tag)?.spriteURL ?? "").length > 0) {
+                            <img [src]="getTagByName(tag)?.spriteURL" [title]="tag"/>
+                        }
+                    }
+                }
             </div>
             <div id="rankCategory">
                 @if((systemData?.weaponRank ?? "").length > 0)
@@ -23,4 +37,51 @@
             }
         </div>
     </div>
+    @if(isExpanded) {
+        <div id="expansionContainer">
+            <mat-divider />
+            <div id="statsContainer">
+                @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
+                    <div class="stat">
+                        <div>{{stat.key}}</div>
+                        <div class="value">
+                            @if (stat.value.finalValue > stat.value.baseValue){
+                                @if (stat.value.invertModifiedDisplayColors){
+                                    <img src="img/arrow_up.png" height="12" class="neg" />
+                                }
+                                @else {
+                                    <img src="img/arrow_up.png" height="12" class="pos" />
+                                }
+
+                            }
+                            @else if(stat.value.finalValue < stat.value.baseValue) {
+                                @if (stat.value.invertModifiedDisplayColors) {
+                                    <img src="img/arrow_down.png" height="12" class="pos" />
+                                }
+                                @else {
+                                    <img src="img/arrow_down.png" height="12" class="neg" />
+                                }
+                            }
+                            {{stat.value.finalValue}}
+                        </div>
+                    </div>
+                }
+                <div class="stat">
+                    <span>Rng</span>
+                    <span class="value">
+                        {{item().minRange?.finalValue}}
+                        @if ((item().minRange?.finalValue ?? 0) < (item().maxRange?.finalValue ?? 0)) {
+                            - {{item().maxRange?.finalValue}}
+                        }
+                    </span>
+                </div>
+            </div>
+            @if ((systemData?.textFields ?? []).length > 0) {
+                <mat-divider />
+                @for (text of systemData?.textFields; track $index) {
+                    <p>{{text}}</p>
+                }
+            }
+        </div>
+    }
 </div>

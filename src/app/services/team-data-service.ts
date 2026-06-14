@@ -10,6 +10,7 @@ import { CurrencyConstants } from '../interfaces/system/currency-constants';
 import { Tag } from '../interfaces/system/tag';
 import { StatusCondition } from '../interfaces/system/status-condition';
 import { Item } from '../interfaces/system/item';
+import { Engraving } from '../interfaces/system/engraving';
 
 @Injectable({
   providedIn: 'root',
@@ -64,6 +65,12 @@ export class TeamDataService {
 
   getClassByName(name: string) : Class | undefined {
 	let dict = this.mapData().system?.classes;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  getEngravingByName(name: string) : Engraving | undefined { 
+	let dict = this.mapData().system?.engravings;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

@@ -29,6 +29,58 @@
             #rankCategory {
                 padding-left: 16px;
             }
+
+            img {
+                max-height: 24px;
+                max-width: 24px;
+                object-fit: scale-down;
+            }
+        }
+    }
+
+    #expansionContainer {
+        display: flex;
+        flex-flow: column nowrap;
+        row-gap: 8px;
+        margin-top: 8px;
+
+        #statsContainer {
+            display: flex;
+            flex-flow: row wrap;
+            column-gap: 5%;
+            padding: 0px 8px 0px 8px;
+
+            div.stat {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+                flex: 0 0 30%;
+                column-gap: 6px;
+
+                div.value {
+                    display: flex;
+                    flex-flow: row nowrap;
+                    align-items: center;
+
+                    //Filters created using https://codepen.io/sosuke/pen/Pjoqqp
+                    img.pos {
+                        margin-right: 2px;
+                        filter: invert(65%) sepia(85%) saturate(1072%) hue-rotate(176deg) brightness(94%) contrast(99%);
+                    }
+                    
+                    img.neg {
+                        margin-right: 2px;
+                        filter: invert(18%) sepia(94%) saturate(2795%) hue-rotate(322deg) brightness(91%) contrast(96%);
+                    }
+                }
+                div.value:has(.pos) { color: #5CB4EF; }
+                div.value:has(.neg) { color: #d81b62; }
+            }
+        }
+
+        p {
+            margin: 0;
         }
     }
 }

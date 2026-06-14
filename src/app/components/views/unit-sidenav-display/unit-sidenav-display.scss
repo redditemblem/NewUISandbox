@@ -305,16 +305,26 @@ div.statusConditionsRow {
         }
     }
 
-    h3 {
-        margin: 0px 0px 8px 0px;
-        font-family: macExtMinecraft;
-        font-style: normal;
-        font-weight: normal;
-    }
-
-    #subsectionItemsContainer {
+    #subsectionContainer {
         display: flex;
         flex-flow: column nowrap;
         row-gap: 8px;
+        margin-bottom: 16px;
+
+        h3 {
+            margin: 0px;
+            font-family: macExtMinecraft;
+            font-style: normal;
+            font-weight: normal;
+        }
+    }
+
+    #emptySlots {
+        display: flex;
+        padding: 8px;
+        border: 2px solid var(--mat-sys-primary-container);
+        border-radius: 0px 8px 0px 8px;
+        font-family: macExtMinecraft;
+        font-style: italic;
     }
 }
