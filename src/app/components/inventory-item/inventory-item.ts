@@ -3,17 +3,22 @@ import { UnitInventoryItem } from '../../interfaces/unit/unit-inventory-item';
 import { Item } from '../../interfaces/system/item';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from '@angular/material/divider';
-import { KeyValuePipe } from '@angular/common';
+import { KeyValuePipe, NgClass } from '@angular/common';
 import { Engraving } from '../../interfaces/system/engraving';
 import { Tag } from '../../interfaces/system/tag';
+import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
+import { ItemRangeShape } from "../../interfaces/system/item-range";
 
 @Component({
   selector: 'inventory-item',
-  imports: [MatDivider, KeyValuePipe],
+  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, NgClass],
   templateUrl: './inventory-item.html',
   styleUrl: './inventory-item.scss',
 })
 export class InventoryItem {
+  //Expose enum for use in the class
+  protected readonly ItemRangeShape = ItemRangeShape;
+
   item = input.required<UnitInventoryItem>();
   systemData : Item | undefined;
   isExpanded : boolean = false;
@@ -53,8 +58,11 @@ export class InventoryItem {
     return "(" + stats + ")";
   }
 
+  hasNonZeroStatValue() : boolean {
+    return Object.values(this.item().stats ?? {}).some(s => s.finalValue !== 0);
+  }
+
   sortStats() : number {
     return 0;
   }
-
 }

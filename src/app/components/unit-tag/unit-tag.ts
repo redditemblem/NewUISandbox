@@ -7,18 +7,18 @@ import { Tag } from '../../interfaces/system/tag';
   imports: [],
   templateUrl: './unit-tag.html',
   styles: `
-    div.tagContainer {
+    #container {
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
       column-gap: 4px;
-      padding: 4px 16px 4px 16px;
+      padding: 4px 8px 4px 8px;
       border-radius: 0px 8px 0px 8px;
-      background: var(--mat-sys-primary-container);
+      background: var(--mat-sys-tertiary-container);
 
       img {
-        max-height: 12px;
-        max-width: 12px;
+        max-height: 16px;
+        max-width: 16px;
         object-fit: scale-down;
       }
 
@@ -26,6 +26,7 @@ import { Tag } from '../../interfaces/system/tag';
         margin: 0px;
         max-width: 125px;
         overflow: hidden;
+        font-size: 0.8rem;
         text-overflow: ellipsis;
         text-wrap: nowrap;
       }

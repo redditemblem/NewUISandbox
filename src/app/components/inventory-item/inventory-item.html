@@ -1,24 +1,24 @@
 <div id="itemContainer" (click)="toggleExpansion()" >
-    <div id="headerRow">
+    <div id="headerRow" [ngClass]="{'opacity50' : !item().canEquip || item().isUsePrevented}">
         <div id="textContainer">
             <div id="name">
                 @if((systemData?.spriteURL ?? "").length > 0){
                     <img [src]="systemData?.spriteURL" />
                 }
-                <div>
+                <div [ngClass]="{'droppableTextColor' : item().isDroppable}">
                     {{item().name}} @if((item().uses ?? 0) > 0){ ({{item().uses}}) }
                 </div>
                 @if ((item().engravings ?? []).length > 0) {
                     @for(engraving of item().engravings; track engraving) {
                         @if((getEngravingByName(engraving)?.spriteURL ?? "").length > 0) {
-                            <img [src]="getEngravingByName(engraving)?.spriteURL" [title]="engraving"/>
+                            <img [src]="getEngravingByName(engraving)?.spriteURL" [title]="engraving" />
                         }
                     }
                 }
                 @if ((item().tags ?? []).length > 0) {
                     @for(tag of item().tags; track tag) {
                         @if((getTagByName(tag)?.spriteURL ?? "").length > 0) {
-                            <img [src]="getTagByName(tag)?.spriteURL" [title]="tag"/>
+                            <img [src]="getTagByName(tag)?.spriteURL" [title]="tag" />
                         }
                     }
                 }
@@ -31,7 +31,13 @@
                 {{systemData?.category}} {{formatUtilizedStatsText()}}
             </div>
         </div>
-        <div>
+        <div id="iconsContainer">
+            @if(item().isUsePrevented) {
+                <img src="img/blocked_icon.png" height="20" width="20" title="Use Prevented" />
+            }
+            @if(item().isDroppable) {
+                <img src="img/package_icon.png" height="20" width="20" title="Droppable" />
+            }
             @if(item().isPrimaryEquipped || item().isSecondaryEquipped) {
                 <img src="img/star_icon.png" height="20" width="20" title="Equipped" />
             }
@@ -39,43 +45,65 @@
     </div>
     @if(isExpanded) {
         <div id="expansionContainer">
-            <mat-divider />
-            <div id="statsContainer">
-                @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
-                    <div class="stat">
-                        <div>{{stat.key}}</div>
-                        <div class="value">
-                            @if (stat.value.finalValue > stat.value.baseValue){
-                                @if (stat.value.invertModifiedDisplayColors){
-                                    <img src="img/arrow_up.png" height="12" class="neg" />
-                                }
-                                @else {
-                                    <img src="img/arrow_up.png" height="12" class="pos" />
-                                }
-
-                            }
-                            @else if(stat.value.finalValue < stat.value.baseValue) {
-                                @if (stat.value.invertModifiedDisplayColors) {
-                                    <img src="img/arrow_down.png" height="12" class="pos" />
-                                }
-                                @else {
-                                    <img src="img/arrow_down.png" height="12" class="neg" />
-                                }
-                            }
-                            {{stat.value.finalValue}}
-                        </div>
-                    </div>
-                }
-                <div class="stat">
-                    <span>Rng</span>
-                    <span class="value">
-                        {{item().minRange?.finalValue}}
-                        @if ((item().minRange?.finalValue ?? 0) < (item().maxRange?.finalValue ?? 0)) {
-                            - {{item().maxRange?.finalValue}}
+            @if ((item().uses ?? 0) > 0 || (item().maxUses ?? 0) > 0 || (item().minRange?.finalValue ?? 0) > 0 || (systemData?.utilizedStats ?? []).length > 0)
+            {
+                <mat-divider />
+                <div id="statsContainer">
+                    @if ((systemData?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
+                    {
+                        @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
+                            <div class="stat">
+                                <div>{{stat.key}}</div>
+                                <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" [height]="12" />
+                            </div>
                         }
-                    </span>
+                    }
+                    @if ((item().minRange?.finalValue ?? 0) > 0)
+                    {
+                        <div class="stat">
+                            <div>Rng</div>
+                            <div class="statValue">
+                                <stat-with-buff-icon [base]="item().minRange?.baseValue ?? 0" [final]="item().minRange?.finalValue ?? 0" [height]="12" />
+                                @if ((item().minRange?.finalValue ?? 0) < (item().maxRange?.finalValue ?? 0))
+                                {
+                                    &nbsp;-&nbsp;<stat-with-buff-icon [base]="item().maxRange?.baseValue ?? 0" [final]="item().maxRange?.finalValue ?? 0" [height]="12" />
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if ((systemData?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
+                    {
+                        <div class="stat">
+                            <div>Shp</div>
+                            <div>
+                                @switch (systemData?.range?.shape)
+                                {
+                                    @case (ItemRangeShape.Square) { Square }
+                                    @case (ItemRangeShape.Cross) { Cross }
+                                    @case (ItemRangeShape.Saltire) { Saltire }
+                                    @case (ItemRangeShape.Star) { Star }
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if ((item().uses ?? 0) > 0 || (item().maxUses ?? 0) > 0)
+                    {
+                        <div class="stat">
+                            <div>
+                                @if((item().uses ?? 0) > 0 && (item().maxUses ?? 0) === 0) { Quantity }
+                                @else { Uses }
+                            </div>
+                            <div class="statValue">
+                                @if((item().uses ?? 0) > 0) { {{item().uses}} }
+                                @if((item().maxUses ?? 0) > 0) {
+                                    @if((item().uses ?? 0) > 0) { /&nbsp; } 
+                                    <stat-with-buff-icon [base]="systemData?.maxUses ?? 0" [final]="item().maxUses ?? 0" [invertColors]="false" [height]="12" />
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
-            </div>
+            }
             @if ((systemData?.textFields ?? []).length > 0) {
                 <mat-divider />
                 @for (text of systemData?.textFields; track $index) {

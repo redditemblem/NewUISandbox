@@ -162,7 +162,7 @@
                 }
                 @if (subsection.emptySlotCount > 0){
                     <div id="emptySlots">
-                        x{{subsection.emptySlotCount}} Empty Slots
+                        <span [style.opacity]="0.5">Empty x{{subsection.emptySlotCount}}</span>
                     </div>
                 }
             </div>

@@ -21,22 +21,32 @@
                 display: flex;
                 display: row nowrap;
                 align-items: center;
-                column-gap: 4px;
+                column-gap: 6px;
                 font-family: macExtMinecraft;
                 font-size: 0.9rem;
+
+                .droppableTextColor { color: #3CD66F; }
             }
 
             #rankCategory {
                 padding-left: 16px;
             }
 
+            //Applies to all sprites in the item header, including engravings and tags
             img {
                 max-height: 24px;
                 max-width: 24px;
                 object-fit: scale-down;
             }
         }
+
+        #iconsContainer {
+            display: flex;
+            flex-flow: row nowrap;
+            column-gap: 4px;
+        }
     }
+    .opacity50{ opacity: 0.5; }
 
     #expansionContainer {
         display: flex;
@@ -58,24 +68,11 @@
                 flex: 0 0 30%;
                 column-gap: 6px;
 
-                div.value {
+                //Forces values with complex displays (range, uses) to stay on the same line
+                div.statValue {
                     display: flex;
                     flex-flow: row nowrap;
-                    align-items: center;
-
-                    //Filters created using https://codepen.io/sosuke/pen/Pjoqqp
-                    img.pos {
-                        margin-right: 2px;
-                        filter: invert(65%) sepia(85%) saturate(1072%) hue-rotate(176deg) brightness(94%) contrast(99%);
-                    }
-                    
-                    img.neg {
-                        margin-right: 2px;
-                        filter: invert(18%) sepia(94%) saturate(2795%) hue-rotate(322deg) brightness(91%) contrast(96%);
-                    }
                 }
-                div.value:has(.pos) { color: #5CB4EF; }
-                div.value:has(.neg) { color: #d81b62; }
             }
         }
 

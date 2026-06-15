@@ -4,22 +4,7 @@
             <div id="text">{{name()}}</div>
             <div id="point"></div>
         </div>
-        <div id="value">
-            @if (values().finalValue !== values().baseValue)
-            {
-                @if (values().invertModifiedDisplayColors)
-                {
-                    @if(values().finalValue < values().baseValue) { <img src="img/arrow_down.png" class="pos" /> }
-                    @else { <img src="img/arrow_up.png" class="neg" /> }
-                }
-                @else
-                {
-                    @if(values().finalValue > values().baseValue) { <img src="img/arrow_up.png" class="pos" /> }
-                    @else { <img src="img/arrow_down.png" class="neg" /> }
-                }
-            }
-            {{values().finalValue}}
-        </div>
+        <stat-with-buff-icon [base]="values().baseValue" [final]="values().finalValue" [invertColors]="values().invertModifiedDisplayColors ?? false" />
     </div>
     @if (expanded()) {
         <div id="modifiersContainer">

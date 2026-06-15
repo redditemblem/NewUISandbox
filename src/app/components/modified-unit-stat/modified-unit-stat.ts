@@ -1,10 +1,11 @@
 import { Component, input } from '@angular/core';
 import { ModifiedStatValue } from '../../interfaces/common/modified-stat-value';
 import { KeyValuePipe, NgClass } from '@angular/common';
+import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 
 @Component({
   selector: 'modified-unit-stat',
-  imports: [KeyValuePipe, NgClass],
+  imports: [KeyValuePipe, NgClass, StatWithBuffIcon],
   templateUrl: './modified-unit-stat.html',
   styleUrl: './modified-unit-stat.scss',
 })
