@@ -1,0 +1,11 @@
+<div id="engravingContainer">
+    <div id="nameRow">
+        @if ((systemData?.spriteURL ?? "").length > 0) {
+            <img id="sprite" [src]="systemData?.spriteURL" />
+        }
+        <span>{{name()}}</span>
+    </div>
+    @for (text of systemData?.textFields; track $index) {
+        <p>{{text}}</p>
+    }
+</div>

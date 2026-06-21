@@ -1,0 +1,25 @@
+#engravingContainer {
+    display: flex;
+    flex-flow: column nowrap;
+
+    #nameRow {
+        display: flex;
+        flex-flow: row nowrap;
+        column-gap: 4px;
+        align-items: center;
+        font-family: macExtMinecraft;
+        font-size: 0.8rem;
+
+        #sprite {
+            max-height: 24px;
+            max-width: 24px;
+            object-fit: scale-down;
+        }
+    }
+
+    p {
+        margin: 0;
+        padding-left: 16px;
+        font-size: 0.8rem;
+    }
+}

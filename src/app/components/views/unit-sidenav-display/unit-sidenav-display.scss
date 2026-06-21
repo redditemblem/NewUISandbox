@@ -328,3 +328,38 @@ div.statusConditionsRow {
         font-style: italic;
     }
 }
+
+#skillsContainer{
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0px 16px 16px 16px;
+
+    #skillsHeaderRow {
+        display: flex;
+        display: row nowrap;
+        align-items: center;
+        column-gap: 8px;
+        margin-bottom: 8px;
+
+        h2 {
+            margin: 0px;
+            font-family: macExtMinecraft;
+            font-style: normal;
+            font-weight: normal;
+        }
+    }
+
+    #subsectionContainer {
+        display: flex;
+        flex-flow: column nowrap;
+        row-gap: 8px;
+        margin-bottom: 16px;
+
+        h3 {
+            margin: 0px;
+            font-family: macExtMinecraft;
+            font-style: normal;
+            font-weight: normal;
+        }
+    }
+}

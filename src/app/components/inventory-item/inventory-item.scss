@@ -1,6 +1,7 @@
 #itemContainer {
     display: flex;
     flex-flow: column nowrap;
+    row-gap: 8px;
     padding: 8px;
     border: 2px solid var(--mat-sys-primary-container);
     border-radius: 0px 8px 0px 8px;
@@ -52,7 +53,6 @@
         display: flex;
         flex-flow: column nowrap;
         row-gap: 8px;
-        margin-top: 8px;
 
         #statsContainer {
             display: flex;
@@ -79,5 +79,18 @@
         p {
             margin: 0;
         }
+
+        #graphic {
+            max-height: 100px; 
+            max-width: 250px;
+            object-fit: scale-down;
+        }
+    }
+
+    div.messageRow {
+        display: flex;
+        flex-flow: row nowrap;
+        column-gap: 4px;
+        color: #ff6600;
     }
 }

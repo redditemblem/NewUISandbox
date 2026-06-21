@@ -1,0 +1,50 @@
+#skillContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    padding: 8px;
+    border: 2px solid var(--mat-sys-primary-container);
+    border-radius: 0px 8px 0px 8px;
+
+    #headerRow {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        column-gap: 16px;
+
+        #textContainer {
+            display: flex;
+            flex-flow: column nowrap;
+        
+            #name {
+                display: flex;
+                display: row nowrap;
+                align-items: center;
+                column-gap: 6px;
+                font-family: macExtMinecraft;
+                font-size: 0.9rem;
+
+                img {
+                    max-height: 24px;
+                    max-width: 24px;
+                    object-fit: scale-down;
+                }
+            }
+
+            #additionalStats {
+                padding-left: 16px;
+                font-size: 0.8rem;
+            }
+        }
+
+        #iconsContainer {
+            display: flex;
+            flex-flow: row nowrap;
+            column-gap: 4px;
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+}

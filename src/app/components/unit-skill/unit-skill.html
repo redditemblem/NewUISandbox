@@ -1,0 +1,28 @@
+<div id="skillContainer">
+    <div id="headerRow">
+        <div id="textContainer">
+            <div id="name">
+                @if((systemData?.spriteURL ?? "").length > 0){
+                    <img [src]="systemData?.spriteURL" />
+                }
+                {{skill().name}}
+            </div>
+            @if (getAdditionalStatsText().length > 0){
+                <div id="additionalStats">
+                    {{getAdditionalStatsText()}}
+                </div>
+            }
+        </div>
+        <div id="iconsContainer">
+            @if (systemData?.isEffectConfigured) {
+                <img src="img/gear_icon.png" height="20" width="20" title="Effect Configured" />
+            }
+        </div>
+    </div>
+    @if (expanded()) {
+        <mat-divider />
+        @for (text of systemData?.textFields; track $index) {
+            <p>{{text}}</p>
+        }
+    }
+</div>

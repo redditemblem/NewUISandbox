@@ -43,7 +43,7 @@
             }
         </div>
     </div>
-    @if(isExpanded) {
+    @if (isExpanded) {
         <div id="expansionContainer">
             @if ((item().uses ?? 0) > 0 || (item().maxUses ?? 0) > 0 || (item().minRange?.finalValue ?? 0) > 0 || (systemData?.utilizedStats ?? []).length > 0)
             {
@@ -104,12 +104,33 @@
                     }
                 </div>
             }
-            @if ((systemData?.textFields ?? []).length > 0) {
+            @if ((systemData?.textFields ?? []).length > 0 || (systemData?.graphicUrl ?? "").length > 0) {
                 <mat-divider />
+                @for (engraving of item().engravings; track engraving) {
+                    <engraving [name]="engraving" />
+                }
                 @for (text of systemData?.textFields; track $index) {
                     <p>{{text}}</p>
                 }
+                @if ((systemData?.graphicUrl ?? "").length > 0) {
+                    <img id="graphic" [src]="systemData?.graphicUrl" />
+                }
             }
         </div>
+    }
+    @if (item().maxRangeExceedsCalculationLimit || item().isNotInInventory) {
+        <mat-divider />
+        @if (item().maxRangeExceedsCalculationLimit) {
+            <div class="messageRow">
+                <img src="img/warn_icon.png" height="20" width="20" />
+                <span>Item Range Not Visible</span>
+            </div>
+        }
+        @if (item().isNotInInventory) {
+            <div class="messageRow">
+                <img src="img/warn_icon.png" height="20" width="20" />
+                <span>Item Not Found In Inventory</span>
+            </div>
+        }
     }
 </div>

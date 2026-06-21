@@ -149,7 +149,7 @@
         <button matIconButton (click)="toggleInventoryExpansion()" [title]="'Click to ' + (isInventoryExpanded ? 'collapse' : 'expand') + ' the inventory'">
             <img src="img/caret.png" [class]="{'rotate90': isInventoryExpanded}" />
         </button>
-        <h2>Inventory</h2>
+        <h2>{{getInventoryLabel()}}</h2>
     </div>
     @if (isInventoryExpanded) {
         @for (subsection of unit().inventory?.subsections; track $index) {
@@ -169,3 +169,26 @@
         }
     }
 </div>
+@if (unit().hasSkills) {
+    <mat-divider />
+    <div id="skillsContainer">
+        <div id="skillsHeaderRow">
+            <button matIconButton (click)="toggleSkillsExpansion()" [title]="'Click to ' + (isSkillsInfoExpanded ? 'collapse' : 'expand') + ' skills'">
+                <img src="img/caret.png" [class]="{'rotate90': isSkillsInfoExpanded}" />
+            </button>
+            <h2>{{getSkillsLabel()}}</h2>
+        </div>
+        @if (isSkillsInfoExpanded) {
+            @for (subsection of unit().skillSubsections; track $index) {
+                <div id="subsectionContainer">
+                    @if (getSkillSubsectionLabel($index).length > 0) {
+                        <h3>{{getSkillSubsectionLabel($index)}}</h3>
+                    }
+                    @for (skill of subsection.skills; track $index) {
+                        <unit-skill [skill]="skill" />
+                    }
+                </div>
+            }
+        }
+    </div>
+}

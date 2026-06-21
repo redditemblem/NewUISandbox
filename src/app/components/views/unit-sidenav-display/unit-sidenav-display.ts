@@ -13,10 +13,11 @@ import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
 import { UnitStatusCondition } from '../../unit-status-condition/unit-status-condition';
 import { MatDivider } from '@angular/material/divider';
 import { InventoryItem } from '../../inventory-item/inventory-item';
+import { UnitSkill } from "../../unit-skill/unit-skill";
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
@@ -27,6 +28,7 @@ export class UnitSidenavDisplay {
   public isUnitInfoExpanded : boolean = false;
   public isStatsInfoExpanded : boolean = false;
   public isInventoryExpanded : boolean = true;
+  public isSkillsInfoExpanded : boolean = true;
 
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
@@ -37,19 +39,33 @@ export class UnitSidenavDisplay {
     this.isUnitInfoExpanded = false;
     this.isStatsInfoExpanded = false;
     this.isInventoryExpanded = true;
+    this.isSkillsInfoExpanded = true;
   }
 
   toggleUnitInfoExpansion() : void { this.isUnitInfoExpanded = !this.isUnitInfoExpanded; }
   toggleStatExpansion() : void { this.isStatsInfoExpanded = !this.isStatsInfoExpanded; }
   toggleInventoryExpansion() : void { this.isInventoryExpanded = !this.isInventoryExpanded; }
+  toggleSkillsExpansion() : void { this.isSkillsInfoExpanded = !this.isSkillsInfoExpanded; }
 
   sortModifiedUnitStat() : number {
     //Don't actually want a real sort here, so just return 0 for all items.
     return 0;
   }
 
+  getInventoryLabel() : string {
+    return this.teamDataService.getInterfaceLabels()?.inventory ?? "";
+  }
+
   getInventorySubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
+  }
+
+  getSkillsLabel() : string {
+    return this.teamDataService.getInterfaceLabels()?.skills ?? "";
+  }
+
+  getSkillSubsectionLabel(index: number) : string {
+    return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
   }
 
   getUnitAffiliation() : Affiliation | undefined {

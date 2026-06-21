@@ -4,14 +4,15 @@ import { Item } from '../../interfaces/system/item';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from '@angular/material/divider';
 import { KeyValuePipe, NgClass } from '@angular/common';
-import { Engraving } from '../../interfaces/system/engraving';
+import { Engraving as IEngraving } from '../../interfaces/system/engraving';
 import { Tag } from '../../interfaces/system/tag';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 import { ItemRangeShape } from "../../interfaces/system/item-range";
+import { Engraving } from '../engraving/engraving';
 
 @Component({
   selector: 'inventory-item',
-  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, NgClass],
+  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, NgClass, Engraving],
   templateUrl: './inventory-item.html',
   styleUrl: './inventory-item.scss',
 })
@@ -36,7 +37,7 @@ export class InventoryItem {
     this.isExpanded = !this.isExpanded;
   }
 
-  getEngravingByName(name: string) : Engraving | undefined {
+  getEngravingByName(name: string) : IEngraving | undefined {
     return this.teamDataService.getEngravingByName(name);
   }
 

@@ -11,6 +11,7 @@ import { Tag } from '../interfaces/system/tag';
 import { StatusCondition } from '../interfaces/system/status-condition';
 import { Item } from '../interfaces/system/item';
 import { Engraving } from '../interfaces/system/engraving';
+import { Skill } from '../interfaces/system/skill';
 
 @Injectable({
   providedIn: 'root',
@@ -77,6 +78,12 @@ export class TeamDataService {
 
   getItemByName(name: string) : Item | undefined {
 	let dict = this.mapData().system?.items;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  getSkillByName(name: string) : Skill | undefined {
+	let dict = this.mapData().system?.skills;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
