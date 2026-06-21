@@ -5,19 +5,19 @@
         </mat-card-title>
     </mat-card-header>
     <mat-card-actions align="end">
-        <button matButton>
-            <span class="buttonContent" [routerLink]="[GetTeamNameWithoutSpaces(), 'map']">
+        <button matButton [routerLink]="[GetTeamNameWithoutSpaces(), 'map']">
+            <span class="buttonContent">
                 <img src="img/map_icon.png" height="20" width="20" alt="Map Icon" />
                 Map
             </span>
         </button>
-        <button matButton disabled="{{!team().showConvoyLink}}" [routerLink]="[GetTeamNameWithoutSpaces(), 'convoy']">
+        <button matButton [disabled]="!team().showConvoyLink" [routerLink]="[GetTeamNameWithoutSpaces(), 'convoy']">
             <span class="buttonContent">
                 <div style="width: 20px; height: 20px; background-color: orange;">?</div>
                 Convoy
             </span>
         </button>
-        <button matButton disabled="{{!team().showShopLink}}" [routerLink]="[GetTeamNameWithoutSpaces(), 'shop']">
+        <button matButton [disabled]="!team().showShopLink" [routerLink]="[GetTeamNameWithoutSpaces(), 'shop']">
             <span class="buttonContent">
                 <img src="img/shop_icon.png" height="20" width="20" alt="Map Icon" />
                 Shop

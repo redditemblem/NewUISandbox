@@ -45,6 +45,11 @@ export class TeamDataService {
       }
     });
   }
+  
+  getWorksheetID() : string | undefined { return this.mapData().workbookID; }
+  isConvoyConfigured() : boolean { return this.mapData().showConvoyLink ?? false; }
+  isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
+  getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
 
   getUnitsList() : Unit[] {
     return this.mapData().units ?? [];
