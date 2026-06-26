@@ -3,7 +3,6 @@ import { UnitSkill as IUnitSkill } from '../../interfaces/unit/unit-skill';
 import { Skill } from '../../interfaces/system/skill';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from "@angular/material/divider";
-import { concat } from 'rxjs';
 
 @Component({
   selector: 'unit-skill',

@@ -1,0 +1,44 @@
+<div id="linksContainer">
+    <mat-action-list>
+        @if ((googleWorksheetID() ?? "").length > 0) {
+            <a mat-list-item [href]="getGoogleSheetUrl()" target="blank">
+                <img matListItemIcon src="img/star_icon.png" />
+                <span class="matListItemTitle pixelFont">Google Sheets</span>
+                <div matListItemMeta>
+                    <mat-icon>open_in_new</mat-icon>
+                </div>
+            </a>
+        }
+        @if ((chapterPostUrl() ?? "").length > 0) {
+            <a mat-list-item [href]="chapterPostUrl()" target="blank">
+                <img matListItemIcon src="img/star_icon.png" />
+                <span class="matListItemTitle pixelFont">Chapter Post</span>
+                <div matListItemMeta>
+                    <mat-icon>open_in_new</mat-icon>
+                </div>
+            </a>
+        }
+        @if (showConvoyLink()) {
+            <a mat-list-item [routerLink]="[`/${teamName}`, 'convoy']">
+                <img matListItemIcon src="img/star_icon.png" />
+                <span class="matListItemTitle pixelFont">Convoy</span>
+            </a>
+        }
+        @if (showShopLink()) {
+            <a mat-list-item [routerLink]="[`/${teamName}`, 'shop']">
+                <img matListItemIcon src="img/shop_icon.png" />
+                <span class="matListItemTitle pixelFont">Shop</span>
+            </a>
+        }
+        @if (showMapAnalyzerLink()) {
+            <a mat-list-item [routerLink]="[`/${teamName}`, 'map', 'analyze']">
+                <img matListItemIcon src="img/star_icon.png" />
+                <span class="matListItemTitle pixelFont">Map Analyzer Tool</span>
+            </a>
+        }
+        <a mat-list-item [routerLink]="['../..']">
+            <img matListItemIcon src="img/star_icon.png" />
+            <span class="matListItemTitle pixelFont">Home</span>
+        </a>
+    </mat-action-list>
+</div>

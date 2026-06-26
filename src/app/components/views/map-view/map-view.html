@@ -24,7 +24,11 @@
                 <ng-template mat-tab-label>
                     <img src="img/links_icon.png" height="30" width="30" />
                 </ng-template>
-                <map-links-sidenav />
+                <links-sidenav [googleWorksheetID]="this.teamDataService.getWorksheetID()"
+                               [chapterPostUrl]="this.teamDataService.getChapterPostUrl()"
+                               [showConvoyLink]="this.teamDataService.isConvoyConfigured()"
+                               [showShopLink]="this.teamDataService.isShopConfigured()"
+                               [showMapAnalyzerLink]="true" />
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>

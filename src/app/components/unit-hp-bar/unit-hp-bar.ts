@@ -1,9 +1,8 @@
-import { NgStyle } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'unit-hp-bar',
-  imports: [NgStyle],
+  imports: [],
   templateUrl: './unit-hp-bar.html',
   styles: `
     div.hpBar {
