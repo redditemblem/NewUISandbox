@@ -4,7 +4,7 @@
     </div>
 }
 <div class="unitNameplateContainer">
-    <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" />
+    <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" [ngClass]="{'flipHorz': shouldFlipUnitSprite()}" />
     <hgroup class="unitNameplateText">
         <h1 class="nameText">{{unit().name}}</h1>
         <p class="levelClassText">

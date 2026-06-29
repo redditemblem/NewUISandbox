@@ -39,12 +39,14 @@
         </mat-tab-group>
     </mat-sidenav>
     <mat-sidenav-content>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="segmentTabs">
-            @for (segment of teamDataService.mapData().map?.segments; track $index){
-                <mat-tab [label]="segment.title">
-                    {{segment.title}}
-                </mat-tab>
+        <div id="segmentButtonRow">
+            @for (segment of teamDataService.mapData().map?.segments; track segment.title){
+                <button matButton="filled" (click)="setCurrentSegment(segment)">{{segment.title}}</button>
             }
-        </mat-tab-group>
+        </div>
+        <mat-divider />
+        @if(currentSegment !== undefined) {
+            <map-segment [segment]="currentSegment" />
+        }
     </mat-sidenav-content>
 </mat-sidenav-container>

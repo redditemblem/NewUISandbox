@@ -2,6 +2,13 @@ img.rotate90 {
     transform: rotate(90deg);
 }
 
+img.flipHorz {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
 div.unitPortraitContainer {
     display: flex;
     flex-flow: row nowrap;

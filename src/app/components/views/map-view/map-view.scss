@@ -53,3 +53,10 @@ button.sidenavExpandButton {
     position-visibility: always;
     z-index: 99;
 }
+
+#segmentButtonRow { 
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 8px;
+    margin-top: 16px;
+}
