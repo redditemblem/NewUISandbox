@@ -1,3 +1,5 @@
+import '@pixi/layout';
+import { LayoutContainer } from '@pixi/layout/components';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
 import { Application, Assets, Container, Sprite, Texture } from 'pixi.js';
@@ -99,12 +101,35 @@ export class MapSegment {
   private async initializePixiApp(appContainer: HTMLElement) {
     await this.pixiApp.init({ backgroundAlpha: 0, resizeTo: appContainer });
     appContainer.appendChild(this.pixiApp.canvas);
+
+    this.pixiApp.stage.layout = {
+      width: this.pixiApp.screen.width,
+      height: this.pixiApp.screen.height
+    };
   }
 
   /** Creates a container, appends it to the `this.pixiApp` stage, and fills it with a centered map segment image. */
   private async AddMapParentContainer() {
-    const map = new Container();
-    this.pixiApp.stage.addChild(map);
+    const mapScrollContainer = new LayoutContainer({
+      layout: {
+        width: this.pixiApp.screen.width,
+        height: this.pixiApp.screen.height,
+        overflow: 'scroll',
+        padding: 8
+      },
+      trackpad: {
+        constrain: false
+      }
+    });
+    this.pixiApp.stage.addChild(mapScrollContainer);
+    
+    const map = new Container({
+        layout: {
+          width: this.segment().widthInPixels,
+          height: this.segment().heightInPixels
+        },
+    });
+    mapScrollContainer.addChild(map);
 
     const mapImage = await this.loadExternalAsset(this.segment().imageURL)
       .catch((error) => {

@@ -8,32 +8,25 @@ mat-sidenav-container {
 mat-sidenav {
     @include mat.sidenav-overrides((
         container-shape: var(--mat-sys-corner-none),
-        container-width: 450px
+        container-width: min(calc(100vw - 58px), 450px)
     ));
 
     anchor-name: --sidenav-anchor;
 }
 
 mat-sidenav-content {
-    padding-left: 8px;
-    padding-right: 8px;
+    height: 100vh;
+    overflow: hidden;
     background-image: url('../../../../../public/img/background.png');
     background-repeat: repeat;
 }
 
-mat-tab-group.sidebarTabs {
+#sidebarTabs {
     height: 100vh;
-}
 
-mat-tab-group.segmentTabs {
-    @include mat.tabs-overrides((
-        container-height: 56px,
-        label-text-font: macExtMinecraft
-    ));
-
-    & mat-tab-header {
-        background-color: var(--mat-sys-background);
-        margin-left: 48px;
+    ::ng-deep .mat-mdc-tab.mdc-tab {
+        min-width: 48px;
+        padding: 0px;
     }
 }
 
@@ -59,4 +52,9 @@ button.sidenavExpandButton {
     flex-flow: row nowrap;
     column-gap: 8px;
     margin-top: 16px;
+}
+
+#mapSegmentContainer {
+    height: calc(100vh - 56px);
+    width: 100%;
 }

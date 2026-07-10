@@ -15,5 +15,5 @@ export interface Item {
     equippedSkills?: UnitSkill[],
     range: ItemRange,
     textFields?: string[],
-    graphicUrl?: string
+    graphicURL?: string
 }

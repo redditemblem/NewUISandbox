@@ -1,7 +1,7 @@
 <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
     <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'" class="noScroll">
-        <mat-tab-group class="sidebarTabs">
+        <mat-tab-group id="sidebarTabs" mat-stretch-tabs disablePagination>
             <mat-tab>
                 <ng-template mat-tab-label>
                     U
@@ -45,7 +45,7 @@
             }
         </div>
         <mat-divider />
-        <div height="100%" width="100%">
+        <div id="mapSegmentContainer">
             @if(currentSegment !== undefined) {
                 <map-segment [segment]="currentSegment" />
             }

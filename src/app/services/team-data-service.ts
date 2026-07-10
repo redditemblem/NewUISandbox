@@ -1,7 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { MapData } from '../interfaces/map/map-data';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Unit } from '../interfaces/unit/unit';
 import { Affiliation } from '../interfaces/system/affiliation';
 import { Class } from '../interfaces/system/class';

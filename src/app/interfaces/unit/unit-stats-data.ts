@@ -9,6 +9,7 @@ export interface UnitStatsData {
     heldCurrency?: number,
     hp: HealthPoints,
     combat?: StringDictionary<ModifiedStatValue>,
-    system?: StringDictionary<ModifiedStatValue>,
-    general: StringDictionary<ModifiedStatValue>
+    general: StringDictionary<ModifiedStatValue>,
+    system_Prioritized?: StringDictionary<ModifiedStatValue>,
+    system_NonPrioritized?: StringDictionary<ModifiedStatValue>
 }
