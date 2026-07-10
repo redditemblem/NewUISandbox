@@ -127,9 +127,9 @@
             }
         </div>
         }
-        @if(unit().stats.system) {
+        @if(unit().stats.system_NonPrioritized) {
             <div class="statRow">
-                @for (stat of unit().stats.system | keyvalue : sortModifiedUnitStat; track stat.key){
+                @for (stat of unit().stats.system_NonPrioritized | keyvalue : sortModifiedUnitStat; track stat.key){
                     <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
                 }
             </div>
