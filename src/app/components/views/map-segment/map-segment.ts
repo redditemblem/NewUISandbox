@@ -1,15 +1,24 @@
-import '@pixi/layout';
-import { LayoutContainer } from '@pixi/layout/components';
+import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
 import { Application, Assets, Container, Sprite, Texture } from 'pixi.js';
+import { GifSource, GifSprite } from 'pixi.js/gif';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
+import { TeamDataService } from '../../../services/team-data-service';
+import { MapConstants } from '../../../interfaces/map/map-constants';
+import { Coordinate } from '../../../interfaces/map/coordinate';
 
 @Component({
   selector: 'map-segment',
   imports: [],
-  templateUrl: './map-segment.html',
-  styleUrl: './map-segment.scss',
+  template: `<div id="pixiContainer"></div>`,
+  styles: `
+    #pixiContainer {
+      height: calc(100vh - 56px);
+      width: 100%;
+      overflow: auto;
+    }
+  `,
 })
 export class MapSegment {
   segment = input.required<IMapSegment>();
@@ -18,12 +27,16 @@ export class MapSegment {
   private snackBarMessageQueue : string[];
   private currentSnackBar : MatSnackBarRef<TextOnlySnackBar> | undefined;
 
+  private constants : MapConstants | undefined;
   private pixiApp : Application;
+  private mapContainer : Container | undefined;
 
-  constructor() {
+  constructor(public teamDataService: TeamDataService) {
+    this.teamDataService = inject(TeamDataService);
     this.snackBar = inject(MatSnackBar);
+    
+    this.constants = this.teamDataService.getMapConstants();
     this.pixiApp = new Application();
-
     this.snackBarMessageQueue = [];
   }
 
@@ -40,17 +53,18 @@ export class MapSegment {
 
     await this.initializePixiApp(pixiContainer);
     await this.AddMapParentContainer();
+    await this.AddMapElements();
   }
 
-  async ngOnChanges() {
+  //async ngOnChanges() {
     //If the app doesn't have children yet, then this is the first initialization
     //Let ngOnInit() handle it
-    if(this.pixiApp.stage.children.length === 0)
-      return;
+  //  if(this.pixiApp.stage.children.length === 0)
+  //    return;
 
-    this.pixiApp.stage.removeChildren();
-    await this.AddMapParentContainer();
-  }
+   // this.pixiApp.stage.removeChildren();
+  //  await this.AddMapParentContainer();
+  //}
 
   // #region Snack Bar Queue
 
@@ -99,52 +113,99 @@ export class MapSegment {
    * @param appContainer - The HTML element that will contain the Pixi.JS canvas
   */
   private async initializePixiApp(appContainer: HTMLElement) {
-    await this.pixiApp.init({ backgroundAlpha: 0, resizeTo: appContainer });
+    await this.pixiApp.init({ 
+      backgroundAlpha: 0, 
+      height: this.segment().heightInPixels, 
+      width: this.segment().widthInPixels 
+    });
     appContainer.appendChild(this.pixiApp.canvas);
-
-    this.pixiApp.stage.layout = {
-      width: this.pixiApp.screen.width,
-      height: this.pixiApp.screen.height
-    };
   }
 
   /** Creates a container, appends it to the `this.pixiApp` stage, and fills it with a centered map segment image. */
   private async AddMapParentContainer() {
-    const mapScrollContainer = new LayoutContainer({
-      layout: {
-        width: this.pixiApp.screen.width,
-        height: this.pixiApp.screen.height,
-        overflow: 'scroll',
-        padding: 8
-      },
-      trackpad: {
-        constrain: false
-      }
-    });
-    this.pixiApp.stage.addChild(mapScrollContainer);
-    
-    const map = new Container({
-        layout: {
-          width: this.segment().widthInPixels,
-          height: this.segment().heightInPixels
-        },
-    });
-    mapScrollContainer.addChild(map);
+    this.mapContainer = new Container();
+    this.mapContainer.setSize(this.segment().widthInPixels, this.segment().heightInPixels);
 
-    const mapImage = await this.loadExternalAsset(this.segment().imageURL)
-      .catch((error) => {
-        this.queueImageLoadFailedSnackBar(this.segment().imageURL); 
-      });
+    this.pixiApp.stage.addChild(this.mapContainer);
 
-    if(mapImage === undefined)
-      return;
-    const mapSprite = new Sprite(mapImage);
-    map.addChild(mapSprite);
+    const sprite = await this.getExternalSprite(this.segment().imageURL);
+    if(sprite === undefined) return;
+
+    this.mapContainer.addChild(sprite);
   }
 
-  private async loadExternalAsset(assetUrl: string) : Promise<Texture> {
+  private async AddMapElements() {
+
+    //Loop through every tile in the map
+    this.segment().tiles.forEach((row) => {
+      row.forEach((tile) =>
+      {
+        if(tile.unitData.isUnitAnchor)
+          this.CreateUnitContainer(tile.unitData.occupyingUnitName, tile.unitData.pairedUnitName, tile.coordinate);
+      }
+    )});
+
+  }
+
+  private async CreateUnitContainer(unitName: string, pairedUnitName: string | undefined, coordinate: Coordinate) : Promise<Container> {
+    let container = new Container();
+    container.setSize(this.constants?.tileSize ?? 16);
+    container.label = unitName;
+
+    //Place this unit on the map
+    this.mapContainer?.addChild(container);
+    container.x = (this.constants?.tileSize ?? 16) * (coordinate.x - 1);
+    container.y = (this.constants?.tileSize ?? 16) * (coordinate.y - 1);
+
+    let unit = this.teamDataService.getUnitByName(unitName);
+    if(unit === undefined) return container;
+
+    var sprite;
+    let url = unit.sprite.spriteURL;
+    if(url.includes('.gif')) sprite = await this.getExternalGif(url);
+    else sprite = await this.getExternalSprite(url);
+
+    if(sprite !== undefined)
+      container.addChild(sprite);
+
+    return container;
+  }
+
+  // #region External Asset Loading
+
+  private async getExternalSprite(assetUrl: string) : Promise<Sprite | undefined> {
+    const img = await this.loadExternalTextureAsset(assetUrl)
+      .catch((error) => {
+        this.queueImageLoadFailedSnackBar(assetUrl);
+        return undefined;
+      });
+
+    return new Sprite(img);
+  }
+
+  private async loadExternalTextureAsset(assetUrl: string) : Promise<Texture> {
     return Assets.load<Texture>({
+      src: assetUrl,
+      parser: 'loadTextures'
+    });
+  }
+
+  private async getExternalGif(assetUrl: string) : Promise<GifSprite | undefined> {
+    const gif = await this.loadExternalGifAsset(assetUrl)
+      .catch((error) => {
+        this.queueImageLoadFailedSnackBar(assetUrl);
+        return undefined;
+      });
+    if(gif === undefined) return undefined;
+
+    return new GifSprite(gif);
+  }
+
+  private async loadExternalGifAsset(assetUrl: string) : Promise<GifSource> {
+    return Assets.load<GifSource>({
       src: assetUrl
     });
   }
+
+  // #endregion External Asset Loading
 }

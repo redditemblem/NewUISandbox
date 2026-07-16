@@ -1,12 +1,8 @@
 <div class="decorativeTriangleTop"></div>
-<div class="decorativeTriangleBottom"></div>
 <div class="homeViewContainer">
     <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'flexColumn' : 'flexRow'">
-        <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'logoRow' : 'logoColumn'">
-            <div style="width: 450px; height: 250px; background-color: #CEFC86; text-align: center;">
-                This will be the logo!
-                Screen width is <= 900px: {{breakpointService.isScreenSmallWidth()}}
-            </div>
+        <div class="logoColumn">
+            <img src="img/logo.png" alt="Reddit Emblem Maps Logo" />
             <button (click)="themeService.setThemeMode(themeService.isDarkMode() ? 'light' : 'dark')">Toggle Theme</button>
         </div>
         <div class="teamListingColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">

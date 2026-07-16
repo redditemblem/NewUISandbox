@@ -11,6 +11,7 @@ import { StatusCondition } from '../interfaces/system/status-condition';
 import { Item } from '../interfaces/system/item';
 import { Engraving } from '../interfaces/system/engraving';
 import { Skill } from '../interfaces/system/skill';
+import { MapConstants } from '../interfaces/map/map-constants';
 
 @Injectable({
   providedIn: 'root',
@@ -62,6 +63,10 @@ export class TeamDataService {
 	return this.mapData().system?.constants.currency;
   }
 
+  getMapConstants() : MapConstants | undefined {
+	return this.mapData().map?.constants;
+  }
+
   getAffiliationByName(name: string) : Affiliation | undefined {
 	let dict = this.mapData().system?.affiliations;
 	if(!dict || !name) return undefined;
@@ -102,5 +107,10 @@ export class TeamDataService {
 	let dict = this.mapData().system?.tags;
 	if(!dict || !name) return undefined;
 	else return dict[name];
+  }
+
+  getUnitByName(name: string) : Unit | undefined {
+	let array = this.mapData().units ?? [];
+	return array.find(unit => unit.name == name);
   }
 }
