@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
-import { Application, Assets, Container, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, Container, FillGradient, Graphics, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
@@ -31,6 +31,8 @@ export class MapSegment {
   private pixiApp : Application;
   private mapContainer : Container | undefined;
 
+  private grayscaleFilter : ColorMatrixFilter;
+
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
     this.snackBar = inject(MatSnackBar);
@@ -38,6 +40,9 @@ export class MapSegment {
     this.constants = this.teamDataService.getMapConstants();
     this.pixiApp = new Application();
     this.snackBarMessageQueue = [];
+
+    this.grayscaleFilter = new ColorMatrixFilter();
+    this.grayscaleFilter.blackAndWhite(true);
   }
 
   async ngOnInit() {
@@ -50,6 +55,21 @@ export class MapSegment {
     await Assets.setPreferences({
       crossOrigin: '*'
     });
+
+    //Load common sprites
+    Assets.addBundle('unit-numbers', [
+      { alias: '0', src: 'img/numbers/num_0.png' },
+      { alias: '1', src: 'img/numbers/num_1.png' },
+      { alias: '2', src: 'img/numbers/num_2.png' },
+      { alias: '3', src: 'img/numbers/num_3.png' },
+      { alias: '4', src: 'img/numbers/num_4.png' },
+      { alias: '5', src: 'img/numbers/num_5.png' },
+      { alias: '6', src: 'img/numbers/num_6.png' },
+      { alias: '7', src: 'img/numbers/num_7.png' },
+      { alias: '8', src: 'img/numbers/num_8.png' },
+      { alias: '9', src: 'img/numbers/num_9.png' }
+    ]);
+    await Assets.loadBundle('unit-numbers');
 
     await this.initializePixiApp(pixiContainer);
     await this.AddMapParentContainer();
@@ -116,7 +136,7 @@ export class MapSegment {
     await this.pixiApp.init({ 
       backgroundAlpha: 0, 
       height: this.segment().heightInPixels, 
-      width: this.segment().widthInPixels 
+      width: this.segment().widthInPixels
     });
     appContainer.appendChild(this.pixiApp.canvas);
   }
@@ -144,29 +164,118 @@ export class MapSegment {
           this.CreateUnitContainer(tile.unitData.occupyingUnitName, tile.unitData.pairedUnitName, tile.coordinate);
       }
     )});
-
   }
 
-  private async CreateUnitContainer(unitName: string, pairedUnitName: string | undefined, coordinate: Coordinate) : Promise<Container> {
-    let container = new Container();
-    container.setSize(this.constants?.tileSize ?? 16);
-    container.label = unitName;
-
-    //Place this unit on the map
-    this.mapContainer?.addChild(container);
-    container.x = (this.constants?.tileSize ?? 16) * (coordinate.x - 1);
-    container.y = (this.constants?.tileSize ?? 16) * (coordinate.y - 1);
-
+  private async CreateUnitContainer(unitName: string, pairedUnitName: string | undefined, coordinate: Coordinate) {
     let unit = this.teamDataService.getUnitByName(unitName);
-    if(unit === undefined) return container;
+    if(unit === undefined) return;
 
+    const unitWidth = (this.constants?.tileSize ?? 16) * unit.location.unitSize;
+
+    //Create a container and place it on the map
+    let container = new Container();
+    container.label = unitName;
+    container.interactive = false;
+    container.interactiveChildren = false;
+
+    //Load the unit's sprite
     var sprite;
     let url = unit.sprite.spriteURL;
     if(url.includes('.gif')) sprite = await this.getExternalGif(url);
     else sprite = await this.getExternalSprite(url);
 
     if(sprite !== undefined)
+    {
       container.addChild(sprite);
+      sprite.anchor.set(0.5); //manipulate sprite relative to its center
+      sprite.x = (unitWidth / 2);
+      sprite.y = unitWidth - (sprite.height / 2) - 2;
+
+      //Horizontally flip sprite
+      let affiliation = this.teamDataService.getAffiliationByName(unit.affiliation);
+      if(affiliation?.flipUnitSprites) {
+        sprite.scale.x = -1;
+      }
+
+      //Make sprite grayscale
+      if(unit.sprite.hasMoved ?? false)
+        sprite.filters = (sprite.filters ?? []).concat([this.grayscaleFilter])
+    }
+
+    //Render health bar
+    const healthBarGradient = this.GetUnitHpBarGradient(unit.stats.hp.percentage);
+    let healthBar = new Graphics()
+      .rect(2, unitWidth - 4, unitWidth - 3, 3)
+      .fill(healthBarGradient)
+      .stroke({ width: 1, color: 0x000000, pixelLine: true });
+    container.addChild(healthBar);
+
+    //Render unit number
+    const unitNumber = unit.unitNumber ?? "";
+    if(unitNumber.length > 0) {
+      let numbers = this.GetUnitNumberContainer(unitNumber);
+
+      container.addChild(numbers);
+      numbers.x = unitWidth - numbers.width - 7;
+      numbers.y = unitWidth - numbers.height - 5;
+    }
+
+    //Place whole container on map
+    this.mapContainer?.addChild(container);
+    container.position = {
+      x: unitWidth * (coordinate.x - 1), 
+      y: unitWidth * (coordinate.y - 1)
+    };
+  }
+
+  private GetUnitHpBarGradient(hpPercentage: number) : FillGradient 
+  { 
+    //Primary and secondary color hexes should match the ones from unit-hp-bar.ts
+    var primaryColor, secondaryColor;
+    if(hpPercentage > 100){
+      primaryColor = "#992DE4";
+      secondaryColor = "#d9cce3";
+    } 
+    else if(hpPercentage <= 100 && hpPercentage > 50)
+    {
+      primaryColor = "#3CD66F";
+      secondaryColor = "#d3efdd";
+    } 
+    else if(hpPercentage <= 50 && hpPercentage > 25)
+    {
+      primaryColor = "#FFC107";
+      secondaryColor = "#fff4d4";
+    }
+    else
+    {
+      primaryColor = "#F13535";
+      secondaryColor = "#efd1d1";
+    }
+
+    const hpFraction = hpPercentage / 100;
+    return new FillGradient({
+      type: 'linear',
+      start: { x: 0, y: 0.5 }, //linear left-to-right gradient
+      end: { x: 1, y: 0.5 },
+      colorStops: [
+        { offset: hpFraction, color: primaryColor },
+        { offset: hpFraction, color: secondaryColor },
+      ],
+    });
+  }
+
+  private GetUnitNumberContainer(unitNumber: string) : Container {
+    let container = new Container();
+    container.interactive = false;
+    container.interactiveChildren = false;
+
+    unitNumber.split('').forEach((digit) => 
+    {
+      let sprite = Sprite.from(digit);
+
+      container.addChild(sprite);
+      sprite.x = container.width;
+    });
 
     return container;
   }
