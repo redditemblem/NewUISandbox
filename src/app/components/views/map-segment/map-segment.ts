@@ -7,6 +7,9 @@ import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material
 import { TeamDataService } from '../../../services/team-data-service';
 import { MapConstants } from '../../../interfaces/map/map-constants';
 import { Coordinate } from '../../../interfaces/map/coordinate';
+import { UnitStatus } from '../../../interfaces/unit/unit-status';
+import { StatusCondition } from '../../../interfaces/system/status-condition';
+import { Tag } from '../../../interfaces/system/tag';
 
 @Component({
   selector: 'map-segment',
@@ -69,7 +72,10 @@ export class MapSegment {
       { alias: '8', src: 'img/numbers/num_8.png' },
       { alias: '9', src: 'img/numbers/num_9.png' }
     ]);
-    await Assets.loadBundle('unit-numbers');
+    Assets.addBundle('unit-statuses', [
+      { alias: 'status_heart', src: 'img/status_heart.png' }
+    ]);
+    await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
 
     await this.initializePixiApp(pixiContainer);
     await this.AddMapParentContainer();
@@ -148,14 +154,14 @@ export class MapSegment {
 
     this.pixiApp.stage.addChild(this.mapContainer);
 
-    const sprite = await this.getExternalSprite(this.segment().imageURL);
+    let assetAlias = `segment ${this.segment().title}`;
+    const sprite = await this.getExternalSprite(assetAlias, this.segment().imageURL);
     if(sprite === undefined) return;
 
     this.mapContainer.addChild(sprite);
   }
 
   private async AddMapElements() {
-
     //Loop through every tile in the map
     this.segment().tiles.forEach((row) => {
       row.forEach((tile) =>
@@ -168,9 +174,13 @@ export class MapSegment {
 
   private async CreateUnitContainer(unitName: string, pairedUnitName: string | undefined, coordinate: Coordinate) {
     let unit = this.teamDataService.getUnitByName(unitName);
-    if(unit === undefined) return;
+    if(unit === undefined) {
+      console.log(`Failed to locate unit name ${unitName}.`);
+      return;
+    }
 
-    const unitWidth = (this.constants?.tileSize ?? 16) * unit.location.unitSize;
+    const tileDimensions = (this.constants?.tileSize ?? 16);
+    const unitDimensions = tileDimensions * unit.location.unitSize;
 
     //Create a container and place it on the map
     let container = new Container();
@@ -179,22 +189,23 @@ export class MapSegment {
     container.interactiveChildren = false;
 
     //Load the unit's sprite
-    var sprite;
+    let sprite;
     let url = unit.sprite.spriteURL;
-    if(url.includes('.gif')) sprite = await this.getExternalGif(url);
-    else sprite = await this.getExternalSprite(url);
+    let assetAlias = `unit ${unit.normalizedName}`;
+    if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
+    else sprite = await this.getExternalSprite(assetAlias, url);
 
     if(sprite !== undefined)
     {
       container.addChild(sprite);
       sprite.anchor.set(0.5); //manipulate sprite relative to its center
-      sprite.x = (unitWidth / 2);
-      sprite.y = unitWidth - (sprite.height / 2) - 2;
+      sprite.x = (unitDimensions / 2);
+      sprite.y = unitDimensions - (sprite.height / 2) - 2;
 
       //Horizontally flip sprite
       let affiliation = this.teamDataService.getAffiliationByName(unit.affiliation);
       if(affiliation?.flipUnitSprites) {
-        sprite.scale.x = -1;
+        sprite.scale.x *= -1;
       }
 
       //Make sprite grayscale
@@ -205,7 +216,7 @@ export class MapSegment {
     //Render health bar
     const healthBarGradient = this.GetUnitHpBarGradient(unit.stats.hp.percentage);
     let healthBar = new Graphics()
-      .rect(2, unitWidth - 4, unitWidth - 3, 3)
+      .rect(2, unitDimensions - 4, unitDimensions - 3, 3)
       .fill(healthBarGradient)
       .stroke({ width: 1, color: 0x000000, pixelLine: true });
     container.addChild(healthBar);
@@ -216,15 +227,31 @@ export class MapSegment {
       let numbers = this.GetUnitNumberContainer(unitNumber);
 
       container.addChild(numbers);
-      numbers.x = unitWidth - numbers.width - 7;
-      numbers.y = unitWidth - numbers.height - 5;
+      numbers.x = unitDimensions - numbers.width - 7;
+      numbers.y = unitDimensions - numbers.height - 5;
+    }
+
+    //Render status conditions
+    let unitStatuses = unit.statusConditions ?? [];
+    if(unitStatuses.length > 0) {
+      let conditions = await this.GetUnitStatusConditionContainer(unitStatuses);
+      container.addChild(conditions);
+    }
+
+    //Render tag sprites
+    let tagNames = unit.tags ?? [];
+    if(tagNames.length > 0) {
+      let tags = await this.GetUnitTagsContainer(tagNames);
+      container.addChild(tags);
+      tags.x = container.width - 12;
     }
 
     //Place whole container on map
     this.mapContainer?.addChild(container);
+    container.zIndex = coordinate.y;
     container.position = {
-      x: unitWidth * (coordinate.x - 1), 
-      y: unitWidth * (coordinate.y - 1)
+      x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
+      y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
     };
   }
 
@@ -252,7 +279,8 @@ export class MapSegment {
       secondaryColor = "#efd1d1";
     }
 
-    const hpFraction = hpPercentage / 100;
+    //Prevent overfilled HP from going above 1.0
+    const hpFraction = Math.min(hpPercentage / 100, 1.0);
     return new FillGradient({
       type: 'linear',
       start: { x: 0, y: 0.5 }, //linear left-to-right gradient
@@ -280,10 +308,126 @@ export class MapSegment {
     return container;
   }
 
+  private async GetUnitStatusConditionContainer(unitStatuses: UnitStatus[]) : Promise<Container> {
+    let conditionSprites: Sprite[] = [];
+    let useDefaultSprite: boolean = false;
+
+    //Load sprites in parallel
+    await Promise.all(unitStatuses.map(async(status) =>
+    {
+      let condition: StatusCondition | undefined = this.teamDataService.getStatusConditionByName(status.name);
+      if(condition === undefined) return;
+
+      let url: string = condition?.spriteURL ?? "";
+      if(url.length < 1) {
+        useDefaultSprite = true;
+        return;
+      }
+
+      let sprite;
+      let assetAlias = `status ${condition.name}`;
+      if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
+      else sprite = await this.getExternalSprite(assetAlias, url);
+
+      if(sprite === undefined) return;
+
+      //Scale sprite down if it exceeds max dimensions of 12px
+      sprite.height = Math.min(sprite.height, 12);
+      sprite.width = Math.min(sprite.width, 12);
+
+      conditionSprites.push(sprite);
+    }));
+
+    //If we flagged a condition without a sprite, push the default sprite to the front of the list
+    if(useDefaultSprite) {
+      let heart: Sprite = Sprite.from('status_heart');
+      conditionSprites.unshift(heart);
+    }
+
+    let container = new Container();
+    container.interactive = false;
+    container.interactiveChildren = false;
+    
+    let shouldRotateSprites: boolean = (conditionSprites.length > 1);
+    conditionSprites.forEach((sprite) => {
+      container.addChild(sprite);
+      sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
+    }); 
+
+    //If we have multiple sprites, make the first sprite visible and 
+    //establish an interval to rotate the visible sprite every 2 seconds (2000 ms)
+    if(shouldRotateSprites) {
+      container.getChildAt(0).visible = true;
+      setInterval(this.RotateVisibilityOfContainerChildren, 2000, container);
+    }
+
+    return container;
+  }
+
+  private async GetUnitTagsContainer(tagNames: string[]) : Promise<Container> {
+    let tagSprites: Sprite[] = [];
+
+    //Load sprites in parallel
+    await Promise.all(tagNames.map(async(name) =>
+    {
+      let tag: Tag | undefined = this.teamDataService.getTagByName(name);
+      if(tag === undefined) return;
+
+      let url: string = tag?.spriteURL ?? "";
+      let showOnUnit: boolean = tag?.showOnUnit ?? false;
+      if(url.length < 1 || !showOnUnit) return;
+
+      let sprite;
+      let assetAlias = `tag ${name}`;
+      if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
+      else sprite = await this.getExternalSprite(assetAlias, url);
+
+      if(sprite === undefined) return;
+
+      //Scale sprite down if it exceeds max dimensions of 12px
+      sprite.height = Math.min(sprite.height, 12);
+      sprite.width = Math.min(sprite.width, 12);
+
+      tagSprites.push(sprite);
+    }));
+
+    let container = new Container();
+    container.interactive = false;
+    container.interactiveChildren = false;
+    
+    let shouldRotateSprites: boolean = (tagSprites.length > 1);
+    tagSprites.forEach((sprite) => {
+      container.addChild(sprite);
+      sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
+    }); 
+
+    //If we have multiple sprites, make the first sprite visible and 
+    //establish an interval to rotate the visible sprite every 2 seconds (2000 ms)
+    if(shouldRotateSprites) {
+      container.getChildAt(0).visible = true;
+      setInterval(this.RotateVisibilityOfContainerChildren, 2000, container);
+    }
+
+    return container;
+  }
+
+  private RotateVisibilityOfContainerChildren(container: Container) {
+    if(container.children.length === 0) return;
+
+    let visibleChildIndex: number = container.children.findIndex(s => s.visible);
+    container.getChildAt(visibleChildIndex).visible = false;
+
+    //Increment index, reset to 0 if we exceed list length
+    if(++visibleChildIndex >= container.children.length)
+      visibleChildIndex = 0;
+
+    container.getChildAt(visibleChildIndex).visible = true;
+  }
+
   // #region External Asset Loading
 
-  private async getExternalSprite(assetUrl: string) : Promise<Sprite | undefined> {
-    const img = await this.loadExternalTextureAsset(assetUrl)
+  private async getExternalSprite(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
+    const img = await this.loadExternalTextureAsset(alias, assetUrl)
       .catch((error) => {
         this.queueImageLoadFailedSnackBar(assetUrl);
         return undefined;
@@ -292,15 +436,16 @@ export class MapSegment {
     return new Sprite(img);
   }
 
-  private async loadExternalTextureAsset(assetUrl: string) : Promise<Texture> {
+  private async loadExternalTextureAsset(alias: string, assetUrl: string) : Promise<Texture> {
     return Assets.load<Texture>({
+      alias: alias,
       src: assetUrl,
       parser: 'loadTextures'
     });
   }
 
-  private async getExternalGif(assetUrl: string) : Promise<GifSprite | undefined> {
-    const gif = await this.loadExternalGifAsset(assetUrl)
+  private async getExternalGif(alias: string, assetUrl: string) : Promise<GifSprite | undefined> {
+    const gif = await this.loadExternalGifAsset(alias, assetUrl)
       .catch((error) => {
         this.queueImageLoadFailedSnackBar(assetUrl);
         return undefined;
@@ -310,8 +455,9 @@ export class MapSegment {
     return new GifSprite(gif);
   }
 
-  private async loadExternalGifAsset(assetUrl: string) : Promise<GifSource> {
+  private async loadExternalGifAsset(alias: string, assetUrl: string) : Promise<GifSource> {
     return Assets.load<GifSource>({
+      alias: alias,
       src: assetUrl
     });
   }
