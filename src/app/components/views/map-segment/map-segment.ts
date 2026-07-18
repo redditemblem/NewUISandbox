@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
-import { Application, Assets, ColorMatrixFilter, Container, FillGradient, Graphics, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, Container, ContainerChild, FederatedPointerEvent, FillGradient, Graphics, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
@@ -44,6 +44,7 @@ export class MapSegment {
     this.pixiApp = new Application();
     this.snackBarMessageQueue = [];
 
+    //Establish sprite filters
     this.grayscaleFilter = new ColorMatrixFilter();
     this.grayscaleFilter.blackAndWhite(true);
   }
@@ -77,7 +78,7 @@ export class MapSegment {
     ]);
     await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
 
-    await this.initializePixiApp(pixiContainer);
+    await this.InitializePixiApp(pixiContainer);
     await this.AddMapParentContainer();
     await this.AddMapElements();
   }
@@ -138,7 +139,7 @@ export class MapSegment {
   /** Initializes `this.pixiApp` and appends its resulting canvas as a child of the `appContainer` element. 
    * @param appContainer - The HTML element that will contain the Pixi.JS canvas
   */
-  private async initializePixiApp(appContainer: HTMLElement) {
+  private async InitializePixiApp(appContainer: HTMLElement) {
     await this.pixiApp.init({ 
       backgroundAlpha: 0, 
       height: this.segment().heightInPixels, 
@@ -185,7 +186,7 @@ export class MapSegment {
     //Create a container and place it on the map
     let container = new Container();
     container.label = unitName;
-    container.interactive = false;
+    container.interactive = true;
     container.interactiveChildren = false;
 
     //Load the unit's sprite
@@ -198,6 +199,8 @@ export class MapSegment {
     if(sprite !== undefined)
     {
       container.addChild(sprite);
+
+      sprite.label = 'unit_sprite';
       sprite.anchor.set(0.5); //manipulate sprite relative to its center
       sprite.x = (unitDimensions / 2);
       sprite.y = unitDimensions - (sprite.height / 2) - 2;
@@ -210,7 +213,7 @@ export class MapSegment {
 
       //Make sprite grayscale
       if(unit.sprite.hasMoved ?? false)
-        sprite.filters = (sprite.filters ?? []).concat([this.grayscaleFilter])
+        sprite.filters = (sprite.filters ?? []).concat([this.grayscaleFilter]);
     }
 
     //Render health bar
@@ -253,6 +256,33 @@ export class MapSegment {
       x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
       y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
     };
+
+    //Setup interaction events for the container
+    container.eventMode = 'static';
+    container.cursor = 'pointer';
+    container.hitArea = new Rectangle(0, 0, unitDimensions, unitDimensions);
+
+    container.on('pointerenter', this.UnitContainer_OnPointerEnter);
+    container.on('pointerleave', this.UnitContainer_OnPointerLeave);
+  }
+
+  private UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
+    let container: Container = event.target;
+    let sprite: Sprite | null = container.getChildByLabel('unit_sprite', false) as Sprite;
+    if(sprite === null) return;
+
+    const filter = new ColorMatrixFilter();
+    filter.brightness(1.5, false);
+
+    sprite.filters = (sprite.filters ?? []).concat([filter]);
+  }
+
+  private UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
+    let container: Container = event.target;
+    let sprite: Sprite | null = container.getChildByLabel('unit_sprite', false) as Sprite;
+    if(sprite === null) return;
+
+    sprite.filters = null;
   }
 
   private GetUnitHpBarGradient(hpPercentage: number) : FillGradient 
