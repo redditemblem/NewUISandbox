@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
-import { Application, Assets, ColorMatrixFilter, Container, ContainerChild, FederatedPointerEvent, FillGradient, Graphics, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, Color, ColorMatrixFilter, Container, ContainerChild, FederatedPointerEvent, FillGradient, Filter, Graphics, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
@@ -10,6 +10,9 @@ import { Coordinate } from '../../../interfaces/map/coordinate';
 import { UnitStatus } from '../../../interfaces/unit/unit-status';
 import { StatusCondition } from '../../../interfaces/system/status-condition';
 import { Tag } from '../../../interfaces/system/tag';
+import { Unit } from '../../../interfaces/unit/unit';
+import { StringDictionary } from '../../../interfaces/common/dictionaries';
+import { Affiliation } from '../../../interfaces/system/affiliation';
 
 @Component({
   selector: 'map-segment',
@@ -34,8 +37,6 @@ export class MapSegment {
   private pixiApp : Application;
   private mapContainer : Container | undefined;
 
-  private grayscaleFilter : ColorMatrixFilter;
-
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
     this.snackBar = inject(MatSnackBar);
@@ -43,10 +44,6 @@ export class MapSegment {
     this.constants = this.teamDataService.getMapConstants();
     this.pixiApp = new Application();
     this.snackBarMessageQueue = [];
-
-    //Establish sprite filters
-    this.grayscaleFilter = new ColorMatrixFilter();
-    this.grayscaleFilter.blackAndWhite(true);
   }
 
   async ngOnInit() {
@@ -156,139 +153,225 @@ export class MapSegment {
     this.pixiApp.stage.addChild(this.mapContainer);
 
     let assetAlias = `segment ${this.segment().title}`;
-    const sprite = await this.getExternalSprite(assetAlias, this.segment().imageURL);
+    const sprite = await SpriteLoader.getExternalSprite(assetAlias, this.segment().imageURL);
     if(sprite === undefined) return;
 
     this.mapContainer.addChild(sprite);
   }
 
   private async AddMapElements() {
+    const tileDimensions: number = (this.constants?.tileSize ?? 16); 
+
     //Loop through every tile in the map
     this.segment().tiles.forEach((row) => {
       row.forEach((tile) =>
       {
-        if(tile.unitData.isUnitAnchor)
-          this.CreateUnitContainer(tile.unitData.occupyingUnitName, tile.unitData.pairedUnitName, tile.coordinate);
+        const coordinate: Coordinate = tile.coordinate;
+
+        if(tile.unitData.isUnitAnchor) {
+          let unitContainer = new UnitContainer(this.teamDataService);
+          unitContainer.init(tile.unitData.occupyingUnitName);
+
+          //Place whole container on map
+          this.mapContainer?.addChild(unitContainer);
+          unitContainer.zIndex = unitContainer.y;
+          unitContainer.position = {
+            x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
+            y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
+          };
+        }
       }
     )});
+  }  
+}
+
+/** Static functions for loading sprite resources */
+export abstract class SpriteLoader {
+
+  public static async getExternalSprite(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
+    const img = await this.loadExternalTextureAsset(alias, assetUrl);
+    return new Sprite(img);
   }
 
-  private async CreateUnitContainer(unitName: string, pairedUnitName: string | undefined, coordinate: Coordinate) {
-    let unit = this.teamDataService.getUnitByName(unitName);
+  public static async getExternalGifSprite(alias: string, assetUrl: string) : Promise<GifSprite | undefined> {
+    const gif = await this.loadExternalGifAsset(alias, assetUrl)
+      .catch((error) => {
+        return undefined;
+      });
+    if(gif === undefined) return undefined;
+
+    return new GifSprite(gif);
+  }
+
+  private static async loadExternalTextureAsset(alias: string, assetUrl: string) : Promise<Texture> {
+    return Assets.load<Texture>({
+      alias: alias,
+      src: assetUrl,
+      parser: 'loadTextures'
+    });
+  }
+
+  private static async loadExternalGifAsset(alias: string, assetUrl: string) : Promise<GifSource> {
+    return Assets.load<GifSource>({
+      alias: alias,
+      src: assetUrl
+    });
+  }
+}
+
+/** Static functions for retrieving common sprite filters */
+export abstract class SpriteFilters {
+
+  //Use a singleton model so we don't keep recreating filters
+  private static grayscaleFilter : ColorMatrixFilter;
+  private static brightFilter : ColorMatrixFilter;
+
+  public static getGrayscaleFilter() : ColorMatrixFilter {
+    if(this.grayscaleFilter !== undefined)
+      return this.grayscaleFilter;
+
+    this.grayscaleFilter = new ColorMatrixFilter();
+    this.grayscaleFilter.blackAndWhite(true);
+
+    return this.grayscaleFilter;
+  }
+
+  public static getBrightFilter() : ColorMatrixFilter {
+    if(this.brightFilter !== undefined)
+      return this.brightFilter;
+
+    this.brightFilter = new ColorMatrixFilter();
+    this.brightFilter.brightness(1.6, true);
+
+    return this.brightFilter;
+  }
+}
+
+export class TileContainer extends Container {
+
+}
+
+export class UnitContainer extends Container {
+
+  /** Number of milliseconds. Used to establish rotation intervals for status condition and tag sprites. */
+  private readonly SPRITE_ROTATION_INTERVAL: number = 2000;
+  private readonly GRAYSCALE_FILTER: string = "grayscale";
+  private readonly BRIGHT_FILTER: string = "bright";
+
+  private teamDataService: TeamDataService;
+
+  private sprite: Sprite | undefined;
+  private unitDimensions: number = 0;
+  private activeSpriteFilters: StringDictionary<Filter>;
+
+  constructor(teamDataService: TeamDataService) {
+    super(); //call the parent Container() constructor
+
+    this.teamDataService = teamDataService;
+    this.activeSpriteFilters = {};
+  }
+
+  public async init(unitName: string) {
+
+    //Set this container's base attributes
+    this.label = unitName;
+    this.interactive = true;
+    this.interactiveChildren = false;
+
+    //Attempt to load the unit by its name
+    const unit: Unit | undefined = this.teamDataService.getUnitByName(unitName);
     if(unit === undefined) {
       console.log(`Failed to locate unit name ${unitName}.`);
       return;
     }
 
-    const tileDimensions = (this.constants?.tileSize ?? 16);
-    const unitDimensions = tileDimensions * unit.location.unitSize;
-
-    //Create a container and place it on the map
-    let container = new Container();
-    container.label = unitName;
-    container.interactive = true;
-    container.interactiveChildren = false;
+    const constants: MapConstants | undefined = this.teamDataService.getMapConstants();
+    const tileDimensions: number = (constants?.tileSize ?? 16);
+    this.unitDimensions = tileDimensions * unit.location.unitSize;
 
     //Load the unit's sprite
-    let sprite;
-    let url = unit.sprite.spriteURL;
-    let assetAlias = `unit ${unit.normalizedName}`;
-    if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
-    else sprite = await this.getExternalSprite(assetAlias, url);
+    const url = unit.sprite.spriteURL;
+    const assetAlias = `unit ${unit.normalizedName}`;
+    if(url.includes('.gif')) this.sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
+    else this.sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
 
-    if(sprite !== undefined)
+    if(this.sprite !== undefined)
     {
-      container.addChild(sprite);
+      this.addChild(this.sprite);
 
-      sprite.label = 'unit_sprite';
-      sprite.anchor.set(0.5); //manipulate sprite relative to its center
-      sprite.x = (unitDimensions / 2);
-      sprite.y = unitDimensions - (sprite.height / 2) - 2;
+      this.sprite.label = 'unit_sprite';
+      this.sprite.anchor.set(0.5); //manipulate sprite relative to its center
+      this.sprite.x = (this.unitDimensions / 2);
+      this.sprite.y = this.unitDimensions - (this.sprite.height / 2) - 2;
 
       //Horizontally flip sprite
-      let affiliation = this.teamDataService.getAffiliationByName(unit.affiliation);
+      const affiliation: Affiliation | undefined = this.teamDataService.getAffiliationByName(unit.affiliation);
       if(affiliation?.flipUnitSprites) {
-        sprite.scale.x *= -1;
+        this.sprite.scale.x *= -1;
       }
 
-      //Make sprite grayscale
+      //Add grayscale filter
       if(unit.sprite.hasMoved ?? false)
-        sprite.filters = (sprite.filters ?? []).concat([this.grayscaleFilter]);
+        this.activeSpriteFilters[this.GRAYSCALE_FILTER] = SpriteFilters.getGrayscaleFilter();
     }
 
     //Render health bar
     const healthBarGradient = this.GetUnitHpBarGradient(unit.stats.hp.percentage);
-    let healthBar = new Graphics()
-      .rect(2, unitDimensions - 4, unitDimensions - 3, 3)
+    const healthBar = new Graphics()
+      .rect(2, this.unitDimensions - 4, this.unitDimensions - 3, 3)
       .fill(healthBarGradient)
       .stroke({ width: 1, color: 0x000000, pixelLine: true });
-    container.addChild(healthBar);
-
+    this.addChild(healthBar);
+ 
     //Render unit number
     const unitNumber = unit.unitNumber ?? "";
     if(unitNumber.length > 0) {
-      let numbers = this.GetUnitNumberContainer(unitNumber);
+      const numbers = this.GetUnitNumberContainer(unitNumber);
 
-      container.addChild(numbers);
-      numbers.x = unitDimensions - numbers.width - 7;
-      numbers.y = unitDimensions - numbers.height - 5;
+      this.addChild(numbers);
+      numbers.x = this.unitDimensions - numbers.width - 7;
+      numbers.y = this.unitDimensions - numbers.height - 5;
     }
 
     //Render status conditions
-    let unitStatuses = unit.statusConditions ?? [];
+    const unitStatuses = unit.statusConditions ?? [];
     if(unitStatuses.length > 0) {
-      let conditions = await this.GetUnitStatusConditionContainer(unitStatuses);
-      container.addChild(conditions);
+      const conditions = await this.GetUnitStatusConditionContainer(unitStatuses);
+      this.addChild(conditions);
     }
 
     //Render tag sprites
-    let tagNames = unit.tags ?? [];
+    const tagNames = unit.tags ?? [];
     if(tagNames.length > 0) {
       let tags = await this.GetUnitTagsContainer(tagNames);
-      container.addChild(tags);
-      tags.x = container.width - 12;
+      this.addChild(tags);
+      tags.x = this.width - 12;
     }
 
-    //Place whole container on map
-    this.mapContainer?.addChild(container);
-    container.zIndex = coordinate.y;
-    container.position = {
-      x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
-      y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
-    };
+    //Set initial filter list
+    const filters = Object.values(this.activeSpriteFilters);
+    if(this.sprite !== undefined && filters.length > 0) {
+      this.sprite.filters = filters;
+    }
 
-    //Setup interaction events for the container
-    container.eventMode = 'static';
-    container.cursor = 'pointer';
-    container.hitArea = new Rectangle(0, 0, unitDimensions, unitDimensions);
+    //Setup interaction events
+    this.eventMode = 'static';
+    this.cursor = 'pointer';
+    this.hitArea = new Rectangle(0, 0, this.unitDimensions, this.unitDimensions);
 
-    container.on('pointerenter', this.UnitContainer_OnPointerEnter);
-    container.on('pointerleave', this.UnitContainer_OnPointerLeave);
+    this.on('pointerenter', this.UnitContainer_OnPointerEnter);
+    this.on('pointerleave', this.UnitContainer_OnPointerLeave);
   }
 
-  private UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
-    let container: Container = event.target;
-    let sprite: Sprite | null = container.getChildByLabel('unit_sprite', false) as Sprite;
-    if(sprite === null) return;
-
-    const filter = new ColorMatrixFilter();
-    filter.brightness(1.5, false);
-
-    sprite.filters = (sprite.filters ?? []).concat([filter]);
-  }
-
-  private UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
-    let container: Container = event.target;
-    let sprite: Sprite | null = container.getChildByLabel('unit_sprite', false) as Sprite;
-    if(sprite === null) return;
-
-    sprite.filters = null;
-  }
-
+  /**
+   * Determine the colors codes appropriate for the unit's current hpPercentage
+   * 
+   * @returns A new FillGradient with a linear left-right gradient utilizes the color codes
+   */
   private GetUnitHpBarGradient(hpPercentage: number) : FillGradient 
   { 
     //Primary and secondary color hexes should match the ones from unit-hp-bar.ts
-    var primaryColor, secondaryColor;
+    let primaryColor: string, secondaryColor: string;
     if(hpPercentage > 100){
       primaryColor = "#992DE4";
       secondaryColor = "#d9cce3";
@@ -316,12 +399,18 @@ export class MapSegment {
       start: { x: 0, y: 0.5 }, //linear left-to-right gradient
       end: { x: 1, y: 0.5 },
       colorStops: [
+        //Transition colors immediately at the hpFraction
         { offset: hpFraction, color: primaryColor },
         { offset: hpFraction, color: secondaryColor },
       ],
     });
   }
 
+  /**
+   * Loads the sprite for each digit in unitNumber and inserts all sprites into a new Container.
+   * 
+   * @returns The new Container with all sprites added
+   */
   private GetUnitNumberContainer(unitNumber: string) : Container {
     let container = new Container();
     container.interactive = false;
@@ -332,12 +421,18 @@ export class MapSegment {
       let sprite = Sprite.from(digit);
 
       container.addChild(sprite);
-      sprite.x = container.width;
+      sprite.x = container.width; //move sprite to end of the container
     });
 
     return container;
   }
 
+  /**
+   * Loads the sprite for each status in unitStatuses and inserts all sprites into a new Container.
+   * If there is more than one sprite, sets up a rotation interval.
+   * 
+   * @returns The new Container with all sprites added
+   */
   private async GetUnitStatusConditionContainer(unitStatuses: UnitStatus[]) : Promise<Container> {
     let conditionSprites: Sprite[] = [];
     let useDefaultSprite: boolean = false;
@@ -354,10 +449,10 @@ export class MapSegment {
         return;
       }
 
-      let sprite;
+      let sprite: Sprite | undefined;
       let assetAlias = `status ${condition.name}`;
-      if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
-      else sprite = await this.getExternalSprite(assetAlias, url);
+      if(url.includes('.gif')) sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
+      else sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
 
       if(sprite === undefined) return;
 
@@ -384,16 +479,22 @@ export class MapSegment {
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
     }); 
 
-    //If we have multiple sprites, make the first sprite visible and 
-    //establish an interval to rotate the visible sprite every 2 seconds (2000 ms)
+    //If we have multiple sprites, make only the first sprite visible and 
+    //establish an interval to rotate the visible sprite.
     if(shouldRotateSprites) {
       container.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, 2000, container);
+      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, container);
     }
 
     return container;
   }
 
+  /**
+   * Loads the sprite for each name in tagNames and inserts all sprites into a new Container.
+   * If there is more than one sprite, sets up a rotation interval.
+   * 
+   * @returns The new Container with all sprites added
+   */
   private async GetUnitTagsContainer(tagNames: string[]) : Promise<Container> {
     let tagSprites: Sprite[] = [];
 
@@ -409,8 +510,8 @@ export class MapSegment {
 
       let sprite;
       let assetAlias = `tag ${name}`;
-      if(url.includes('.gif')) sprite = await this.getExternalGif(assetAlias, url);
-      else sprite = await this.getExternalSprite(assetAlias, url);
+      if(url.includes('.gif')) sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
+      else sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
 
       if(sprite === undefined) return;
 
@@ -431,16 +532,21 @@ export class MapSegment {
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
     }); 
 
-    //If we have multiple sprites, make the first sprite visible and 
-    //establish an interval to rotate the visible sprite every 2 seconds (2000 ms)
+    //If we have multiple sprites, make only the first sprite visible and 
+    //establish an interval to rotate the visible sprite.
     if(shouldRotateSprites) {
       container.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, 2000, container);
+      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, container);
     }
 
     return container;
   }
 
+  /**
+   * Intended to be called on an inverval system. Looks for the current visible child of container,
+   * makes it invisible, then sets the next child to visible. Loops when it reaches the end of the
+   * child list.
+   */
   private RotateVisibilityOfContainerChildren(container: Container) {
     if(container.children.length === 0) return;
 
@@ -454,43 +560,26 @@ export class MapSegment {
     container.getChildAt(visibleChildIndex).visible = true;
   }
 
-  // #region External Asset Loading
+  // #region Event Handling
 
-  private async getExternalSprite(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
-    const img = await this.loadExternalTextureAsset(alias, assetUrl)
-      .catch((error) => {
-        this.queueImageLoadFailedSnackBar(assetUrl);
-        return undefined;
-      });
+  private UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
+    if(this.sprite === undefined)
+      return;
 
-    return new Sprite(img);
+    if(this.activeSpriteFilters[this.BRIGHT_FILTER] !== undefined)
+      return;
+
+    this.activeSpriteFilters[this.BRIGHT_FILTER] = SpriteFilters.getBrightFilter();
+    this.sprite.filters = Object.values(this.activeSpriteFilters);
   }
 
-  private async loadExternalTextureAsset(alias: string, assetUrl: string) : Promise<Texture> {
-    return Assets.load<Texture>({
-      alias: alias,
-      src: assetUrl,
-      parser: 'loadTextures'
-    });
+  private UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
+    if(this.sprite === undefined)
+      return;
+
+    delete this.activeSpriteFilters[this.BRIGHT_FILTER];
+    this.sprite.filters = Object.values(this.activeSpriteFilters);
   }
 
-  private async getExternalGif(alias: string, assetUrl: string) : Promise<GifSprite | undefined> {
-    const gif = await this.loadExternalGifAsset(alias, assetUrl)
-      .catch((error) => {
-        this.queueImageLoadFailedSnackBar(assetUrl);
-        return undefined;
-      });
-    if(gif === undefined) return undefined;
-
-    return new GifSprite(gif);
-  }
-
-  private async loadExternalGifAsset(alias: string, assetUrl: string) : Promise<GifSource> {
-    return Assets.load<GifSource>({
-      alias: alias,
-      src: assetUrl
-    });
-  }
-
-  // #endregion External Asset Loading
+  // #endregion Event Handling
 }
