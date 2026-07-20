@@ -1,8 +1,9 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
-import { Application, Assets, Color, ColorMatrixFilter, Container, ContainerChild, FederatedPointerEvent, FillGradient, Filter, Graphics, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, ColorSource, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
+import { GlowFilter } from 'pixi-filters';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
 import { MapConstants } from '../../../interfaces/map/map-constants';
@@ -13,11 +14,15 @@ import { Tag } from '../../../interfaces/system/tag';
 import { Unit } from '../../../interfaces/unit/unit';
 import { StringDictionary } from '../../../interfaces/common/dictionaries';
 import { Affiliation } from '../../../interfaces/system/affiliation';
+import { Tile } from '../../../interfaces/map/tile';
 
 @Component({
   selector: 'map-segment',
   imports: [],
-  template: `<div id="pixiContainer"></div>`,
+  template: `
+    <button style="position: absolute" (click)="downloadMapAsImage()">Download map image</button>
+    <div id="pixiContainer"></div>
+  `,
   styles: `
     #pixiContainer {
       height: calc(100vh - 56px);
@@ -76,8 +81,8 @@ export class MapSegment {
     await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
 
     await this.InitializePixiApp(pixiContainer);
-    await this.AddMapParentContainer();
-    await this.AddMapElements();
+    await this.addMapParentContainer();
+    await this.addMapElements();
   }
 
   //async ngOnChanges() {
@@ -142,11 +147,13 @@ export class MapSegment {
       height: this.segment().heightInPixels, 
       width: this.segment().widthInPixels
     });
+    this.pixiApp.canvas.id = 'pixiCanvas';
+
     appContainer.appendChild(this.pixiApp.canvas);
   }
 
   /** Creates a container, appends it to the `this.pixiApp` stage, and fills it with a centered map segment image. */
-  private async AddMapParentContainer() {
+  private async addMapParentContainer() {
     this.mapContainer = new Container();
     this.mapContainer.setSize(this.segment().widthInPixels, this.segment().heightInPixels);
 
@@ -159,30 +166,39 @@ export class MapSegment {
     this.mapContainer.addChild(sprite);
   }
 
-  private async AddMapElements() {
+  private async addMapElements() {
     const tileDimensions: number = (this.constants?.tileSize ?? 16); 
 
     //Loop through every tile in the map
     this.segment().tiles.forEach((row) => {
       row.forEach((tile) =>
       {
-        const coordinate: Coordinate = tile.coordinate;
+        const tileContainer : TileContainer = new TileContainer(this.teamDataService, tile);
+        tileContainer.init().then(() => {
+          this.mapContainer?.addChild(tileContainer);
 
-        if(tile.unitData.isUnitAnchor) {
-          let unitContainer = new UnitContainer(this.teamDataService);
-          unitContainer.init(tile.unitData.occupyingUnitName);
-
-          //Place whole container on map
-          this.mapContainer?.addChild(unitContainer);
-          unitContainer.zIndex = unitContainer.y;
-          unitContainer.position = {
+          const coordinate: Coordinate = tile.coordinate;
+          tileContainer.position = {
             x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
             y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
           };
-        }
+        });
       }
     )});
-  }  
+  }
+
+  public async downloadMapAsImage() {
+    const blob: ImageLike = await this.pixiApp.renderer.extract.image({
+      target: this.pixiApp.stage,
+      format: 'png'
+    });
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = blob.src;
+    downloadLink.download = `${this.segment().title}.png`;
+    downloadLink.click();
+    downloadLink.remove();
+  }
 }
 
 /** Static functions for loading sprite resources */
@@ -225,6 +241,7 @@ export abstract class SpriteFilters {
   //Use a singleton model so we don't keep recreating filters
   private static grayscaleFilter : ColorMatrixFilter;
   private static brightFilter : ColorMatrixFilter;
+  private static glowFilters : StringDictionary<GlowFilter> = {};
 
   public static getGrayscaleFilter() : ColorMatrixFilter {
     if(this.grayscaleFilter !== undefined)
@@ -245,53 +262,148 @@ export abstract class SpriteFilters {
 
     return this.brightFilter;
   }
+
+  /**
+   * @param colorHex - A color code in hex format (ex. '#ffffff')
+   */
+  public static getGlowFilter(colorHex: string) : GlowFilter {
+    if(this.glowFilters[colorHex] !== undefined)
+      return this.glowFilters[colorHex];
+
+    const filter = new GlowFilter({
+      color: colorHex,
+      distance: 10,
+      outerStrength: 5,
+      alpha: 0.6
+    });
+    this.glowFilters[colorHex] = filter;
+
+    return filter;
+  }
 }
 
 export class TileContainer extends Container {
 
+  private readonly movRangeColor: string = '#5cb4ef';
+  private readonly atkRangeColor: string = '#d81b62';
+  private readonly utilRangeColor: string = '#9dff00';
+
+  private teamDataService: TeamDataService;
+
+  private tile : Tile;
+  private backgroundTint: Graphics | undefined;
+  private unitContainer : UnitContainer | undefined;
+  private pairupUnitContainer: UnitContainer | undefined;
+
+  constructor(teamDataService: TeamDataService, tile: Tile) {
+    super(); //call the parent Container() constructor
+
+    this.teamDataService = teamDataService;
+    this.tile = tile;
+
+    //Set this container's base attributes
+    this.label = this.tile.coordinate.asText;
+    this.interactive = false;
+    this.interactiveChildren = false;
+  }
+
+  public async init() {
+    
+    const constants: MapConstants | undefined = this.teamDataService.getMapConstants();
+    const tileDimensions: number = (constants?.tileSize ?? 16);
+
+    //Add a rectangle graphic for showing ranges
+    this.backgroundTint = new Graphics()
+      .rect(0, 0, tileDimensions, tileDimensions)
+      .fill({
+        color: '#ffffff',
+        alpha: 0.5
+      });
+    this.backgroundTint.visible = false; //hide by default
+    this.addChild(this.backgroundTint);
+
+    const occupyingUnitName: string = this.tile.unitData.occupyingUnitName ?? "";
+    const pairUpUnitName: string = this.tile.unitData.pairedUnitName ?? "";
+
+    //Create unit containers for each unit on this tile
+    if(this.tile.unitData.isUnitAnchor && occupyingUnitName.length > 0) {
+
+      this.interactiveChildren = true;
+      let units: UnitContainer[] = [];
+
+      this.unitContainer = new UnitContainer(this.teamDataService, occupyingUnitName, true);
+      units.push(this.unitContainer);
+
+      if(pairUpUnitName.length > 0) {
+        this.pairupUnitContainer = new UnitContainer(this.teamDataService, pairUpUnitName, false);
+        units.push(this.pairupUnitContainer);
+      }
+
+      //Initialize unit containers in parallel
+      Promise.all(units.map(async(unit) => {
+        unit.init();
+        this.addChild(unit);
+      }))
+      .then(() => {
+        //Position children?
+      });
+    }
+  }
+
+  private enableBackgroundTint() {
+    if(this.backgroundTint === undefined) return;
+
+    this.backgroundTint.tint = this.movRangeColor;
+    this.backgroundTint.visible = true;
+  }
 }
 
 export class UnitContainer extends Container {
 
   /** Number of milliseconds. Used to establish rotation intervals for status condition and tag sprites. */
   private readonly SPRITE_ROTATION_INTERVAL: number = 2000;
+
   private readonly GRAYSCALE_FILTER: string = "grayscale";
   private readonly BRIGHT_FILTER: string = "bright";
+  private readonly GLOW_FILTER: string = "glow";
 
   private teamDataService: TeamDataService;
 
+  private unitName: string;
+  public unit: Unit | undefined;
   private sprite: Sprite | undefined;
   private unitDimensions: number = 0;
   private activeSpriteFilters: StringDictionary<Filter>;
 
-  constructor(teamDataService: TeamDataService) {
+  constructor(teamDataService: TeamDataService, unitName: string, enableInteraction: boolean) {
     super(); //call the parent Container() constructor
 
     this.teamDataService = teamDataService;
+    this.unitName = unitName;
     this.activeSpriteFilters = {};
-  }
-
-  public async init(unitName: string) {
 
     //Set this container's base attributes
-    this.label = unitName;
-    this.interactive = true;
+    this.label = this.unitName;
+    this.interactive = enableInteraction;
     this.interactiveChildren = false;
+  }
+
+  public async init() {
 
     //Attempt to load the unit by its name
-    const unit: Unit | undefined = this.teamDataService.getUnitByName(unitName);
-    if(unit === undefined) {
-      console.log(`Failed to locate unit name ${unitName}.`);
+    this.unit = this.teamDataService.getUnitByName(this.unitName);
+    if(this.unit === undefined) {
+      console.log(`Failed to locate unit name ${this.unitName}.`);
       return;
     }
 
     const constants: MapConstants | undefined = this.teamDataService.getMapConstants();
     const tileDimensions: number = (constants?.tileSize ?? 16);
-    this.unitDimensions = tileDimensions * unit.location.unitSize;
+    this.unitDimensions = tileDimensions * this.unit.location.unitSize;
 
     //Load the unit's sprite
-    const url = unit.sprite.spriteURL;
-    const assetAlias = `unit ${unit.normalizedName}`;
+    const url = this.unit.sprite.spriteURL;
+    const assetAlias = `unit ${this.unit.normalizedName}`;
     if(url.includes('.gif')) this.sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
     else this.sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
 
@@ -305,18 +417,23 @@ export class UnitContainer extends Container {
       this.sprite.y = this.unitDimensions - (this.sprite.height / 2) - 2;
 
       //Horizontally flip sprite
-      const affiliation: Affiliation | undefined = this.teamDataService.getAffiliationByName(unit.affiliation);
+      const affiliation: Affiliation | undefined = this.teamDataService.getAffiliationByName(this.unit.affiliation);
       if(affiliation?.flipUnitSprites) {
         this.sprite.scale.x *= -1;
       }
 
       //Add grayscale filter
-      if(unit.sprite.hasMoved ?? false)
+      if(this.unit.sprite.hasMoved ?? false)
         this.activeSpriteFilters[this.GRAYSCALE_FILTER] = SpriteFilters.getGrayscaleFilter();
+
+      //Add aura glow filter
+      const auraColor: string = (this.unit.sprite.aura ?? "");
+      if(auraColor.length > 0)
+        this.activeSpriteFilters[this.GLOW_FILTER] = SpriteFilters.getGlowFilter(auraColor);
     }
 
     //Render health bar
-    const healthBarGradient = this.GetUnitHpBarGradient(unit.stats.hp.percentage);
+    const healthBarGradient = this.GetUnitHpBarGradient(this.unit.stats.hp.percentage);
     const healthBar = new Graphics()
       .rect(2, this.unitDimensions - 4, this.unitDimensions - 3, 3)
       .fill(healthBarGradient)
@@ -324,7 +441,7 @@ export class UnitContainer extends Container {
     this.addChild(healthBar);
  
     //Render unit number
-    const unitNumber = unit.unitNumber ?? "";
+    const unitNumber = this.unit.unitNumber ?? "";
     if(unitNumber.length > 0) {
       const numbers = this.GetUnitNumberContainer(unitNumber);
 
@@ -334,14 +451,14 @@ export class UnitContainer extends Container {
     }
 
     //Render status conditions
-    const unitStatuses = unit.statusConditions ?? [];
+    const unitStatuses = this.unit.statusConditions ?? [];
     if(unitStatuses.length > 0) {
       const conditions = await this.GetUnitStatusConditionContainer(unitStatuses);
       this.addChild(conditions);
     }
 
     //Render tag sprites
-    const tagNames = unit.tags ?? [];
+    const tagNames = this.unit.tags ?? [];
     if(tagNames.length > 0) {
       let tags = await this.GetUnitTagsContainer(tagNames);
       this.addChild(tags);
@@ -355,12 +472,14 @@ export class UnitContainer extends Container {
     }
 
     //Setup interaction events
-    this.eventMode = 'static';
-    this.cursor = 'pointer';
-    this.hitArea = new Rectangle(0, 0, this.unitDimensions, this.unitDimensions);
+    if(this.isInteractive()) {
+      this.eventMode = 'static';
+      this.cursor = 'pointer';
+      this.hitArea = new Rectangle(0, 0, this.unitDimensions, this.unitDimensions);
 
-    this.on('pointerenter', this.UnitContainer_OnPointerEnter);
-    this.on('pointerleave', this.UnitContainer_OnPointerLeave);
+      this.on('pointerenter', this.UnitContainer_OnPointerEnter);
+      this.on('pointerleave', this.UnitContainer_OnPointerLeave);
+    }
   }
 
   /**
@@ -562,20 +681,15 @@ export class UnitContainer extends Container {
 
   // #region Event Handling
 
-  private UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
-    if(this.sprite === undefined)
-      return;
-
-    if(this.activeSpriteFilters[this.BRIGHT_FILTER] !== undefined)
-      return;
+  public UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
+    if(this.sprite === undefined) return;
 
     this.activeSpriteFilters[this.BRIGHT_FILTER] = SpriteFilters.getBrightFilter();
     this.sprite.filters = Object.values(this.activeSpriteFilters);
   }
 
-  private UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
-    if(this.sprite === undefined)
-      return;
+  public UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
+    if(this.sprite === undefined) return;
 
     delete this.activeSpriteFilters[this.BRIGHT_FILTER];
     this.sprite.filters = Object.values(this.activeSpriteFilters);

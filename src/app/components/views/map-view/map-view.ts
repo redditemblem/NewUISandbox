@@ -13,10 +13,11 @@ import { LinksSidenav } from "../links-sidenav/links-sidenav";
 import { MapSegment } from '../map-segment/map-segment';
 import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
 import { MatDivider } from "@angular/material/divider";
+import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenav, MatSidenavContainer, MatSidenavContent, MatTab, MatTabGroup, MatTabLabel, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapSegment, MatAnchor, MatDivider],
+  imports: [MatSidenav, MatSidenavContainer, MatSidenavContent, MatTab, MatTabGroup, MatTabLabel, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapSegment, MatAnchor, MatDivider, MapPaintSidenav],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })

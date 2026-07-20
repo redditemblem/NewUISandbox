@@ -6,39 +6,41 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Unit } from '../../../interfaces/unit/unit';
 import { UnitSidenavDisplay } from "../unit-sidenav-display/unit-sidenav-display";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'map-units-sidenav',
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, UnitSidenavDisplay],
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, UnitSidenavDisplay, MatButtonModule, MatIconModule],
   templateUrl: './map-units-sidenav.html',
   styleUrl: './map-units-sidenav.scss',
 })
 export class MapUnitsSidenav {
   @ViewChild('unitAutocompleteInput') unitAutocompleteInput!: ElementRef<HTMLInputElement>;
   
-  selectedUnit = new FormControl<null | Unit>(null);
-  filteredUnits: Unit[];
+  public selectedUnit = new FormControl<null | Unit>(null);
+  public filteredUnits: Unit[];
 
   constructor(public dataService: TeamDataService) {
     this.dataService = inject(TeamDataService);
     this.filteredUnits = [];
   }
 
-  filterUnits() : void {
+  public filterUnits() {
     const filterValue = this.unitAutocompleteInput.nativeElement.value.toLowerCase();
     this.filteredUnits = this.dataService.getUnitsList()
       .filter(unit => 
         unit.name.toLowerCase().includes(filterValue) || unit.normalizedName.toLowerCase().includes(filterValue)
       )
-      .sort((a, b) => this._sortUnits(a, b));
+      .sort((a, b) => this.sortUnits(a, b));
   }
 
   //Sort units by name
-  private _sortUnits(unitA: Unit, unitB: Unit) {
-      return unitA.name.toLowerCase().localeCompare(unitB.name.toLowerCase());
+  private sortUnits(unitA: Unit, unitB: Unit) {
+    return unitA.name.toLowerCase().localeCompare(unitB.name.toLowerCase());
   }
 
-  formatAutocompleteDisplayValue(unit: Unit): string {
+  public formatAutocompleteDisplayValue(unit: Unit): string {
     return unit && unit.name ? unit.name : '';
   }
 }

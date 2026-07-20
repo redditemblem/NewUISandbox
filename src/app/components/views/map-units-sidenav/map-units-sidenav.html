@@ -13,13 +13,18 @@
       <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
         @for (unit of filteredUnits; track unit.name) {
           <mat-option [value]="unit">
-              <div class="autocompleteOptionContainer">
-                  <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" />
-                  <div>{{unit.name}}</div>
-              </div>
+            <div class="autocompleteOptionContainer">
+                <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" />
+                <div>{{unit.name}}</div>
+            </div>
           </mat-option>
         }
       </mat-autocomplete>
+      @if(selectedUnit.value !== null) {
+        <button matIconButton matSuffix aria-label="Clear" (click)="this.selectedUnit.setValue(null)">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
   </form>
   @if (selectedUnit.value) {
