@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
-import { UnitSkill as IUnitSkill } from '../../interfaces/unit/unit-skill';
-import { Skill } from '../../interfaces/system/skill';
+import { IUnitSkill } from '../../data/interfaces/unit/unit-skill';
+import { ISkill } from '../../data/interfaces/system/skill';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from "@angular/material/divider";
 
@@ -13,7 +13,7 @@ import { MatDivider } from "@angular/material/divider";
 export class UnitSkill {
   skill = input.required<IUnitSkill>();
   expanded = input<boolean>(true);
-  systemData : Skill | undefined;
+  systemData : ISkill | undefined;
 
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);

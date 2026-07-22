@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { TeamData } from '../../interfaces/team-data';
+import { ITeamData } from '../../data/interfaces/team-data';
 import { MatCard, MatCardActions, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from "@angular/router";
@@ -11,7 +11,7 @@ import { RouterLink } from "@angular/router";
   styleUrl: './team-listing.scss',
 })
 export class TeamListing {
-  team = input.required<TeamData>();
+  team = input.required<ITeamData>();
 
   GetTeamNameWithoutSpaces(): string{
     return this.team().teamName.replace(' ', '');

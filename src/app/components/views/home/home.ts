@@ -4,7 +4,7 @@ import { TeamListService } from '../../../services/team-list-service';
 import { TeamListing } from '../../team-listing/team-listing';
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { LoadingIcon } from "../../loading-icon/loading-icon";
-import { TeamData } from '../../../interfaces/team-data';
+import { ITeamData } from '../../../data/interfaces/team-data';
 import { ThemeService } from '../../../services/theme-service';
 
 
@@ -16,7 +16,7 @@ import { ThemeService } from '../../../services/theme-service';
 })
 export class Home{
   
-  public teamExample: TeamData;
+  public teamExample: ITeamData;
 
   constructor(public breakpointService: BreakpointService, public themeService: ThemeService, public teamListService: TeamListService){
     this.breakpointService = inject(BreakpointService);

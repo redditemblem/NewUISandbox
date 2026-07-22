@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
-import { CurrencyConstants } from '../../interfaces/system/currency-constants';
+import { ICurrencyConstants } from '../../data/interfaces/system/currency-constants';
 
 @Component({
   selector: 'currency',
@@ -10,7 +10,7 @@ import { CurrencyConstants } from '../../interfaces/system/currency-constants';
 })
 export class Currency {
   amount = input.required<number | undefined>();
-  constants : CurrencyConstants | undefined;
+  constants : ICurrencyConstants | undefined;
 
   constructor(public teamDataService : TeamDataService) {
     this.teamDataService = inject(TeamDataService);

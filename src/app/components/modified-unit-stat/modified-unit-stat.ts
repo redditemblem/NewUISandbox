@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { ModifiedStatValue } from '../../interfaces/common/modified-stat-value';
+import { IModifiedStatValue } from '../../data/interfaces/common/modified-stat-value';
 import { KeyValuePipe, NgClass } from '@angular/common';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 
@@ -11,6 +11,6 @@ import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 })
 export class ModifiedUnitStat {
   name = input.required<string>();
-  values = input.required<ModifiedStatValue>();
+  values = input.required<IModifiedStatValue>();
   expanded = input.required<boolean>();
 }

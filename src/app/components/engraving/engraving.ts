@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
-import { Engraving as IEngraving } from '../../interfaces/system/engraving';
+import { IEngraving } from '../../data/interfaces/system/engraving';
 
 @Component({
   selector: 'engraving',

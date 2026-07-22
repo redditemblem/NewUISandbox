@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-import { TeamData } from '../interfaces/team-data';
+import { ITeamData } from '../data/interfaces/team-data';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
@@ -15,11 +15,11 @@ export class TeamListService {
   private error = signal<string>("");
   readonly errorMessage = this.error.asReadonly();
 
-  private teams = signal<TeamData[]>([]);
+  private teams = signal<ITeamData[]>([]);
   readonly teamsList = this.teams.asReadonly();
 
   constructor(private http: HttpClient)  {
-    http.get<TeamData[]>(this.apiUrl, {responseType: 'json'}).subscribe({
+    http.get<ITeamData[]>(this.apiUrl, {responseType: 'json'}).subscribe({
       next: (response) => {
         this.teams.set(response);
         this.loading.set(false);

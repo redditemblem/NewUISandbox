@@ -1,10 +1,10 @@
 import { Component, inject, input } from '@angular/core';
-import { Unit } from '../../../interfaces/unit/unit';
+import { IUnit } from '../../../data/interfaces/unit/unit';
 import { MatIconButton } from '@angular/material/button';
 import { TeamDataService } from '../../../services/team-data-service';
 import { TextFieldsWithLabeledHeader } from "../../text-fields-with-labeled-header/text-fields-with-labeled-header";
-import { Affiliation } from '../../../interfaces/system/affiliation';
-import { Class } from '../../../interfaces/system/class';
+import { IAffiliation } from '../../../data/interfaces/system/affiliation';
+import { IClass } from '../../../data/interfaces/system/class';
 import { Currency } from '../../currency/currency';
 import { UnitTag } from '../../unit-tag/unit-tag';
 import { UnitHpBar } from '../../unit-hp-bar/unit-hp-bar';
@@ -14,6 +14,7 @@ import { UnitStatusCondition } from '../../unit-status-condition/unit-status-con
 import { MatDivider } from '@angular/material/divider';
 import { InventoryItem } from '../../inventory-item/inventory-item';
 import { UnitSkill } from "../../unit-skill/unit-skill";
+import { CustomEventService } from '../../../services/custom-event-service';
 
 @Component({
   selector: 'unit-sidenav-display',
@@ -22,16 +23,17 @@ import { UnitSkill } from "../../unit-skill/unit-skill";
   styleUrl: './unit-sidenav-display.scss',
 })
 export class UnitSidenavDisplay {
-  unit = input.required<Unit>();
+  unit = input.required<IUnit>();
 
-  //Default expansion states
+  //Default states
   public isUnitInfoExpanded : boolean = false;
   public isStatsInfoExpanded : boolean = false;
   public isInventoryExpanded : boolean = true;
   public isSkillsInfoExpanded : boolean = true;
 
-  constructor(public teamDataService: TeamDataService) {
+  constructor(public teamDataService: TeamDataService, public eventService: CustomEventService) {
     this.teamDataService = inject(TeamDataService);
+    this.eventService = inject(CustomEventService);
   }
 
   ngOnChanges() {
@@ -42,10 +44,12 @@ export class UnitSidenavDisplay {
     this.isSkillsInfoExpanded = true;
   }
 
+  toggleUnitPinnedStatus() : void { this.eventService.toggleUnitPinnedState(this.unit()); }
   toggleUnitInfoExpansion() : void { this.isUnitInfoExpanded = !this.isUnitInfoExpanded; }
   toggleStatExpansion() : void { this.isStatsInfoExpanded = !this.isStatsInfoExpanded; }
   toggleInventoryExpansion() : void { this.isInventoryExpanded = !this.isInventoryExpanded; }
   toggleSkillsExpansion() : void { this.isSkillsInfoExpanded = !this.isSkillsInfoExpanded; }
+  
 
   sortModifiedUnitStat() : number {
     //Don't actually want a real sort here, so just return 0 for all items.
@@ -68,7 +72,7 @@ export class UnitSidenavDisplay {
     return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
   }
 
-  getUnitAffiliation() : Affiliation | undefined {
+  getUnitAffiliation() : IAffiliation | undefined {
     return this.teamDataService.getAffiliationByName(this.unit().affiliation);
   }
 
@@ -77,7 +81,7 @@ export class UnitSidenavDisplay {
     return aff?.flipUnitSprites ?? false;
   }
 
-  getUnitClass(name: string) : Class | undefined {
+  getUnitClass(name: string) : IClass | undefined {
     return this.teamDataService.getClassByName(name);
   }
 }

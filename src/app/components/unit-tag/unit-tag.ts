@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
-import { Tag } from '../../interfaces/system/tag';
+import { ITag } from '../../data/interfaces/system/tag';
 
 @Component({
   selector: 'unit-tag',
@@ -35,7 +35,7 @@ import { Tag } from '../../interfaces/system/tag';
 })
 export class UnitTag {
   tag = input.required<string>();
-  systemData : Tag | undefined;
+  systemData : ITag | undefined;
 
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);

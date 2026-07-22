@@ -1,7 +1,7 @@
 import { Component, inject, input } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
-import { StatusCondition } from '../../interfaces/system/status-condition';
-import { UnitStatus } from '../../interfaces/unit/unit-status';
+import { IStatusCondition } from '../../data/interfaces/system/status-condition';
+import { IUnitStatus } from '../../data/interfaces/unit/unit-status';
 import { KeyValuePipe } from '@angular/common';
 
 @Component({
@@ -11,8 +11,8 @@ import { KeyValuePipe } from '@angular/common';
   styleUrl: './unit-status-condition.scss',
 })
 export class UnitStatusCondition {
-  status = input.required<UnitStatus>();
-  systemData : StatusCondition | undefined;
+  status = input.required<IUnitStatus>();
+  systemData : IStatusCondition | undefined;
 
   constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);

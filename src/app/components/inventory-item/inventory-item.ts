@@ -1,13 +1,13 @@
 import { Component, inject, input } from '@angular/core';
-import { UnitInventoryItem } from '../../interfaces/unit/unit-inventory-item';
-import { Item } from '../../interfaces/system/item';
+import { IUnitInventoryItem } from '../../data/interfaces/unit/unit-inventory-item';
+import { IItem } from '../../data/interfaces/system/item';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from '@angular/material/divider';
 import { KeyValuePipe, NgClass } from '@angular/common';
-import { Engraving as IEngraving } from '../../interfaces/system/engraving';
-import { Tag } from '../../interfaces/system/tag';
+import { IEngraving } from '../../data/interfaces/system/engraving';
+import { ITag } from '../../data/interfaces/system/tag';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
-import { ItemRangeShape } from "../../interfaces/system/item-range";
+import { ItemRangeShape } from "../../data/interfaces/system/item-range";
 import { Engraving } from '../engraving/engraving';
 
 @Component({
@@ -20,8 +20,8 @@ export class InventoryItem {
   //Expose enum for use in the class
   protected readonly ItemRangeShape = ItemRangeShape;
 
-  item = input.required<UnitInventoryItem>();
-  systemData : Item | undefined;
+  item = input.required<IUnitInventoryItem>();
+  systemData : IItem | undefined;
   isExpanded : boolean = false;
 
   constructor(public teamDataService: TeamDataService) {
@@ -41,7 +41,7 @@ export class InventoryItem {
     return this.teamDataService.getEngravingByName(name);
   }
 
-  getTagByName(name: string) : Tag | undefined {
+  getTagByName(name: string) : ITag | undefined {
     return this.teamDataService.getTagByName(name);
   }
 

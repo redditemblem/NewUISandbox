@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { Unit } from '../../../interfaces/unit/unit';
+import { IUnit } from '../../../data/interfaces/unit/unit';
 import { UnitSidenavDisplay } from "../unit-sidenav-display/unit-sidenav-display";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from '@angular/material/button';
@@ -18,8 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
 export class MapUnitsSidenav {
   @ViewChild('unitAutocompleteInput') unitAutocompleteInput!: ElementRef<HTMLInputElement>;
   
-  public selectedUnit = new FormControl<null | Unit>(null);
-  public filteredUnits: Unit[];
+  public selectedUnit = new FormControl<null | IUnit>(null);
+  public filteredUnits: IUnit[];
 
   constructor(public dataService: TeamDataService) {
     this.dataService = inject(TeamDataService);
@@ -36,11 +36,11 @@ export class MapUnitsSidenav {
   }
 
   //Sort units by name
-  private sortUnits(unitA: Unit, unitB: Unit) {
+  private sortUnits(unitA: IUnit, unitB: IUnit) {
     return unitA.name.toLowerCase().localeCompare(unitB.name.toLowerCase());
   }
 
-  public formatAutocompleteDisplayValue(unit: Unit): string {
+  public formatAutocompleteDisplayValue(unit: IUnit): string {
     return unit && unit.name ? unit.name : '';
   }
 }

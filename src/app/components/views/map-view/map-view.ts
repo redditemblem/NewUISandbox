@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatFabButton, MatAnchor } from '@angular/material/button';
 import { LinksSidenav } from "../links-sidenav/links-sidenav";
 import { MapSegment } from '../map-segment/map-segment';
-import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
+import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MatDivider } from "@angular/material/divider";
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 

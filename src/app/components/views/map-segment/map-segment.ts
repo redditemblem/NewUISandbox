@@ -1,28 +1,26 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
-import { MapSegment as IMapSegment } from '../../../interfaces/map/map-segment';
+import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { Application, Assets, ColorMatrixFilter, ColorSource, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { GlowFilter } from 'pixi-filters';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
-import { MapConstants } from '../../../interfaces/map/map-constants';
-import { Coordinate } from '../../../interfaces/map/coordinate';
-import { UnitStatus } from '../../../interfaces/unit/unit-status';
-import { StatusCondition } from '../../../interfaces/system/status-condition';
-import { Tag } from '../../../interfaces/system/tag';
-import { Unit } from '../../../interfaces/unit/unit';
-import { StringDictionary } from '../../../interfaces/common/dictionaries';
-import { Affiliation } from '../../../interfaces/system/affiliation';
-import { Tile } from '../../../interfaces/map/tile';
+import { IMapConstants } from '../../../data/interfaces/map/map-constants';
+import { ICoordinate } from '../../../data/interfaces/map/coordinate';
+import { IUnitStatus } from '../../../data/interfaces/unit/unit-status';
+import { IStatusCondition } from '../../../data/interfaces/system/status-condition';
+import { ITag } from '../../../data/interfaces/system/tag';
+import { IUnit } from '../../../data/interfaces/unit/unit';
+import { StringDictionary } from '../../../data/interfaces/common/dictionaries';
+import { IAffiliation } from '../../../data/interfaces/system/affiliation';
+import { ITile } from '../../../data/interfaces/map/tile';
+import { CustomEventService } from '../../../services/custom-event-service';
 
 @Component({
   selector: 'map-segment',
   imports: [],
-  template: `
-    <button style="position: absolute" (click)="downloadMapAsImage()">Download map image</button>
-    <div id="pixiContainer"></div>
-  `,
+  template: `<div id="pixiContainer"></div>`,
   styles: `
     #pixiContainer {
       height: calc(100vh - 56px);
@@ -38,17 +36,30 @@ export class MapSegment {
   private snackBarMessageQueue : string[];
   private currentSnackBar : MatSnackBarRef<TextOnlySnackBar> | undefined;
 
-  private constants : MapConstants | undefined;
+  private constants : IMapConstants | undefined;
   private pixiApp : Application;
   private mapContainer : Container | undefined;
+  private unitContainers : StringDictionary<UnitContainer>;
 
-  constructor(public teamDataService: TeamDataService) {
+  constructor(public teamDataService: TeamDataService, public eventService: CustomEventService) {
     this.teamDataService = inject(TeamDataService);
+    this.eventService = inject(CustomEventService);
     this.snackBar = inject(MatSnackBar);
     
     this.constants = this.teamDataService.getMapConstants();
     this.pixiApp = new Application();
     this.snackBarMessageQueue = [];
+    this.unitContainers = {};
+
+    //Subscribe to external events
+    this.eventService.downloadMapAsImage
+      .subscribe(() => this.downloadMapAsImage());
+
+    this.eventService.pinUnit
+      .subscribe((unit) => this.pinUnit(unit));
+
+    this.eventService.unpinUnit
+      .subscribe((unit) => this.unpinUnit(unit));
   }
 
   async ngOnInit() {
@@ -80,7 +91,7 @@ export class MapSegment {
     ]);
     await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
 
-    await this.InitializePixiApp(pixiContainer);
+    await this.initializePixiApp(pixiContainer);
     await this.addMapParentContainer();
     await this.addMapElements();
   }
@@ -141,7 +152,7 @@ export class MapSegment {
   /** Initializes `this.pixiApp` and appends its resulting canvas as a child of the `appContainer` element. 
    * @param appContainer - The HTML element that will contain the Pixi.JS canvas
   */
-  private async InitializePixiApp(appContainer: HTMLElement) {
+  private async initializePixiApp(appContainer: HTMLElement) {
     await this.pixiApp.init({ 
       backgroundAlpha: 0, 
       height: this.segment().heightInPixels, 
@@ -173,21 +184,34 @@ export class MapSegment {
     this.segment().tiles.forEach((row) => {
       row.forEach((tile) =>
       {
-        const tileContainer : TileContainer = new TileContainer(this.teamDataService, tile);
+        const tileContainer : TileContainer = new TileContainer(this.teamDataService, this.eventService, tile);
         tileContainer.init().then(() => {
           this.mapContainer?.addChild(tileContainer);
 
-          const coordinate: Coordinate = tile.coordinate;
+          const coordinate: ICoordinate = tile.coordinate;
           tileContainer.position = {
             x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
             y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
           };
+
+          this.addUnitContainerToDictionary(tileContainer.unitContainer);
+          this.addUnitContainerToDictionary(tileContainer.pairupUnitContainer);
         });
       }
     )});
   }
 
-  public async downloadMapAsImage() {
+  private addUnitContainerToDictionary(container: UnitContainer | undefined) {
+    if(container === undefined) return;
+
+    const name = container.unit?.name ?? "";
+    if(name.length < 1) return;
+
+    this.unitContainers[name] = container;
+  }
+
+  /** Triggers the browser to download the current canvas stage as a PNG */
+  private async downloadMapAsImage() {
     const blob: ImageLike = await this.pixiApp.renderer.extract.image({
       target: this.pixiApp.stage,
       format: 'png'
@@ -198,6 +222,22 @@ export class MapSegment {
     downloadLink.download = `${this.segment().title}.png`;
     downloadLink.click();
     downloadLink.remove();
+  }
+
+  private pinUnit(unit: IUnit) {
+    const container: UnitContainer = this.unitContainers[unit.name];
+    if(container === undefined)
+      return;
+
+    container.pinUnit();
+  }
+
+  private unpinUnit(unit: IUnit) {
+    const container: UnitContainer = this.unitContainers[unit.name];
+    if(container === undefined)
+      return;
+
+    container.unpinUnit();
   }
 }
 
@@ -242,6 +282,7 @@ export abstract class SpriteFilters {
   private static grayscaleFilter : ColorMatrixFilter;
   private static brightFilter : ColorMatrixFilter;
   private static glowFilters : StringDictionary<GlowFilter> = {};
+  private static unitPinnedFilter : GlowFilter;
 
   public static getGrayscaleFilter() : ColorMatrixFilter {
     if(this.grayscaleFilter !== undefined)
@@ -263,6 +304,20 @@ export abstract class SpriteFilters {
     return this.brightFilter;
   }
 
+  public static getUnitPinnedFilter() : GlowFilter {
+    if(this.unitPinnedFilter !== undefined)
+      return this.unitPinnedFilter;
+
+    this.unitPinnedFilter = new GlowFilter({
+      color: '#ffffff',
+      distance: 10,
+      outerStrength: 4,
+      alpha: 0.5
+    });
+
+    return this.unitPinnedFilter;
+  }
+
   /**
    * @param colorHex - A color code in hex format (ex. '#ffffff')
    */
@@ -273,7 +328,7 @@ export abstract class SpriteFilters {
     const filter = new GlowFilter({
       color: colorHex,
       distance: 10,
-      outerStrength: 5,
+      outerStrength: 4,
       alpha: 0.6
     });
     this.glowFilters[colorHex] = filter;
@@ -289,16 +344,18 @@ export class TileContainer extends Container {
   private readonly utilRangeColor: string = '#9dff00';
 
   private teamDataService: TeamDataService;
+  private eventService: CustomEventService;
 
-  private tile : Tile;
+  private tile : ITile;
   private backgroundTint: Graphics | undefined;
-  private unitContainer : UnitContainer | undefined;
-  private pairupUnitContainer: UnitContainer | undefined;
+  public unitContainer : UnitContainer | undefined;
+  public pairupUnitContainer: UnitContainer | undefined;
 
-  constructor(teamDataService: TeamDataService, tile: Tile) {
+  constructor(teamDataService: TeamDataService, eventService: CustomEventService, tile: ITile) {
     super(); //call the parent Container() constructor
 
     this.teamDataService = teamDataService;
+    this.eventService = eventService;
     this.tile = tile;
 
     //Set this container's base attributes
@@ -309,7 +366,7 @@ export class TileContainer extends Container {
 
   public async init() {
     
-    const constants: MapConstants | undefined = this.teamDataService.getMapConstants();
+    const constants: IMapConstants | undefined = this.teamDataService.getMapConstants();
     const tileDimensions: number = (constants?.tileSize ?? 16);
 
     //Add a rectangle graphic for showing ranges
@@ -331,11 +388,11 @@ export class TileContainer extends Container {
       this.interactiveChildren = true;
       let units: UnitContainer[] = [];
 
-      this.unitContainer = new UnitContainer(this.teamDataService, occupyingUnitName, true);
+      this.unitContainer = new UnitContainer(this.teamDataService, this.eventService, occupyingUnitName, true);
       units.push(this.unitContainer);
 
       if(pairUpUnitName.length > 0) {
-        this.pairupUnitContainer = new UnitContainer(this.teamDataService, pairUpUnitName, false);
+        this.pairupUnitContainer = new UnitContainer(this.teamDataService, this.eventService, pairUpUnitName, false);
         units.push(this.pairupUnitContainer);
       }
 
@@ -366,19 +423,22 @@ export class UnitContainer extends Container {
   private readonly GRAYSCALE_FILTER: string = "grayscale";
   private readonly BRIGHT_FILTER: string = "bright";
   private readonly GLOW_FILTER: string = "glow";
+  private readonly PINNED_FILTER: string = "pinned";
 
   private teamDataService: TeamDataService;
+  private eventService: CustomEventService;
 
   private unitName: string;
-  public unit: Unit | undefined;
+  public unit: IUnit | undefined;
   private sprite: Sprite | undefined;
   private unitDimensions: number = 0;
   private activeSpriteFilters: StringDictionary<Filter>;
 
-  constructor(teamDataService: TeamDataService, unitName: string, enableInteraction: boolean) {
+  constructor(teamDataService: TeamDataService, eventService: CustomEventService, unitName: string, enableInteraction: boolean) {
     super(); //call the parent Container() constructor
 
     this.teamDataService = teamDataService;
+    this.eventService = eventService;
     this.unitName = unitName;
     this.activeSpriteFilters = {};
 
@@ -397,7 +457,7 @@ export class UnitContainer extends Container {
       return;
     }
 
-    const constants: MapConstants | undefined = this.teamDataService.getMapConstants();
+    const constants: IMapConstants | undefined = this.teamDataService.getMapConstants();
     const tileDimensions: number = (constants?.tileSize ?? 16);
     this.unitDimensions = tileDimensions * this.unit.location.unitSize;
 
@@ -417,7 +477,7 @@ export class UnitContainer extends Container {
       this.sprite.y = this.unitDimensions - (this.sprite.height / 2) - 2;
 
       //Horizontally flip sprite
-      const affiliation: Affiliation | undefined = this.teamDataService.getAffiliationByName(this.unit.affiliation);
+      const affiliation: IAffiliation | undefined = this.teamDataService.getAffiliationByName(this.unit.affiliation);
       if(affiliation?.flipUnitSprites) {
         this.sprite.scale.x *= -1;
       }
@@ -477,6 +537,7 @@ export class UnitContainer extends Container {
       this.cursor = 'pointer';
       this.hitArea = new Rectangle(0, 0, this.unitDimensions, this.unitDimensions);
 
+      this.on('pointerdown', this.UnitContainer_PointerDown);
       this.on('pointerenter', this.UnitContainer_OnPointerEnter);
       this.on('pointerleave', this.UnitContainer_OnPointerLeave);
     }
@@ -552,14 +613,14 @@ export class UnitContainer extends Container {
    * 
    * @returns The new Container with all sprites added
    */
-  private async GetUnitStatusConditionContainer(unitStatuses: UnitStatus[]) : Promise<Container> {
+  private async GetUnitStatusConditionContainer(unitStatuses: IUnitStatus[]) : Promise<Container> {
     let conditionSprites: Sprite[] = [];
     let useDefaultSprite: boolean = false;
 
     //Load sprites in parallel
     await Promise.all(unitStatuses.map(async(status) =>
     {
-      let condition: StatusCondition | undefined = this.teamDataService.getStatusConditionByName(status.name);
+      let condition: IStatusCondition | undefined = this.teamDataService.getStatusConditionByName(status.name);
       if(condition === undefined) return;
 
       let url: string = condition?.spriteURL ?? "";
@@ -620,7 +681,7 @@ export class UnitContainer extends Container {
     //Load sprites in parallel
     await Promise.all(tagNames.map(async(name) =>
     {
-      let tag: Tag | undefined = this.teamDataService.getTagByName(name);
+      let tag: ITag | undefined = this.teamDataService.getTagByName(name);
       if(tag === undefined) return;
 
       let url: string = tag?.spriteURL ?? "";
@@ -680,6 +741,25 @@ export class UnitContainer extends Container {
   }
 
   // #region Event Handling
+
+  public pinUnit() {
+    if(this.sprite === undefined) return;
+
+    this.activeSpriteFilters[this.PINNED_FILTER] = SpriteFilters.getUnitPinnedFilter();
+    this.sprite.filters = Object.values(this.activeSpriteFilters);
+  }
+
+  public unpinUnit() {
+    if(this.sprite === undefined) return;
+
+    delete this.activeSpriteFilters[this.PINNED_FILTER];
+    this.sprite.filters = Object.values(this.activeSpriteFilters);
+  }
+
+  public UnitContainer_PointerDown(event: FederatedPointerEvent) {
+    if(this.unit === undefined) return;
+    this.eventService.toggleUnitPinnedState(this.unit);
+  }
 
   public UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
     if(this.sprite === undefined) return;

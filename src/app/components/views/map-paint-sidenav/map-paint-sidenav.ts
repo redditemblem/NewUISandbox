@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
+import { CustomEventService } from '../../../services/custom-event-service';
 
 @Component({
   selector: 'map-paint-sidenav',
@@ -10,4 +11,11 @@ import { MatIconModule } from "@angular/material/icon";
 })
 export class MapPaintSidenav {
 
+  constructor(public eventService: CustomEventService) {
+    this.eventService = inject(CustomEventService);
+  }
+
+  public exportMapAsImage() {
+    this.eventService.triggerMapImageDownload();
+  }
 }
