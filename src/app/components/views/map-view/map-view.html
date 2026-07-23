@@ -45,8 +45,8 @@
             }
         </div>
         <mat-divider />
-        @if(currentSegment !== undefined) {
-            <map-segment [segment]="currentSegment" />
+        @if(this.currentSegment !== undefined) {
+            <map-segment [currentSegmentTitle]="this.currentSegment.title" />
         }
     </mat-sidenav-content>
 </mat-sidenav-container>

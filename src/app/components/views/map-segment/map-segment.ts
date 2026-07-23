@@ -15,7 +15,7 @@ import { IUnit } from '../../../data/interfaces/unit/unit';
 import { StringDictionary } from '../../../data/interfaces/common/dictionaries';
 import { IAffiliation } from '../../../data/interfaces/system/affiliation';
 import { ITile } from '../../../data/interfaces/map/tile';
-import { CustomEventService } from '../../../services/custom-event-service';
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'map-segment',
@@ -30,36 +30,29 @@ import { CustomEventService } from '../../../services/custom-event-service';
   `,
 })
 export class MapSegment {
-  segment = input.required<IMapSegment>();
+  currentSegmentTitle = input.required<string>();
 
   private snackBar : MatSnackBar;
   private snackBarMessageQueue : string[];
   private currentSnackBar : MatSnackBarRef<TextOnlySnackBar> | undefined;
 
-  private constants : IMapConstants | undefined;
   private pixiApp : Application;
-  private mapContainer : Container | undefined;
-  private unitContainers : StringDictionary<UnitContainer>;
+  private segmentContainers : StringDictionary<SegmentContainer>;
+  private activeSegment: SegmentContainer | undefined;
 
-  constructor(public teamDataService: TeamDataService, public eventService: CustomEventService) {
+  constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
-    this.eventService = inject(CustomEventService);
+    this.eventService = inject(MapEventService);
     this.snackBar = inject(MatSnackBar);
     
-    this.constants = this.teamDataService.getMapConstants();
     this.pixiApp = new Application();
+
     this.snackBarMessageQueue = [];
-    this.unitContainers = {};
+    this.segmentContainers = {};
 
     //Subscribe to external events
     this.eventService.downloadMapAsImage
       .subscribe(() => this.downloadMapAsImage());
-
-    this.eventService.pinUnit
-      .subscribe((unit) => this.pinUnit(unit));
-
-    this.eventService.unpinUnit
-      .subscribe((unit) => this.unpinUnit(unit));
   }
 
   async ngOnInit() {
@@ -73,38 +66,21 @@ export class MapSegment {
       crossOrigin: '*'
     });
 
-    //Load common sprites
-    Assets.addBundle('unit-numbers', [
-      { alias: '0', src: 'img/numbers/num_0.png' },
-      { alias: '1', src: 'img/numbers/num_1.png' },
-      { alias: '2', src: 'img/numbers/num_2.png' },
-      { alias: '3', src: 'img/numbers/num_3.png' },
-      { alias: '4', src: 'img/numbers/num_4.png' },
-      { alias: '5', src: 'img/numbers/num_5.png' },
-      { alias: '6', src: 'img/numbers/num_6.png' },
-      { alias: '7', src: 'img/numbers/num_7.png' },
-      { alias: '8', src: 'img/numbers/num_8.png' },
-      { alias: '9', src: 'img/numbers/num_9.png' }
-    ]);
-    Assets.addBundle('unit-statuses', [
-      { alias: 'status_heart', src: 'img/status_heart.png' }
-    ]);
-    await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
-
+    await this.loadBundledAssets();
     await this.initializePixiApp(pixiContainer);
-    await this.addMapParentContainer();
-    await this.addMapElements();
+    await this.createSegmentContainers();
+
+    this.updateActiveSegment();
   }
 
-  //async ngOnChanges() {
+  async ngOnChanges() {
     //If the app doesn't have children yet, then this is the first initialization
     //Let ngOnInit() handle it
-  //  if(this.pixiApp.stage.children.length === 0)
-  //    return;
+    if(this.pixiApp.stage.children.length === 0)
+      return;
 
-   // this.pixiApp.stage.removeChildren();
-  //  await this.AddMapParentContainer();
-  //}
+    this.updateActiveSegment();
+  }
 
   // #region Snack Bar Queue
 
@@ -149,65 +125,79 @@ export class MapSegment {
 
   // #endregion Snack Bar Queue
 
+  private async loadBundledAssets() {
+    //Unit number sprites
+    Assets.addBundle('unit-numbers', [
+      { alias: '0', src: 'img/numbers/num_0.png' },
+      { alias: '1', src: 'img/numbers/num_1.png' },
+      { alias: '2', src: 'img/numbers/num_2.png' },
+      { alias: '3', src: 'img/numbers/num_3.png' },
+      { alias: '4', src: 'img/numbers/num_4.png' },
+      { alias: '5', src: 'img/numbers/num_5.png' },
+      { alias: '6', src: 'img/numbers/num_6.png' },
+      { alias: '7', src: 'img/numbers/num_7.png' },
+      { alias: '8', src: 'img/numbers/num_8.png' },
+      { alias: '9', src: 'img/numbers/num_9.png' }
+    ]);
+
+    //Default status heart
+    Assets.addBundle('unit-statuses', [
+      { alias: 'status_heart', src: 'img/status_heart.png' }
+    ]);
+
+    await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
+  }
+
   /** Initializes `this.pixiApp` and appends its resulting canvas as a child of the `appContainer` element. 
    * @param appContainer - The HTML element that will contain the Pixi.JS canvas
   */
   private async initializePixiApp(appContainer: HTMLElement) {
     await this.pixiApp.init({ 
-      backgroundAlpha: 0, 
-      height: this.segment().heightInPixels, 
-      width: this.segment().widthInPixels
+      backgroundAlpha: 0
     });
     this.pixiApp.canvas.id = 'pixiCanvas';
 
     appContainer.appendChild(this.pixiApp.canvas);
   }
 
-  /** Creates a container, appends it to the `this.pixiApp` stage, and fills it with a centered map segment image. */
-  private async addMapParentContainer() {
-    this.mapContainer = new Container();
-    this.mapContainer.setSize(this.segment().widthInPixels, this.segment().heightInPixels);
+  private async createSegmentContainers() {
+    const segments: IMapSegment[] = this.teamDataService.mapData().map?.segments ?? [];
 
-    this.pixiApp.stage.addChild(this.mapContainer);
+    //Create segments in parallel
+    await Promise.all(segments.map(async(segment) => {
+      const container = new SegmentContainer(this.teamDataService, this.eventService, segment);
+      await container.init();
 
-    let assetAlias = `segment ${this.segment().title}`;
-    const sprite = await SpriteLoader.getExternalSprite(assetAlias, this.segment().imageURL);
-    if(sprite === undefined) return;
+      this.segmentContainers[segment.title] = container;
 
-    this.mapContainer.addChild(sprite);
+      //Add segment to stage and make it invisible
+      container.visible = false;
+      this.pixiApp.stage.addChild(container);
+    }));
   }
 
-  private async addMapElements() {
-    const tileDimensions: number = (this.constants?.tileSize ?? 16); 
-
-    //Loop through every tile in the map
-    this.segment().tiles.forEach((row) => {
-      row.forEach((tile) =>
-      {
-        const tileContainer : TileContainer = new TileContainer(this.teamDataService, this.eventService, tile);
-        tileContainer.init().then(() => {
-          this.mapContainer?.addChild(tileContainer);
-
-          const coordinate: ICoordinate = tile.coordinate;
-          tileContainer.position = {
-            x: tileDimensions * ((coordinate.x - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
-            y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
-          };
-
-          this.addUnitContainerToDictionary(tileContainer.unitContainer);
-          this.addUnitContainerToDictionary(tileContainer.pairupUnitContainer);
-        });
-      }
-    )});
-  }
-
-  private addUnitContainerToDictionary(container: UnitContainer | undefined) {
+  private updateActiveSegment() {
+    const container: SegmentContainer = this.segmentContainers[this.currentSegmentTitle()];
     if(container === undefined) return;
 
-    const name = container.unit?.name ?? "";
-    if(name.length < 1) return;
+    //If there is a current active segment, inactivate it first
+    if(this.activeSegment !== undefined) {
+      this.activeSegment.visible = false;
+      this.activeSegment.interactive = false;
+      this.activeSegment.interactiveChildren = false;
+    }
 
-    this.unitContainers[name] = container;
+    //Update the active segment
+    this.activeSegment = container;
+    this.activeSegment.visible = true;
+    this.activeSegment.interactive = true;
+    this.activeSegment.interactiveChildren = true;
+
+    //Resize canvas to this new segment
+    this.pixiApp.renderer.resize(
+      container.segment.widthInPixels,
+      container.segment.heightInPixels
+    );
   }
 
   /** Triggers the browser to download the current canvas stage as a PNG */
@@ -219,25 +209,9 @@ export class MapSegment {
 
     const downloadLink = document.createElement("a");
     downloadLink.href = blob.src;
-    downloadLink.download = `${this.segment().title}.png`;
+    downloadLink.download = `${this.currentSegmentTitle()}.png`;
     downloadLink.click();
     downloadLink.remove();
-  }
-
-  private pinUnit(unit: IUnit) {
-    const container: UnitContainer = this.unitContainers[unit.name];
-    if(container === undefined)
-      return;
-
-    container.pinUnit();
-  }
-
-  private unpinUnit(unit: IUnit) {
-    const container: UnitContainer = this.unitContainers[unit.name];
-    if(container === undefined)
-      return;
-
-    container.unpinUnit();
   }
 }
 
@@ -337,21 +311,154 @@ export abstract class SpriteFilters {
   }
 }
 
+export class SegmentContainer extends Container {
+  private teamDataService: TeamDataService;
+  private eventService: MapEventService;
+  private constants: IMapConstants | undefined;
+
+  public readonly segment: IMapSegment;
+  private tileContainers : StringDictionary<TileContainer>;
+  private unitContainers : StringDictionary<UnitContainer>;
+
+  constructor(teamDataService: TeamDataService, eventService: MapEventService, segment: IMapSegment) {
+    super(); //call the parent Container() constructor
+
+    this.teamDataService = teamDataService;
+    this.eventService = eventService;
+    this.constants = this.teamDataService.getMapConstants();
+
+    this.segment = segment;
+    this.tileContainers = {};
+    this.unitContainers = {};
+
+    //Set this container's base attributes
+    this.label = this.segment.title;
+    this.interactive = false;
+    this.interactiveChildren = false;
+
+    this.height = this.segment.heightInPixels;
+    this.width = this.segment.widthInPixels;
+
+    //Subscribe to external events
+    this.eventService.pinUnit
+      .subscribe((name: string) => this.pinUnit(name));
+
+    this.eventService.unpinUnit
+      .subscribe((name: string) => this.unpinUnit(name));
+  }
+
+  public async init() {
+
+    //Load the segment's background
+    const assetAlias = `segment ${this.segment.title}`;
+    const segmentBackground = await SpriteLoader.getExternalSprite(assetAlias, this.segment.imageURL);
+    if(segmentBackground !== undefined)
+      this.addChild(segmentBackground);
+
+    const tileDimensions: number = (this.constants?.tileSize ?? 16); 
+
+    //Load all tiles in parallel
+    Promise.all(this.segment.tiles.map(async(row) => {
+      Promise.all(row.map(async(tile) =>
+      {
+        const tileContainer : TileContainer = new TileContainer(this.teamDataService, this.eventService, tile);
+        tileContainer.init()
+          .then(() => {
+            this.addChild(tileContainer);
+
+            const coordinate: ICoordinate = tile.coordinate;
+            tileContainer.position = {
+              x: tileDimensions * (coordinate.x - this.segment.horizontalTileRangeWithinMap.start.value + (this.constants?.hasHeaderTopLeft ? 1 : 0)), 
+              y: tileDimensions * ((coordinate.y - 1) + (this.constants?.hasHeaderTopLeft ? 1 : 0))
+            };
+
+            this.addTileItemsToDictionaries(tileContainer);
+          });
+      }))
+    }));
+  }
+
+  private addTileItemsToDictionaries(container: TileContainer) {
+    if(container === undefined) return;
+    this.tileContainers[container.tile.coordinate.asText] = container;
+
+    const unitContainer: UnitContainer | undefined = container.unitContainer;
+    const pairedUnitContainer: UnitContainer | undefined = container.pairupUnitContainer;
+    
+    if(unitContainer !== undefined)
+      this.unitContainers[unitContainer.unitName] = unitContainer;
+    if(pairedUnitContainer !== undefined)
+      this.unitContainers[pairedUnitContainer.unitName] = pairedUnitContainer;
+  }
+
+  // #region Event Handling
+
+  private pinUnit(unitName: string) {
+    const container: UnitContainer = this.unitContainers[unitName];
+    if(container === undefined) return;
+
+    container.pinUnit();
+    
+    const unit: IUnit | undefined = container.unit;
+    if(unit === undefined) return;
+
+    this.updateUnitRangeTiles(unit, 1);
+  }
+
+  private unpinUnit(unitName: string) {
+    const container: UnitContainer = this.unitContainers[unitName];
+    if(container === undefined) return;
+
+    container.unpinUnit();
+
+    const unit: IUnit | undefined = container.unit;
+    if(unit === undefined) return;
+
+    this.updateUnitRangeTiles(unit, -1);
+  }
+
+  private updateUnitRangeTiles(unit: IUnit, incrementBy: number) {
+    const movRange: ICoordinate[] = unit.ranges.movement ?? [];
+    Promise.all(movRange.map(async(coord) => {
+      const tile: TileContainer = this.tileContainers[coord.asText];
+      tile?.updateMoveRangeCount(incrementBy);
+    }));
+
+    const atkRange: ICoordinate[] = unit.ranges.attack ?? [];
+    Promise.all(atkRange.map(async(coord) => {
+      const tile: TileContainer = this.tileContainers[coord.asText];
+      tile?.updateAttackRangeCount(incrementBy);
+    }));
+
+    const utilRange: ICoordinate[] = unit.ranges.utility ?? [];
+    Promise.all(utilRange.map(async(coord) => {
+      const tile: TileContainer = this.tileContainers[coord.asText];
+      tile?.updateUtilityRangeCount(incrementBy);
+    }));
+  }
+
+  // #endregion Event Handling
+}
+
 export class TileContainer extends Container {
+
+  private movementRangeCount: number = 0;
+  private attackRangeCount: number = 0;
+  private utilityRangeCount: number = 0;
 
   private readonly movRangeColor: string = '#5cb4ef';
   private readonly atkRangeColor: string = '#d81b62';
   private readonly utilRangeColor: string = '#9dff00';
 
   private teamDataService: TeamDataService;
-  private eventService: CustomEventService;
+  private eventService: MapEventService;
 
-  private tile : ITile;
-  private backgroundTint: Graphics | undefined;
+  public tile : ITile;
   public unitContainer : UnitContainer | undefined;
   public pairupUnitContainer: UnitContainer | undefined;
+  private backgroundTint: Graphics | undefined;
 
-  constructor(teamDataService: TeamDataService, eventService: CustomEventService, tile: ITile) {
+  constructor(teamDataService: TeamDataService, eventService: MapEventService, tile: ITile) {
     super(); //call the parent Container() constructor
 
     this.teamDataService = teamDataService;
@@ -407,11 +514,37 @@ export class TileContainer extends Container {
     }
   }
 
-  private enableBackgroundTint() {
+  public updateMoveRangeCount(incrementBy: number) {
+    this.movementRangeCount += incrementBy;
+    this.updateBackgroundTint();
+  }
+
+  public updateAttackRangeCount(incrementBy: number) {
+    this.attackRangeCount += incrementBy;
+    this.updateBackgroundTint();
+  }
+
+  public updateUtilityRangeCount(incrementBy: number) {
+    this.utilityRangeCount += incrementBy;
+    this.updateBackgroundTint();
+  }
+
+  private updateBackgroundTint() {
     if(this.backgroundTint === undefined) return;
 
-    this.backgroundTint.tint = this.movRangeColor;
-    this.backgroundTint.visible = true;
+    let tint: string = "";
+    if(this.movementRangeCount > 0) { tint = this.movRangeColor; }
+    else if(this.attackRangeCount > 0) { tint = this.atkRangeColor; }
+    else if(this.utilityRangeCount > 0) { tint = this.utilRangeColor; }
+
+    //If we picked a tint color, update.
+    if(tint.length > 0) {
+      this.backgroundTint.tint = tint;
+      this.backgroundTint.visible = true;
+    }
+    else {
+      this.backgroundTint.visible = false;
+    }
   }
 }
 
@@ -426,15 +559,15 @@ export class UnitContainer extends Container {
   private readonly PINNED_FILTER: string = "pinned";
 
   private teamDataService: TeamDataService;
-  private eventService: CustomEventService;
+  private eventService: MapEventService;
 
-  private unitName: string;
+  public readonly unitName: string;
   public unit: IUnit | undefined;
   private sprite: Sprite | undefined;
   private unitDimensions: number = 0;
   private activeSpriteFilters: StringDictionary<Filter>;
 
-  constructor(teamDataService: TeamDataService, eventService: CustomEventService, unitName: string, enableInteraction: boolean) {
+  constructor(teamDataService: TeamDataService, eventService: MapEventService, unitName: string, enableInteraction: boolean) {
     super(); //call the parent Container() constructor
 
     this.teamDataService = teamDataService;
@@ -758,7 +891,7 @@ export class UnitContainer extends Container {
 
   public UnitContainer_PointerDown(event: FederatedPointerEvent) {
     if(this.unit === undefined) return;
-    this.eventService.toggleUnitPinnedState(this.unit);
+    this.eventService.toggleUnitPinnedState(this.unit.name);
   }
 
   public UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {

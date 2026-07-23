@@ -35,10 +35,10 @@ export class MapView {
   }
 
   public async loadDataForTeam() { 
-    let teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
+    const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     await this.teamDataService.loadDataForTeam(teamName);
 
-    let firstSegment = this.teamDataService.mapData().map?.segments[0];
+    const firstSegment = this.teamDataService.mapData().map?.segments[0];
     if(firstSegment !== undefined) {
       this.setCurrentSegment(firstSegment);
     }

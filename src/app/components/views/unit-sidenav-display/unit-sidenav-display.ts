@@ -14,7 +14,7 @@ import { UnitStatusCondition } from '../../unit-status-condition/unit-status-con
 import { MatDivider } from '@angular/material/divider';
 import { InventoryItem } from '../../inventory-item/inventory-item';
 import { UnitSkill } from "../../unit-skill/unit-skill";
-import { CustomEventService } from '../../../services/custom-event-service';
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'unit-sidenav-display',
@@ -31,9 +31,9 @@ export class UnitSidenavDisplay {
   public isInventoryExpanded : boolean = true;
   public isSkillsInfoExpanded : boolean = true;
 
-  constructor(public teamDataService: TeamDataService, public eventService: CustomEventService) {
+  constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
-    this.eventService = inject(CustomEventService);
+    this.eventService = inject(MapEventService);
   }
 
   ngOnChanges() {
@@ -44,7 +44,7 @@ export class UnitSidenavDisplay {
     this.isSkillsInfoExpanded = true;
   }
 
-  toggleUnitPinnedStatus() : void { this.eventService.toggleUnitPinnedState(this.unit()); }
+  toggleUnitPinnedStatus() : void { this.eventService.toggleUnitPinnedState(this.unit().name); }
   toggleUnitInfoExpansion() : void { this.isUnitInfoExpanded = !this.isUnitInfoExpanded; }
   toggleStatExpansion() : void { this.isStatsInfoExpanded = !this.isStatsInfoExpanded; }
   toggleInventoryExpansion() : void { this.isInventoryExpanded = !this.isInventoryExpanded; }

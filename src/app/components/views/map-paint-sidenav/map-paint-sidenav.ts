@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
-import { CustomEventService } from '../../../services/custom-event-service';
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'map-paint-sidenav',
@@ -11,8 +11,8 @@ import { CustomEventService } from '../../../services/custom-event-service';
 })
 export class MapPaintSidenav {
 
-  constructor(public eventService: CustomEventService) {
-    this.eventService = inject(CustomEventService);
+  constructor(public eventService: MapEventService) {
+    this.eventService = inject(MapEventService);
   }
 
   public exportMapAsImage() {

@@ -1,16 +1,16 @@
-import { EventEmitter, Injectable, Output, signal } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { IUnit } from '../data/interfaces/unit/unit';
 import { StringDictionary } from '../data/interfaces/common/dictionaries';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CustomEventService {
+export class MapEventService {
 
   //These outputs can be subscribed to and will trigger on emit()
   @Output() downloadMapAsImage = new EventEmitter<void>();
-  @Output() pinUnit = new EventEmitter<IUnit>();
-  @Output() unpinUnit = new EventEmitter<IUnit>();
+  @Output() pinUnit = new EventEmitter<string>();
+  @Output() unpinUnit = new EventEmitter<string>();
 
   private unitPinnedStatuses: StringDictionary<boolean> = {};
 
@@ -18,17 +18,17 @@ export class CustomEventService {
     this.downloadMapAsImage.emit();
   }
 
-  public toggleUnitPinnedState(unit: IUnit) : boolean {
+  public toggleUnitPinnedState(unitName: string) : boolean {
 
     //Determine the current status, invert it, and update
-    let isPinned = this.unitPinnedStatuses[unit.name] ?? false;
+    let isPinned = this.unitPinnedStatuses[unitName] ?? false;
     isPinned = !isPinned;
 
-    this.unitPinnedStatuses[unit.name] = isPinned;
+    this.unitPinnedStatuses[unitName] = isPinned;
 
     //Emit the correct event for subscribers
-    if(isPinned) this.pinUnit.emit(unit);
-    else this.unpinUnit.emit(unit);
+    if(isPinned) this.pinUnit.emit(unitName);
+    else this.unpinUnit.emit(unitName);
 
     return isPinned;
   }
