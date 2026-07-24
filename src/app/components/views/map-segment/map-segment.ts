@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
-import { Application, Assets, ColorMatrixFilter, ColorSource, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, NineSliceSprite, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { GlowFilter } from 'pixi-filters';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
@@ -140,12 +140,12 @@ export class MapSegment {
       { alias: '9', src: 'img/numbers/num_9.png' }
     ]);
 
-    //Default status heart
-    Assets.addBundle('unit-statuses', [
+    Assets.addBundle('assorted', [
+      { alias: 'tile_cursor', src: 'img/tile_cursor.png' },
       { alias: 'status_heart', src: 'img/status_heart.png' }
     ]);
 
-    await Assets.loadBundle(['unit-numbers', 'unit-statuses']);
+    await Assets.loadBundle(['unit-numbers', 'assorted']);
   }
 
   /** Initializes `this.pixiApp` and appends its resulting canvas as a child of the `appContainer` element. 
@@ -219,15 +219,14 @@ export class MapSegment {
 export abstract class SpriteLoader {
 
   public static async getExternalSprite(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
-    const img = await this.loadExternalTextureAsset(alias, assetUrl);
+    const img: Texture = await this.loadExternalTextureAsset(alias, assetUrl);
+    img.source.scaleMode = 'nearest';
+
     return new Sprite(img);
   }
 
   public static async getExternalGifSprite(alias: string, assetUrl: string) : Promise<GifSprite | undefined> {
-    const gif = await this.loadExternalGifAsset(alias, assetUrl)
-      .catch((error) => {
-        return undefined;
-      });
+    const gif: GifSource = await this.loadExternalGifAsset(alias, assetUrl);
     if(gif === undefined) return undefined;
 
     return new GifSprite(gif);
@@ -316,9 +315,17 @@ export class SegmentContainer extends Container {
   private eventService: MapEventService;
   private constants: IMapConstants | undefined;
 
+  private readonly tileDimensions: number;
+  private readonly tileDimensionCenter: number;
+  private readonly hasTopLeftHeaders: boolean;
+  private readonly hasBottomRightHeaders: boolean;
+
   public readonly segment: IMapSegment;
   private tileContainers : StringDictionary<TileContainer>;
   private unitContainers : StringDictionary<UnitContainer>;
+
+  private tileCursor: NineSliceSprite;
+  private cursorIncrementBy: number = 2;
 
   constructor(teamDataService: TeamDataService, eventService: MapEventService, segment: IMapSegment) {
     super(); //call the parent Container() constructor
@@ -326,6 +333,11 @@ export class SegmentContainer extends Container {
     this.teamDataService = teamDataService;
     this.eventService = eventService;
     this.constants = this.teamDataService.getMapConstants();
+
+    this.tileDimensions = (this.constants?.tileSize ?? 16);
+    this.tileDimensionCenter = Math.floor(this.tileDimensions / 2);
+    this.hasTopLeftHeaders = (this.constants?.hasHeaderTopLeft ?? false);
+    this.hasBottomRightHeaders = (this.constants?.hasHeaderBottomRight ?? false);
 
     this.segment = segment;
     this.tileContainers = {};
@@ -339,12 +351,18 @@ export class SegmentContainer extends Container {
     this.height = this.segment.heightInPixels;
     this.width = this.segment.widthInPixels;
 
-    //Subscribe to external events
+    //Create tile cursor and "breath" interval
+    this.tileCursor = this.createTileCursorSprite();
+    this.addChild(this.tileCursor);
+
+    //Subscribe to events
     this.eventService.pinUnit
       .subscribe((name: string) => this.pinUnit(name));
 
     this.eventService.unpinUnit
       .subscribe((name: string) => this.unpinUnit(name));
+
+    this.on('pointermove', this.SegmentContainer_PointerMove);
   }
 
   public async init() {
@@ -391,6 +409,39 @@ export class SegmentContainer extends Container {
       this.unitContainers[pairedUnitContainer.unitName] = pairedUnitContainer;
   }
 
+  private createTileCursorSprite(): NineSliceSprite {
+    const texture = Texture.from('tile_cursor');
+    texture.source.scaleMode = 'nearest'; //prevent blurring
+
+    const sprite = new NineSliceSprite({
+      texture: texture,
+      leftWidth: 7,
+      topHeight: 7,
+      rightWidth: 7,
+      bottomHeight: 7,
+      height: this.tileDimensions+2,
+      width: this.tileDimensions+2
+    });
+
+    sprite.label = 'Cursor';
+    sprite.anchor.set(0.5); //manipulate relative to center
+    sprite.zIndex = 10000;
+    sprite.interactive = false;
+    sprite.interactiveChildren = false;
+
+    //Set up animation interval
+    setInterval(() => {
+      sprite.height += this.cursorIncrementBy;
+      sprite.width += this.cursorIncrementBy;
+
+      //Invert increment at bounds
+      if(sprite.height > this.tileDimensions+5) this.cursorIncrementBy = -2;
+      else if(sprite.height <= this.tileDimensions+1) this.cursorIncrementBy = 2;
+    }, 250);
+
+    return sprite;
+  }
+
   // #region Event Handling
 
   private pinUnit(unitName: string) {
@@ -435,6 +486,23 @@ export class SegmentContainer extends Container {
       const tile: TileContainer = this.tileContainers[coord.asText];
       tile?.updateUtilityRangeCount(incrementBy);
     }));
+  }
+
+  private SegmentContainer_PointerMove(event: FederatedPointerEvent) {
+    const xNumTiles = Math.floor(event.screen.x / this.tileDimensions);
+    const yNumTiles = Math.floor(event.screen.y / this.tileDimensions);
+
+    //Hide cursor on headers/footers
+    if( (this.hasTopLeftHeaders && (xNumTiles < 1 || yNumTiles < 1))
+     || (this.hasBottomRightHeaders && (xNumTiles > this.segment.widthInTiles || yNumTiles > this.segment.heightInTiles))) 
+    {
+      this.tileCursor.visible = false;
+      return;
+    }
+
+    this.tileCursor.visible = true;
+    this.tileCursor.x = xNumTiles * this.tileDimensions + this.tileDimensionCenter;
+    this.tileCursor.y = yNumTiles * this.tileDimensions + this.tileDimensionCenter;
   }
 
   // #endregion Event Handling
