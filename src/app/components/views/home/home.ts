@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { NgClass, NgStyle } from '@angular/common';
 import { TeamListService } from '../../../services/team-list-service';
 import { TeamListing } from '../../team-listing/team-listing';
 import { BreakpointService } from '../../../services/breakpoint-service';
@@ -10,13 +9,13 @@ import { ThemeService } from '../../../services/theme-service';
 
 @Component({
   selector: 'home',
-  imports: [TeamListing, NgClass, NgStyle, LoadingIcon],
+  imports: [TeamListing, LoadingIcon],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home{
   
-  public teamExample: ITeamData;
+  public readonly teamExample: ITeamData;
 
   constructor(public breakpointService: BreakpointService, public themeService: ThemeService, public teamListService: TeamListService){
     this.breakpointService = inject(BreakpointService);

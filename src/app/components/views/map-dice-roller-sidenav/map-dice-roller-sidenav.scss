@@ -1,3 +1,4 @@
+@use '../../../styles/variables.scss' as global;
 @use '@angular/material' as mat;
 
 #diceRollerContainer {
@@ -63,7 +64,7 @@
             flex-flow: row nowrap;
             column-gap: 24px;
             padding: 8px;
-            border: 2px solid var(--mat-sys-primary-container);
+            border: 2px solid global.$primary-theme-color;
             border-radius: 0px 8px 0px 8px;
 
             div.leftColumn {

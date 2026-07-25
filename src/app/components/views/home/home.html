@@ -1,11 +1,11 @@
 <div class="decorativeTriangleTop"></div>
 <div class="homeViewContainer">
-    <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'flexColumn' : 'flexRow'">
+    <div [class]="breakpointService.isScreenSmallWidth() ? 'flexColumn' : 'flexRow'">
         <div class="logoColumn">
             <img src="img/logo.png" alt="Reddit Emblem Maps Logo" />
             <button (click)="themeService.setThemeMode(themeService.isDarkMode() ? 'light' : 'dark')">Toggle Theme</button>
         </div>
-        <div class="teamListingColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
+        <div class="teamListingColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
             @if (teamListService.isLoading()){
                 <loading-icon />
             }
@@ -30,8 +30,8 @@
             }
         </div>
     </div>
-    <div [ngClass]="breakpointService.isScreenSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
-        <div class="informationColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+    <div [class]="breakpointService.isScreenSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
+        <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
             <h1 class="pixelFont">Information</h1>
             <p>Reddit Emblem Maps is a web-based display for games run by the Reddit Emblem community on Discord!</p>
             <h2 class="pixelFont">Resources</h2>
@@ -47,7 +47,7 @@
             </ul>
             <team-listing [team]="teamExample" />
         </div>
-        <div class="informationColumn" [ngStyle]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+        <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
             <h2 class="pixelFont">Credits</h2>
             <ul>
                 <li><a href="https://www.transparenttextures.com/">Website background texture "Az Subtle" by Anli</a></li>

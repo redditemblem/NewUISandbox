@@ -4,7 +4,6 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
-@use './app/styles/theme-colors' as custom-theme;
 
 @mixin apply-dark-mode {
   color-scheme: dark;
@@ -14,11 +13,7 @@ html {
   height: 100%;
   @include mat.theme(
     (
-      color: (
-        primary: custom-theme.$primary-palette,
-        secondary: custom-theme.$secondary-palette,
-        tertiary: custom-theme.$tertiary-palette,
-      ),
+      color: mat.$blue-palette,
       typography: Roboto,
       density: 0,
     )
@@ -89,15 +84,4 @@ img.smooth{
     image-rendering: optimizeQuality;
     image-rendering: auto;
     -ms-interpolation-mode: inherit;
-}
-
-//Allow overriding of default scrollable behavior
-.noScroll {
-  .mat-drawer-inner-container {
-    overflow: hidden;
-  }
-
-  .mat-mdc-tab-body-content {
-    overflow: hidden;
-  }
 }

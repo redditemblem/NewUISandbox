@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
-import { Application, Assets, ColorMatrixFilter, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, NineSliceSprite, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, NineSliceSprite, Rectangle, Sprite, Texture, TextureSource } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { GlowFilter } from 'pixi-filters';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
@@ -62,6 +62,8 @@ export class MapSegment {
       return;
     }
 
+    //Set global preferences
+    TextureSource.defaultOptions.scaleMode = 'nearest'; //prevent sprites from rendering blurry
     await Assets.setPreferences({
       crossOrigin: '*'
     });
@@ -74,8 +76,6 @@ export class MapSegment {
   }
 
   async ngOnChanges() {
-    //If the app doesn't have children yet, then this is the first initialization
-    //Let ngOnInit() handle it
     if(this.pixiApp.stage.children.length === 0)
       return;
 
@@ -220,7 +220,7 @@ export abstract class SpriteLoader {
 
   public static async getExternalSprite(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
     const img: Texture = await this.loadExternalTextureAsset(alias, assetUrl);
-    img.source.scaleMode = 'nearest';
+    if(img === undefined) return undefined;
 
     return new Sprite(img);
   }
@@ -326,6 +326,7 @@ export class SegmentContainer extends Container {
 
   private tileCursor: NineSliceSprite;
   private cursorIncrementBy: number = 2;
+  private currTileXY: [number, number] = [0, 0];
 
   constructor(teamDataService: TeamDataService, eventService: MapEventService, segment: IMapSegment) {
     super(); //call the parent Container() constructor
@@ -353,7 +354,6 @@ export class SegmentContainer extends Container {
 
     //Create tile cursor and "breath" interval
     this.tileCursor = this.createTileCursorSprite();
-    this.addChild(this.tileCursor);
 
     //Subscribe to events
     this.eventService.pinUnit
@@ -362,7 +362,8 @@ export class SegmentContainer extends Container {
     this.eventService.unpinUnit
       .subscribe((name: string) => this.unpinUnit(name));
 
-    this.on('pointermove', this.SegmentContainer_PointerMove);
+    this.on('pointermove', this.SegmentContainer_PointerMove_PointerTap);
+    this.on('pointertap', this.SegmentContainer_PointerMove_PointerTap)
   }
 
   public async init() {
@@ -411,7 +412,6 @@ export class SegmentContainer extends Container {
 
   private createTileCursorSprite(): NineSliceSprite {
     const texture = Texture.from('tile_cursor');
-    texture.source.scaleMode = 'nearest'; //prevent blurring
 
     const sprite = new NineSliceSprite({
       texture: texture,
@@ -428,6 +428,7 @@ export class SegmentContainer extends Container {
     sprite.zIndex = 10000;
     sprite.interactive = false;
     sprite.interactiveChildren = false;
+    sprite.visible = false; //default to invisible
 
     //Set up animation interval
     setInterval(() => {
@@ -435,11 +436,24 @@ export class SegmentContainer extends Container {
       sprite.width += this.cursorIncrementBy;
 
       //Invert increment at bounds
-      if(sprite.height > this.tileDimensions+5) this.cursorIncrementBy = -2;
-      else if(sprite.height <= this.tileDimensions+1) this.cursorIncrementBy = 2;
-    }, 250);
+      if(sprite.height >= this.tileDimensions+6) this.cursorIncrementBy = -2;
+      else if(sprite.height <= this.tileDimensions+2) this.cursorIncrementBy = 2;
+    }, 200);
 
+    this.addChild(sprite);
     return sprite;
+  }
+
+  private updateCurrentTile(x: number, y: number) {
+    //Offset x by the segment's horizontal displacement
+    x += this.segment.horizontalTileRangeWithinMap.start.value - 1;
+
+    //If this is already the current tile, don't send another event
+    if(x === this.currTileXY[0] && y === this.currTileXY[1])
+      return;
+
+    this.currTileXY = [x, y];
+    this.eventService.updateCurrentTileCoordinates(x, y);
   }
 
   // #region Event Handling
@@ -488,7 +502,7 @@ export class SegmentContainer extends Container {
     }));
   }
 
-  private SegmentContainer_PointerMove(event: FederatedPointerEvent) {
+  private SegmentContainer_PointerMove_PointerTap(event: FederatedPointerEvent) {
     const xNumTiles = Math.floor(event.screen.x / this.tileDimensions);
     const yNumTiles = Math.floor(event.screen.y / this.tileDimensions);
 
@@ -503,6 +517,7 @@ export class SegmentContainer extends Container {
     this.tileCursor.visible = true;
     this.tileCursor.x = xNumTiles * this.tileDimensions + this.tileDimensionCenter;
     this.tileCursor.y = yNumTiles * this.tileDimensions + this.tileDimensionCenter;
+    this.updateCurrentTile(xNumTiles, yNumTiles);
   }
 
   // #endregion Event Handling

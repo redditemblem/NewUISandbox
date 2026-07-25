@@ -4,7 +4,7 @@
     </div>
 }
 <div class="unitNameplateContainer">
-    <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" [ngClass]="{'flipHorz': shouldFlipUnitSprite()}" />
+    <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" [class]="{'flipHorz': shouldFlipUnitSprite()}" />
     <hgroup class="unitNameplateText">
         <h1 class="nameText">{{unit().name}}</h1>
         <p class="levelClassText">
@@ -17,8 +17,8 @@
     }
 </div>
 <div class="unitButtonsRow">
-    <button matIconButton (click)="toggleUnitInfoExpansion()" [title]="'Click to ' + (isUnitInfoExpanded ? 'collapse' : 'expand') + ' the additional unit info section'">
-        <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded}" />
+    <button matIconButton (click)="toggleUnitInfoExpansion()" [title]="'Click to ' + (this.isUnitInfoExpanded() ? 'collapse' : 'expand') + ' the additional unit info section'">
+        <img src="img/caret.png" [class]="{'rotate90': this.isUnitInfoExpanded()}" />
     </button>
     @if (unit().player) {
         <div class="playerNameplateContainer" [title]="unit().player">
@@ -31,11 +31,11 @@
             </div>
         </div>
     }
-    <button matIconButton (click)="toggleUnitPinnedStatus()" title="Pin this Unit">
-        <img src="img/pin_icon.png" alt="Pin Icon" />
+    <button matIconButton (click)="toggleUnitPinnedStatus()" [title]="(this.isPinned() ? 'Unpin' : 'Pin') + ' this Unit'">
+        <img src="img/pin_icon.png" [class]="{'grayscale': !this.isPinned()}" alt="Pin Icon" />
     </button>
 </div>
-@if(isUnitInfoExpanded){
+@if(this.isUnitInfoExpanded()){
     <div class="expandableUnitInfoContainer">
         @if (unit().textFields) {
             @for (text of unit().textFields; track $index) {
@@ -114,8 +114,8 @@
 }
 <div id="statsSectionContainer">
     <div id="statsHeaderRow">
-        <button matIconButton (click)="toggleStatExpansion()" [title]="'Click to ' + (isStatsInfoExpanded ? 'collapse' : 'expand') + ' the stats section'">
-            <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded}" />
+        <button matIconButton (click)="toggleStatExpansion()" [title]="'Click to ' + (this.isStatsInfoExpanded() ? 'collapse' : 'expand') + ' the stats section'">
+            <img src="img/caret.png" [class]="{'rotate90': this.isStatsInfoExpanded()}" />
         </button>
         <h2>Stats</h2>
     </div>
@@ -123,21 +123,21 @@
         @if(unit().stats.combat) {
         <div class="statRow">
             @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
-                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+                <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
             }
         </div>
         }
         @if(unit().stats.system_NonPrioritized) {
             <div class="statRow">
                 @for (stat of unit().stats.system_NonPrioritized | keyvalue : sortModifiedUnitStat; track stat.key){
-                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
                 }
             </div>
         }
         @if(unit().stats.general) {
             <div class="statRow">
                 @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
-                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded" />
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
                 }
             </div>
         }
@@ -146,12 +146,12 @@
 <mat-divider />
 <div id="inventorySectionContainer">
     <div id="inventoryHeaderRow">
-        <button matIconButton (click)="toggleInventoryExpansion()" [title]="'Click to ' + (isInventoryExpanded ? 'collapse' : 'expand') + ' the inventory'">
-            <img src="img/caret.png" [class]="{'rotate90': isInventoryExpanded}" />
+        <button matIconButton (click)="toggleInventoryExpansion()" [title]="'Click to ' + (this.isInventoryExpanded() ? 'collapse' : 'expand') + ' the inventory'">
+            <img src="img/caret.png" [class]="{'rotate90': this.isInventoryExpanded()}" />
         </button>
         <h2>{{getInventoryLabel()}}</h2>
     </div>
-    @if (isInventoryExpanded) {
+    @if (this.isInventoryExpanded()) {
         @for (subsection of unit().inventory?.subsections; track $index) {
             <div id="subsectionContainer">
                 @if (getInventorySubsectionLabel($index).length > 0) {
@@ -173,12 +173,12 @@
     <mat-divider />
     <div id="skillsContainer">
         <div id="skillsHeaderRow">
-            <button matIconButton (click)="toggleSkillsExpansion()" [title]="'Click to ' + (isSkillsInfoExpanded ? 'collapse' : 'expand') + ' skills'">
-                <img src="img/caret.png" [class]="{'rotate90': isSkillsInfoExpanded}" />
+            <button matIconButton (click)="toggleSkillsExpansion()" [title]="'Click to ' + (this.isSkillsInfoExpanded() ? 'collapse' : 'expand') + ' skills'">
+                <img src="img/caret.png" [class]="{'rotate90': this.isSkillsInfoExpanded()}" />
             </button>
             <h2>{{getSkillsLabel()}}</h2>
         </div>
-        @if (isSkillsInfoExpanded) {
+        @if (this.isSkillsInfoExpanded()) {
             @for (subsection of unit().skillSubsections; track $index) {
                 <div id="subsectionContainer">
                     @if (getSkillSubsectionLabel($index).length > 0) {

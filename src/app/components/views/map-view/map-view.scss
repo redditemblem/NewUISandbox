@@ -1,3 +1,4 @@
+@use '../../../styles/variables.scss' as global;
 @use '@angular/material' as mat;
 
 mat-sidenav-container {
@@ -12,6 +13,14 @@ mat-sidenav {
     ));
 
     anchor-name: --sidenav-anchor;
+
+    .mat-drawer-inner-container {
+        overflow: hidden;
+    }
+
+    .mat-mdc-tab-body-content {
+        overflow: hidden;
+    }
 }
 
 mat-sidenav-content {
@@ -22,6 +31,12 @@ mat-sidenav-content {
 }
 
 #sidebarTabs {
+    @include mat.tabs-overrides((
+        active-focus-indicator-color: global.$primary-theme-color,
+        active-indicator-color: global.$primary-theme-color,
+        active-hover-indicator-color: global.$primary-theme-color,
+    ));
+
     height: 100vh;
 
     ::ng-deep .mat-mdc-tab.mdc-tab {
@@ -32,6 +47,7 @@ mat-sidenav-content {
 
 button.sidenavExpandButton {
     @include mat.fab-overrides((
+        container-color: global.$primary-theme-color,
         container-elevation-shadow: none,
         focus-container-elevation-shadow: none,
         hover-container-elevation-shadow: none,
@@ -45,6 +61,18 @@ button.sidenavExpandButton {
     position-area: x-end y-start;
     position-visibility: always;
     z-index: 99;
+}
+
+#segmentTabs {
+    @include mat.tabs-overrides((
+        active-focus-indicator-color: global.$primary-theme-color,
+        active-indicator-color: global.$primary-theme-color,
+        active-hover-indicator-color: global.$primary-theme-color,
+        container-height: 56px,
+        label-text-font: macExtMinecraft
+    ));
+
+    margin-left: 60px;
 }
 
 #segmentButtonRow { 

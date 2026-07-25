@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
-import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
+import { Component, inject, signal } from '@angular/core';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MapDiceRollerSidenav } from '../map-dice-roller-sidenav/map-dice-roller-sidenav';
 import { MapUnitsSidenav } from '../map-units-sidenav/map-units-sidenav';
 import { MapTilesSidenav } from '../map-tiles-sidenav/map-tiles-sidenav';
@@ -17,13 +17,13 @@ import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenav, MatSidenavContainer, MatSidenavContent, MatTab, MatTabGroup, MatTabLabel, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapSegment, MatAnchor, MatDivider, MapPaintSidenav],
+  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapSegment, MatAnchor, MatDivider, MapPaintSidenav],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })
 export class MapView {
   
-  public currentSegment : IMapSegment | undefined;
+  protected currentSegment = signal<IMapSegment | undefined>(undefined);
 
   constructor(public route: ActivatedRoute, public breakpointService: BreakpointService, public themeService: ThemeService, public teamDataService: TeamDataService) {
     this.route = inject(ActivatedRoute);
@@ -34,17 +34,24 @@ export class MapView {
     this.loadDataForTeam();
   }
 
-  public async loadDataForTeam() { 
+  protected async loadDataForTeam() { 
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     await this.teamDataService.loadDataForTeam(teamName);
 
     const firstSegment = this.teamDataService.mapData().map?.segments[0];
-    if(firstSegment !== undefined) {
+    if(firstSegment !== undefined)
       this.setCurrentSegment(firstSegment);
-    }
   }
 
-  public setCurrentSegment(segment: IMapSegment) { 
-    this.currentSegment = segment;
+  protected SegmentTabs_selectedTabChange(event: MatTabChangeEvent) {
+    const segment: IMapSegment | undefined = this.teamDataService.mapData().map?.segments[event.index];
+    if(segment === undefined)
+      return;
+
+    this.setCurrentSegment(segment);
+  }
+
+  protected setCurrentSegment(segment: IMapSegment) { 
+    this.currentSegment.set(segment);
   }
 }

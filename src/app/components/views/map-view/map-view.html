@@ -1,6 +1,6 @@
 <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
-    <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'" class="noScroll">
+    <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'">
         <mat-tab-group id="sidebarTabs" mat-stretch-tabs disablePagination>
             <mat-tab>
                 <ng-template mat-tab-label>
@@ -39,14 +39,13 @@
         </mat-tab-group>
     </mat-sidenav>
     <mat-sidenav-content>
-        <div id="segmentButtonRow">
-            @for (segment of teamDataService.mapData().map?.segments; track segment.title){
-                <button matButton="filled" (click)="setCurrentSegment(segment)">{{segment.title}}</button>
+        <mat-tab-group id="segmentTabs" mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="SegmentTabs_selectedTabChange($event)">
+            @for (segment of teamDataService.mapData().map?.segments; track segment.title) {
+                <mat-tab label="{{segment.title}}"></mat-tab>
             }
-        </div>
-        <mat-divider />
-        @if(this.currentSegment !== undefined) {
-            <map-segment [currentSegmentTitle]="this.currentSegment.title" />
+        </mat-tab-group>
+        @if(this.currentSegment() !== undefined) {
+            <map-segment [currentSegmentTitle]="this.currentSegment()?.title ?? ''" />
         }
     </mat-sidenav-content>
 </mat-sidenav-container>

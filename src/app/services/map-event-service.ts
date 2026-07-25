@@ -11,6 +11,7 @@ export class MapEventService {
   @Output() downloadMapAsImage = new EventEmitter<void>();
   @Output() pinUnit = new EventEmitter<string>();
   @Output() unpinUnit = new EventEmitter<string>();
+  @Output() updateCurrentTile = new EventEmitter<[number, number]>();
 
   private unitPinnedStatuses: StringDictionary<boolean> = {};
 
@@ -31,5 +32,13 @@ export class MapEventService {
     else this.unpinUnit.emit(unitName);
 
     return isPinned;
+  }
+
+  public getPinnedStateForUnit(unitName: string) : boolean {
+    return this.unitPinnedStatuses[unitName] ?? false;
+  }
+
+  public updateCurrentTileCoordinates(x: number, y: number) {
+    this.updateCurrentTile.emit([x, y]);
   }
 }

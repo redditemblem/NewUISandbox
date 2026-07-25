@@ -8,6 +8,7 @@ import { IUnit } from '../../../data/interfaces/unit/unit';
 import { UnitSidenavDisplay } from "../unit-sidenav-display/unit-sidenav-display";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from '@angular/material/button';
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'map-units-sidenav',
@@ -21,14 +22,26 @@ export class MapUnitsSidenav {
   public selectedUnit = new FormControl<null | IUnit>(null);
   public filteredUnits: IUnit[];
 
-  constructor(public dataService: TeamDataService) {
-    this.dataService = inject(TeamDataService);
+  constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
+    this.teamDataService = inject(TeamDataService);
     this.filteredUnits = [];
+
+    //Subscribe to external events
+    this.eventService.pinUnit
+      .subscribe((unitName) => this.setPinnedUnit(unitName));
+  }
+
+  private setPinnedUnit(unitName: string) {
+    const unit = this.teamDataService.getUnitByName(unitName);
+    if(unit === undefined)
+      return;
+
+    this.selectedUnit.setValue(unit);
   }
 
   public filterUnits() {
     const filterValue = this.unitAutocompleteInput.nativeElement.value.toLowerCase();
-    this.filteredUnits = this.dataService.getUnitsList()
+    this.filteredUnits = this.teamDataService.getUnitsList()
       .filter(unit => 
         unit.name.toLowerCase().includes(filterValue) || unit.normalizedName.toLowerCase().includes(filterValue)
       )
@@ -42,5 +55,10 @@ export class MapUnitsSidenav {
 
   public formatAutocompleteDisplayValue(unit: IUnit): string {
     return unit && unit.name ? unit.name : '';
+  }
+
+  public shouldFlipUnitSprite(unit: IUnit) : boolean {
+    const aff = this.teamDataService.getAffiliationByName(unit.affiliation);
+    return aff?.flipUnitSprites ?? false;
   }
 }

@@ -1,9 +1,11 @@
+@use '../../styles/variables.scss' as global;
+
 #skillContainer {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
     padding: 8px;
-    border: 2px solid var(--mat-sys-primary-container);
+    border: 2px solid global.$primary-theme-color;
     border-radius: 0px 8px 0px 8px;
 
     #headerRow {

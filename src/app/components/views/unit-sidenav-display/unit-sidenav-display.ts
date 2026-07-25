@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { IUnit } from '../../../data/interfaces/unit/unit';
 import { MatIconButton } from '@angular/material/button';
 import { TeamDataService } from '../../../services/team-data-service';
@@ -8,7 +8,7 @@ import { IClass } from '../../../data/interfaces/system/class';
 import { Currency } from '../../currency/currency';
 import { UnitTag } from '../../unit-tag/unit-tag';
 import { UnitHpBar } from '../../unit-hp-bar/unit-hp-bar';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
 import { UnitStatusCondition } from '../../unit-status-condition/unit-status-condition';
 import { MatDivider } from '@angular/material/divider';
@@ -18,70 +18,100 @@ import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill, NgClass],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
 export class UnitSidenavDisplay {
   unit = input.required<IUnit>();
 
-  //Default states
-  public isUnitInfoExpanded : boolean = false;
-  public isStatsInfoExpanded : boolean = false;
-  public isInventoryExpanded : boolean = true;
-  public isSkillsInfoExpanded : boolean = true;
+  public isPinned = signal<boolean>(false);
+  public isUnitInfoExpanded = signal<boolean>(false);
+  public isStatsInfoExpanded = signal<boolean>(false);
+  public isInventoryExpanded = signal<boolean>(true);
+  public isSkillsInfoExpanded = signal<boolean>(true);
 
   constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
     this.eventService = inject(MapEventService);
+
+    //Subscribe to external events
+    this.eventService.pinUnit
+      .subscribe((unitName) => this.syncPinnedStatus());
+    this.eventService.unpinUnit
+      .subscribe((unitName) => this.syncPinnedStatus());
+  }
+
+  ngOnInit() {
+    this.syncPinnedStatus();
   }
 
   ngOnChanges() {
-    //Every time unit() changes, reset expansion statuses
-    this.isUnitInfoExpanded = false;
-    this.isStatsInfoExpanded = false;
-    this.isInventoryExpanded = true;
-    this.isSkillsInfoExpanded = true;
+    //Every time unit() changes, reset defaults
+    this.syncPinnedStatus();
+
+    this.isUnitInfoExpanded.set(false);
+    this.isStatsInfoExpanded.set(false);
+    this.isInventoryExpanded.set(true);
+    this.isSkillsInfoExpanded.set(true);
   }
 
-  toggleUnitPinnedStatus() : void { this.eventService.toggleUnitPinnedState(this.unit().name); }
-  toggleUnitInfoExpansion() : void { this.isUnitInfoExpanded = !this.isUnitInfoExpanded; }
-  toggleStatExpansion() : void { this.isStatsInfoExpanded = !this.isStatsInfoExpanded; }
-  toggleInventoryExpansion() : void { this.isInventoryExpanded = !this.isInventoryExpanded; }
-  toggleSkillsExpansion() : void { this.isSkillsInfoExpanded = !this.isSkillsInfoExpanded; }
+  public syncPinnedStatus() {
+    this.isPinned.set(this.eventService.getPinnedStateForUnit(this.unit().name));
+  }
+
+  public toggleUnitPinnedStatus() { 
+    this.eventService.toggleUnitPinnedState(this.unit().name); 
+  }
+
+  public toggleUnitInfoExpansion() { 
+    this.isUnitInfoExpanded.set(!this.isUnitInfoExpanded()); 
+  }
+
+  public toggleStatExpansion() { 
+    this.isStatsInfoExpanded.set(!this.isStatsInfoExpanded());
+  }
+
+  public toggleInventoryExpansion() { 
+    this.isInventoryExpanded.set(!this.isInventoryExpanded());
+  }
+
+  public toggleSkillsExpansion() { 
+    this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded());
+  }
   
 
-  sortModifiedUnitStat() : number {
+  public sortModifiedUnitStat() : number {
     //Don't actually want a real sort here, so just return 0 for all items.
     return 0;
   }
 
-  getInventoryLabel() : string {
+  public getInventoryLabel() : string {
     return this.teamDataService.getInterfaceLabels()?.inventory ?? "";
   }
 
-  getInventorySubsectionLabel(index: number) : string {
+  public getInventorySubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
   }
 
-  getSkillsLabel() : string {
+  public getSkillsLabel() : string {
     return this.teamDataService.getInterfaceLabels()?.skills ?? "";
   }
 
-  getSkillSubsectionLabel(index: number) : string {
+  public getSkillSubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
   }
 
-  getUnitAffiliation() : IAffiliation | undefined {
+  public getUnitAffiliation() : IAffiliation | undefined {
     return this.teamDataService.getAffiliationByName(this.unit().affiliation);
   }
 
-  shouldFlipUnitSprite() : boolean {
+  public shouldFlipUnitSprite() : boolean {
     let aff = this.getUnitAffiliation();
     return aff?.flipUnitSprites ?? false;
   }
 
-  getUnitClass(name: string) : IClass | undefined {
+  public getUnitClass(name: string) : IClass | undefined {
     return this.teamDataService.getClassByName(name);
   }
 }

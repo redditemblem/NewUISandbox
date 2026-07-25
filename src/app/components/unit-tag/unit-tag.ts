@@ -7,6 +7,8 @@ import { ITag } from '../../data/interfaces/system/tag';
   imports: [],
   templateUrl: './unit-tag.html',
   styles: `
+    @use '../../styles/variables.scss' as global;
+
     #container {
       display: flex;
       flex-flow: row nowrap;
@@ -14,7 +16,7 @@ import { ITag } from '../../data/interfaces/system/tag';
       column-gap: 4px;
       padding: 4px 8px 4px 8px;
       border-radius: 0px 8px 0px 8px;
-      background: var(--mat-sys-tertiary-container);
+      background: global.$tertiary-theme-color;
 
       img {
         max-height: 16px;

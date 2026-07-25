@@ -1,3 +1,5 @@
+@use '../../styles/variables.scss' as global;
+
 #modifiedStatContainer {
     display: flex;
     flex-flow: column nowrap;
@@ -23,14 +25,12 @@
                 width: 100px;
                 padding: 4px 0px 4px 0px;
                 border-radius: 0px 0px 0px 8px;
-                background: var(--mat-sys-secondary-container);
-                box-shadow: 0px 2px var(--mat-sys-tertiary-container);
+                background: global.$secondary-theme-color;
             }
 
             #point {
                 width: 16px;
-                background: linear-gradient(to right top, var(--mat-sys-secondary-container) 50%, transparent 50%);
-                box-shadow: 0px 2px var(--mat-sys-tertiary-container);
+                background: linear-gradient(to right top, global.$secondary-theme-color 50%, transparent 50%);
             }
         }
     }
@@ -45,7 +45,7 @@
             display: flex;
             flex-flow: column nowrap;
             width: 12px;
-            border-right: 3px solid var(--mat-sys-tertiary-container);
+            border-right: 3px solid global.$tertiary-theme-color;
         }
         
         #modifierRows {

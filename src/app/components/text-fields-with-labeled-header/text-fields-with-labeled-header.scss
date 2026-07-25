@@ -1,3 +1,5 @@
+@use '../../styles/variables.scss' as global;
+
 div.headerRow {
     display: flex;
     flex-flow: row nowrap;
@@ -11,14 +13,14 @@ div.headerRow {
         margin: 0px;
         padding: 4px 8px 4px 16px;
         border-radius: 0px 0px 0px 8px;
-        background: var(--mat-sys-primary-container);
+        background: global.$primary-theme-color;
         font-style: normal;
         font-weight: normal;
     }
 
     div.labelTextPoint {
         width: 16px;
-        background: linear-gradient(to right top, var(--mat-sys-primary-container) 50%, transparent 50%);
+        background: linear-gradient(to right top, global.$primary-theme-color 50%, transparent 50%);
     }
 
     h2.titleText {
@@ -26,7 +28,7 @@ div.headerRow {
         align-content: center;
         margin: 0px;
         padding: 4px 8px 4px 8px;
-        box-shadow: inset 0px -2px var(--mat-sys-primary-container);
+        box-shadow: inset 0px -2px global.$primary-theme-color;
         border-radius: 0px 8px 0px 0px;
         font-style: normal;
         font-weight: normal;

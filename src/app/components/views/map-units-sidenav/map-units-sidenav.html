@@ -1,32 +1,32 @@
-<div class="unitScrollContainer">
-  <form>
-    <mat-form-field>
-      <input #unitAutocompleteInput
-            type="text" 
-            matInput
-            placeholder="Unit Name"
-            [formControl]="selectedUnit"
-            [matAutocomplete]="auto"
-            (focus)="filterUnits()"
-            (input)="filterUnits()"
-            >
-      <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
-        @for (unit of filteredUnits; track unit.name) {
-          <mat-option [value]="unit">
-            <div class="autocompleteOptionContainer">
-                <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" />
-                <div>{{unit.name}}</div>
-            </div>
-          </mat-option>
-        }
-      </mat-autocomplete>
-      @if(selectedUnit.value !== null) {
-        <button matIconButton matSuffix aria-label="Clear" (click)="this.selectedUnit.setValue(null)">
-          <mat-icon>close</mat-icon>
-        </button>
+<form>
+  <mat-form-field>
+    <input #unitAutocompleteInput
+          type="text" 
+          matInput
+          placeholder="Unit"
+          [formControl]="selectedUnit"
+          [matAutocomplete]="auto"
+          (focus)="filterUnits()"
+          (input)="filterUnits()"
+          >
+    <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
+      @for (unit of filteredUnits; track unit.name) {
+        <mat-option [value]="unit">
+          <div class="autocompleteOptionContainer">
+              <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" [class]="{'flipHorz': shouldFlipUnitSprite(unit)}" />
+              <p>{{unit.name}}</p>
+          </div>
+        </mat-option>
       }
-    </mat-form-field>
-  </form>
+    </mat-autocomplete>
+    @if(selectedUnit.value !== null) {
+      <button matIconButton matSuffix aria-label="Clear selected unit" (click)="this.selectedUnit.setValue(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+</form>
+<div id="unitSidenavContainer">
   @if (selectedUnit.value) {
     <unit-sidenav-display [unit]="selectedUnit.value" />
   }
