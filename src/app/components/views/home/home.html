@@ -1,11 +1,11 @@
-<div class="decorativeTriangleTop"></div>
-<div class="homeViewContainer">
-    <div [class]="breakpointService.isScreenSmallWidth() ? 'flexColumn' : 'flexRow'">
-        <div class="logoColumn">
-            <img src="img/logo.png" alt="Reddit Emblem Maps Logo" />
-            <button (click)="themeService.setThemeMode(themeService.isDarkMode() ? 'light' : 'dark')">Toggle Theme</button>
+<div id="decorativePanelTop"></div>
+<div id="homeViewContainer">
+    <div [class]="breakpointService.isScreenSmallWidth() ? 'logoSectionColumn' : 'logoSectionRow'">
+        <div id="logoColumn">
+            <img id="logo" src="img/logo.png" alt="Reddit Emblem Maps Logo" />
+            <button (click)="themeService.toggleTheme()">Toggle Theme</button>
         </div>
-        <div class="teamListingColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
+        <div id="teamListingColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
             @if (teamListService.isLoading()){
                 <loading-icon />
             }
@@ -33,26 +33,42 @@
     <div [class]="breakpointService.isScreenSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
         <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
             <h1 class="pixelFont">Information</h1>
-            <p>Reddit Emblem Maps is a web-based display for games run by the Reddit Emblem community on Discord!</p>
+            <p>Reddit Emblem Maps is web-based display that is custom built for the Reddit Emblem play-by-post community on Discord! Maps is backed by a highly configurable API, with the goal of supporting a wide range of system designs and customized mechanics.</p>
             <h2 class="pixelFont">Resources</h2>
-            <ul>
-                <li><a href="https://docs.google.com/document/d/150h2pxQbrd3uZOKM_r3iniCRBPtnfIJbSTnWlm-pRUM/edit?usp=sharing">Reddit Emblem Maps Documentation</a></li>
-                <li><a href="https://github.com/redditemblem/RedditEmblemAPI">API Github Repository</a></li>
-                <li><a href="https://github.com/redditemblem/redditemblem.github.io">Webapp Github Repository</a></li>
-            </ul>
+            <mat-action-list>
+                <a mat-list-item href="https://docs.google.com/document/d/150h2pxQbrd3uZOKM_r3iniCRBPtnfIJbSTnWlm-pRUM/edit?usp=sharing" target="_blank">
+                    <img matListItemIcon src="img/star_icon.png" />
+                    <p class="matListItemTitle pixelFont">User Documentation</p>
+                    <div matListItemMeta>
+                        <mat-icon>open_in_new</mat-icon>
+                    </div>
+                </a>
+                <a mat-list-item href="https://github.com/redditemblem/RedditEmblemAPI" target="_blank">
+                    <img matListItemIcon src="img/star_icon.png" />
+                    <p class="matListItemTitle pixelFont">API Github Repository</p>
+                    <div matListItemMeta>
+                        <mat-icon>open_in_new</mat-icon>
+                    </div>
+                </a>
+                <a mat-list-item href="https://github.com/redditemblem/redditemblem.github.io" target="_blank">
+                    <img matListItemIcon src="img/star_icon.png" />
+                    <p class="matListItemTitle pixelFont">UI Github Repository</p>
+                    <div matListItemMeta>
+                        <mat-icon>open_in_new</mat-icon>
+                    </div>
+                </a>
+            </mat-action-list>
             <h2 class="pixelFont">Example</h2>
-            <p>Maps has a developer sandbox called "Team Example" that shows off a variety of its functionality.</p>
-            <ul>
-                <li><a href="https://docs.google.com/spreadsheets/d/10OGJGY4RcLemNcdoGVTrwoc6qJQyv5ONMK09VUyFptc/edit?usp=sharing">Team Example Google Spreadsheet</a></li>
-            </ul>
+            <p>Maps has a developer sandbox called "Team Example", which showcases a wide range of its available functionality.</p>
             <team-listing [team]="teamExample" />
         </div>
         <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
             <h2 class="pixelFont">Credits</h2>
             <ul>
-                <li><a href="https://www.transparenttextures.com/">Website background texture "Az Subtle" by Anli</a></li>
-                <li><a href="https://www.dafont.com/mac-s-minecraft.font">"Mac's Minecraft" pixel font</a></li>
+                <li><a href="https://www.transparenttextures.com/" target="_blank">Website background texture "Az Subtle" by Anli</a></li>
+                <li><a href="https://www.dafont.com/mac-s-minecraft.font" target="_blank">Pixel font "Mac's Minecraft" by macimas bahnsisk</a></li>
             </ul>
         </div>
     </div>
 </div>
+<div id="decorativePanelBottom"></div>

@@ -14,7 +14,6 @@ import { UnitStatusCondition } from '../../unit-status-condition/unit-status-con
 import { MatDivider } from '@angular/material/divider';
 import { InventoryItem } from '../../inventory-item/inventory-item';
 import { UnitSkill } from "../../unit-skill/unit-skill";
-import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'unit-sidenav-display',
@@ -31,37 +30,16 @@ export class UnitSidenavDisplay {
   public isInventoryExpanded = signal<boolean>(true);
   public isSkillsInfoExpanded = signal<boolean>(true);
 
-  constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
+  constructor(public teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
-    this.eventService = inject(MapEventService);
-
-    //Subscribe to external events
-    this.eventService.pinUnit
-      .subscribe((unitName) => this.syncPinnedStatus());
-    this.eventService.unpinUnit
-      .subscribe((unitName) => this.syncPinnedStatus());
-  }
-
-  ngOnInit() {
-    this.syncPinnedStatus();
   }
 
   ngOnChanges() {
     //Every time unit() changes, reset defaults
-    this.syncPinnedStatus();
-
     this.isUnitInfoExpanded.set(false);
     this.isStatsInfoExpanded.set(false);
     this.isInventoryExpanded.set(true);
     this.isSkillsInfoExpanded.set(true);
-  }
-
-  public syncPinnedStatus() {
-    this.isPinned.set(this.eventService.getPinnedStateForUnit(this.unit().name));
-  }
-
-  public toggleUnitPinnedStatus() { 
-    this.eventService.toggleUnitPinnedState(this.unit().name); 
   }
 
   public toggleUnitInfoExpansion() { 

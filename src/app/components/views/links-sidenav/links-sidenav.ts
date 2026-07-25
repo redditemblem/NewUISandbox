@@ -1,7 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, Signal, signal } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { ThemeService } from '../../../services/theme-service';
 
 @Component({
   selector: 'links-sidenav',
@@ -10,25 +11,27 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './links-sidenav.scss',
 })
 export class LinksSidenav {
-  googleWorksheetID = input<string | undefined>(undefined);
-  chapterPostUrl = input<string | undefined>(undefined);
-  showConvoyLink = input<boolean>(false);
-  showShopLink = input<boolean>(false);
-  showMapAnalyzerLink = input<boolean>(false);
+  public googleWorksheetID = input<string | undefined>(undefined);
+  public chapterPostUrl = input<string | undefined>(undefined);
+  public showConvoyLink = input<boolean>(false);
+  public showShopLink = input<boolean>(false);
+  public showMapAnalyzerLink = input<boolean>(false);
   
-  public teamName : string = "";
+  private routeTeamName = signal<string>('');
+  protected teamName: Signal<string> = this.routeTeamName.asReadonly();
 
-  constructor(public activatedRoute: ActivatedRoute) {
+  constructor(private activatedRoute: ActivatedRoute, protected themeService: ThemeService) {
     this.activatedRoute = inject(ActivatedRoute);
+    this.themeService = inject(ThemeService);
   }
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params) => {
-      this.teamName = params['teamName'];
+      this.routeTeamName.set(params['teamName']);
     });
   }
   
-  getGoogleSheetUrl() : string {
+  protected getGoogleSheetUrl() : string {
     return `https://docs.google.com/spreadsheets/d/${this.googleWorksheetID()}/edit`;
   }
 }

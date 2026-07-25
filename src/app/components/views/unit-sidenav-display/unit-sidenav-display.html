@@ -31,9 +31,6 @@
             </div>
         </div>
     }
-    <button matIconButton (click)="toggleUnitPinnedStatus()" [title]="(this.isPinned() ? 'Unpin' : 'Pin') + ' this Unit'">
-        <img src="img/pin_icon.png" [class]="{'grayscale': !this.isPinned()}" alt="Pin Icon" />
-    </button>
 </div>
 @if(this.isUnitInfoExpanded()){
     <div class="expandableUnitInfoContainer">

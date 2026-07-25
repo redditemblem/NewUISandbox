@@ -1,5 +1,3 @@
-@use '../../../styles/variables.scss' as global;
-
 img.rotate90 {
     transform: rotate(90deg);
 }
@@ -9,10 +7,6 @@ img.flipHorz {
     -o-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
-}
-
-img.grayscale {
-    filter: grayscale(1);
 }
 
 div.unitPortraitContainer {
@@ -38,7 +32,7 @@ div.unitNameplateContainer {
     margin: 0px 16px 0px 16px;
     padding: 16px 32px 16px 32px;
     border-radius: 0px 16px;
-    background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, global.$primary-theme-color, transparent, global.$primary-theme-color);
+    background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--primary-theme-color), transparent, var(--primary-theme-color));
     font-family: macExtMinecraft;
 
     image-rendering: optimizeSpeed;
@@ -97,7 +91,7 @@ div.unitButtonsRow {
             div.text {
                 max-width: 150px;
                 padding: 2px 16px 4px 16px;
-                background: global.$secondary-theme-color;
+                background: var(--secondary-theme-color);
                 font-size: .8rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -111,12 +105,12 @@ div.unitButtonsRow {
                 
                 div.leftRibbon {
                     flex: 1;
-                    background: linear-gradient(to bottom right, global.$secondary-theme-color 50%, transparent 50%);
+                    background: linear-gradient(to bottom right, var(--secondary-theme-color) 50%, transparent 50%);
                 }
 
                 div.rightRibbon {
                     flex: 1;
-                    background: linear-gradient(to bottom left, global.$secondary-theme-color 50%, transparent 50%);
+                    background: linear-gradient(to bottom left, var(--secondary-theme-color) 50%, transparent 50%);
                 }
             }
         }
@@ -335,7 +329,7 @@ div.statusConditionsRow {
     #emptySlots {
         display: flex;
         padding: 8px;
-        border: 2px solid global.$primary-theme-color;
+        border: 2px solid var(--primary-theme-color);
         border-radius: 0px 8px 0px 8px;
         font-family: macExtMinecraft;
         font-style: italic;

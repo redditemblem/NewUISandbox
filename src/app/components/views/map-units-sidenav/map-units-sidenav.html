@@ -1,33 +1,38 @@
-<form>
-  <mat-form-field>
-    <input #unitAutocompleteInput
-          type="text" 
-          matInput
-          placeholder="Unit"
-          [formControl]="selectedUnit"
-          [matAutocomplete]="auto"
-          (focus)="filterUnits()"
-          (input)="filterUnits()"
-          >
-    <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
-      @for (unit of filteredUnits; track unit.name) {
-        <mat-option [value]="unit">
-          <div class="autocompleteOptionContainer">
-              <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" [class]="{'flipHorz': shouldFlipUnitSprite(unit)}" />
-              <p>{{unit.name}}</p>
-          </div>
-        </mat-option>
+<div id="autocompleteRow">
+  <form>
+    <mat-form-field>
+      <input #unitAutocompleteInput
+            type="text" 
+            matInput
+            placeholder="Unit"
+            [formControl]="selectedUnit"
+            [matAutocomplete]="auto"
+            (focus)="filterUnits()"
+            (input)="filterUnits()"
+            >
+      <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue" (optionSelected)="syncPinnedStatus($event)">
+        @for (unit of filteredUnits; track unit.name) {
+          <mat-option [value]="unit">
+            <div class="autocompleteOptionContainer">
+                <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" [class]="{'flipHorz': shouldFlipUnitSprite(unit)}" />
+                <p>{{unit.name}}</p>
+            </div>
+          </mat-option>
+        }
+      </mat-autocomplete>
+      @if(selectedUnit.value !== null) {
+        <button matIconButton matSuffix aria-label="Clear selected unit" (click)="this.selectedUnit.setValue(null)">
+          <mat-icon>close</mat-icon>
+        </button>
       }
-    </mat-autocomplete>
-    @if(selectedUnit.value !== null) {
-      <button matIconButton matSuffix aria-label="Clear selected unit" (click)="this.selectedUnit.setValue(null)">
-        <mat-icon>close</mat-icon>
-      </button>
-    }
-  </mat-form-field>
-</form>
+    </mat-form-field>
+  </form>
+  <button matIconButton [disabled]="selectedUnit.value === null" (click)="toggleUnitPinnedStatus()" [title]="(this.selectedUnitIsPinned() ? 'Unpin' : 'Pin') + ' this unit'">
+      <img src="img/pin_icon.png" [class]="{'grayscale': selectedUnit.value === null || !this.selectedUnitIsPinned()}" alt="Pin Icon" />
+  </button>
+</div>
 <div id="unitSidenavContainer">
-  @if (selectedUnit.value) {
+  @if (selectedUnit.value !== null) {
     <unit-sidenav-display [unit]="selectedUnit.value" />
   }
 </div>

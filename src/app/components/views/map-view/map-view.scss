@@ -1,4 +1,3 @@
-@use '../../../styles/variables.scss' as global;
 @use '@angular/material' as mat;
 
 mat-sidenav-container {
@@ -32,9 +31,9 @@ mat-sidenav-content {
 
 #sidebarTabs {
     @include mat.tabs-overrides((
-        active-focus-indicator-color: global.$primary-theme-color,
-        active-indicator-color: global.$primary-theme-color,
-        active-hover-indicator-color: global.$primary-theme-color,
+        active-focus-indicator-color: var(--primary-theme-color),
+        active-indicator-color: var(--primary-theme-color),
+        active-hover-indicator-color: var(--primary-theme-color),
     ));
 
     height: 100vh;
@@ -47,7 +46,7 @@ mat-sidenav-content {
 
 button.sidenavExpandButton {
     @include mat.fab-overrides((
-        container-color: global.$primary-theme-color,
+        container-color: var(--primary-theme-color),
         container-elevation-shadow: none,
         focus-container-elevation-shadow: none,
         hover-container-elevation-shadow: none,
@@ -65,9 +64,9 @@ button.sidenavExpandButton {
 
 #segmentTabs {
     @include mat.tabs-overrides((
-        active-focus-indicator-color: global.$primary-theme-color,
-        active-indicator-color: global.$primary-theme-color,
-        active-hover-indicator-color: global.$primary-theme-color,
+        active-focus-indicator-color: var(--primary-theme-color),
+        active-indicator-color: var(--primary-theme-color),
+        active-hover-indicator-color: var(--primary-theme-color),
         container-height: 56px,
         label-text-font: macExtMinecraft
     ));

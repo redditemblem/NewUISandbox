@@ -1,25 +1,24 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { inject, Injectable, signal } from '@angular/core';
-
-const bPoint900px = '(max-width: 900px)';
+import { inject, Injectable, Signal, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BreakpointService {
 
-  private breakpointObserver = inject(BreakpointObserver);
-
   private isSmallWidth = signal<boolean>(false);
-  readonly isScreenSmallWidth = this.isSmallWidth.asReadonly();
+  public readonly isScreenSmallWidth: Signal<boolean> = this.isSmallWidth.asReadonly();
 
-  constructor()  {
+  private readonly bPoint900px: string = '(max-width: 900px)';
+
+  constructor(private breakpointObserver: BreakpointObserver)  {
+    this.breakpointObserver = inject(BreakpointObserver);
+
     this.breakpointObserver
-    // pass values from constants.ts
-    .observe([bPoint900px])
+    .observe([this.bPoint900px])
     .subscribe(x => {
       // Set signal to the breakpoint check result
-      this.isSmallWidth.set(x.breakpoints[bPoint900px]);
+      this.isSmallWidth.set(x.breakpoints[this.bPoint900px]);
     });
   }
 }

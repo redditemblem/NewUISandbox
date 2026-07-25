@@ -5,19 +5,21 @@ import { BreakpointService } from '../../../services/breakpoint-service';
 import { LoadingIcon } from "../../loading-icon/loading-icon";
 import { ITeamData } from '../../../data/interfaces/team-data';
 import { ThemeService } from '../../../services/theme-service';
+import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
 
 
 @Component({
   selector: 'home',
-  imports: [TeamListing, LoadingIcon],
+  imports: [TeamListing, LoadingIcon, MatListModule, MatIconModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home{
   
-  public readonly teamExample: ITeamData;
+  protected readonly teamExample: ITeamData;
 
-  constructor(public breakpointService: BreakpointService, public themeService: ThemeService, public teamListService: TeamListService){
+  constructor(protected breakpointService: BreakpointService, protected themeService: ThemeService, protected teamListService: TeamListService){
     this.breakpointService = inject(BreakpointService);
     this.themeService = inject(ThemeService);
     this.teamListService = inject(TeamListService);

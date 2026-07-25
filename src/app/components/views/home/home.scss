@@ -1,50 +1,51 @@
-@use '../../../styles/variables.scss' as global;
-
-div.homeViewContainer{
-    display: flex;
-    flex-flow: column nowrap;
-    background-image: url('../../../../../public/img/background.png');
-    background-repeat: repeat;
-    padding-bottom: 32px;
-}
-
-div.decorativeTriangleTop{
+#decorativePanelTop{
     position: absolute;
     width: 100%;
-    height: 250px;
-    background: linear-gradient(to right bottom, global.$primary-theme-color 49.9%, transparent 50%);
+    height: 175px;
+    background-color: var(--primary-theme-color);
 }
 
-div.flexRow {
+#decorativePanelBottom {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary-theme-color);
+}
+
+#homeViewContainer{
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 50px;
+    padding: 50px 8px 25px 8px;
+    background-image: url('../../../../../public/img/background.png');
+    background-repeat: repeat;
+}
+
+div.logoSectionRow {
     display: flex;
     flex-flow: row nowrap;
-    column-gap: 8px;
-    padding: 75px 8px 0px 8px;
-    z-index: 1;
+    column-gap: 16px;
+    z-index: 1; //keep section above decorative panel
 }
 
-div.flexColumn {
+div.logoSectionColumn {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 32px;
-    padding: 50px 8px 0px 8px;
-    z-index: 1;
+    z-index: 1; //keep section above decorative panel
 }
 
-div.logoColumn {
+#logoColumn {
     display: flex;
     flex-flow: column nowrap;
     flex-grow: 1;
     align-items: center;
 }
 
-div.logoRow {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
+#logo {
+    max-width: 100%;
 }
 
-div.teamListingColumn {
+#teamListingColumn {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
@@ -65,13 +66,11 @@ div.noResultsColumn{
 div.informationSectionRow {
     display: flex;
     flex-flow: row nowrap;
-    padding: 50px 8px 0px 8px;
 }
 
 div.informationSectionColumn {
     display: flex;
     flex-flow: column nowrap;
-    padding: 50px 8px 0px 8px;
 }
 
 div.informationColumn{
