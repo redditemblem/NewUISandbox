@@ -30,7 +30,7 @@ export class UnitSidenavDisplay {
   public isInventoryExpanded = signal<boolean>(true);
   public isSkillsInfoExpanded = signal<boolean>(true);
 
-  constructor(public teamDataService: TeamDataService) {
+  constructor(protected teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 
@@ -42,54 +42,48 @@ export class UnitSidenavDisplay {
     this.isSkillsInfoExpanded.set(true);
   }
 
-  public toggleUnitInfoExpansion() { 
-    this.isUnitInfoExpanded.set(!this.isUnitInfoExpanded()); 
-  }
-
-  public toggleStatExpansion() { 
-    this.isStatsInfoExpanded.set(!this.isStatsInfoExpanded());
-  }
-
-  public toggleInventoryExpansion() { 
-    this.isInventoryExpanded.set(!this.isInventoryExpanded());
-  }
-
-  public toggleSkillsExpansion() { 
-    this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded());
-  }
+  protected toggleUnitInfoExpansion() { this.isUnitInfoExpanded.set(!this.isUnitInfoExpanded()); }
+  protected toggleStatExpansion() { this.isStatsInfoExpanded.set(!this.isStatsInfoExpanded()); }
+  protected toggleInventoryExpansion() { this.isInventoryExpanded.set(!this.isInventoryExpanded()); }
+  protected toggleSkillsExpansion() { this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded()); }
   
+  protected dictionaryHasKeys(object: any) : boolean {
+    if(object === null || object === undefined)
+      return false;
+    return Object.keys(object).length > 0;
+  }
 
-  public sortModifiedUnitStat() : number {
+  protected sortModifiedUnitStat() : number {
     //Don't actually want a real sort here, so just return 0 for all items.
     return 0;
   }
 
-  public getInventoryLabel() : string {
+  protected getInventoryLabel() : string {
     return this.teamDataService.getInterfaceLabels()?.inventory ?? "";
   }
 
-  public getInventorySubsectionLabel(index: number) : string {
+  protected getInventorySubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
   }
 
-  public getSkillsLabel() : string {
+  protected getSkillsLabel() : string {
     return this.teamDataService.getInterfaceLabels()?.skills ?? "";
   }
 
-  public getSkillSubsectionLabel(index: number) : string {
+  protected getSkillSubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
   }
 
-  public getUnitAffiliation() : IAffiliation | undefined {
+  protected getUnitAffiliation() : IAffiliation | undefined {
     return this.teamDataService.getAffiliationByName(this.unit().affiliation);
   }
 
-  public shouldFlipUnitSprite() : boolean {
+  protected shouldFlipUnitSprite() : boolean {
     let aff = this.getUnitAffiliation();
     return aff?.flipUnitSprites ?? false;
   }
 
-  public getUnitClass(name: string) : IClass | undefined {
+  protected getUnitClass(name: string) : IClass | undefined {
     return this.teamDataService.getClassByName(name);
   }
 }

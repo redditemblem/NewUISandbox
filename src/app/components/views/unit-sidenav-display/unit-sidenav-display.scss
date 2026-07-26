@@ -9,27 +9,32 @@ img.flipHorz {
     transform: scaleX(-1);
 }
 
-div.unitPortraitContainer {
+#unitDisplayContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 12px;
+    padding: 0px 16px 24px 16px;
+}
+
+#unitPortraitContainer {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     justify-content: center;
-    padding: 0px 16px 8px 16px;
 
     img.unitPortraitSprite {
         max-height: 200px;
-        max-width: 400px;
+        max-width: 100%;
         object-fit: scale-down;
     }
 }
 
-div.unitNameplateContainer {
+#unitNameplate {
     display: flex;
     flex-flow: row nowrap;
-    flex-grow: 1;
+    flex: 1;
     align-items: center;
     column-gap: 8px;
-    margin: 0px 16px 0px 16px;
     padding: 16px 32px 16px 32px;
     border-radius: 0px 16px;
     background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--primary-theme-color), transparent, var(--primary-theme-color));
@@ -42,134 +47,122 @@ div.unitNameplateContainer {
     image-rendering: pixelated;
     -ms-interpolation-mode: nearest-neighbor;
 
-    img.unitNameplateSprite {
-        max-height: 32px;
-        max-width: 32px;
+    #unitNameplateSprite {
+        max-height: 48px;
+        max-width: 48px;
         object-fit: scale-down;
     }
 
-    hgroup.unitNameplateText {
+    #unitNameplateText {
         display: flex;
         flex-flow: column nowrap;
         flex-grow: 1;
+        row-gap: 4px;
 
-        h1.nameText {
+        #nameText {
             margin: 0px;
-            font-size: var(--mat-sys-body-large-line-height);
             font-weight: normal;
-            line-height: var(--mat-sys-body-large-line-height);
+            font-size: 1.5rem;
+            line-height: 1.5rem;
         }
 
-        p.levelClassText {
-            margin: 0px;
-            padding-left: 16px;
+        #levelClassText {
+            margin: 0px 0px 0px 16px;
         }
     }
 
-    img.nameplateAffiliationSprite {
+    #nameplateAffiliationSprite {
         max-height: 48px;
         max-width: 36px;
         object-fit: scale-down;
     }
 }
 
-div.unitButtonsRow {
+#unitNameplateFooter {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    padding: 0px 16px 8px 16px;
+    padding-right: 16px;
 
-    div.playerNameplateContainer {
+    #playerNameRibbon {
         display: flex;
-        flex-flow: row-reverse nowrap;
-        flex: 1;
+        flex-flow: column nowrap;
 
-        div.playerNameplate {
+        #ribbonBody {
+            max-width: 150px;
+            margin: 0px;
+            padding: 4px 16px 4px 16px;
+            background: var(--secondary-theme-color);
+            font-size: .65rem;
+            font-family: macExtMinecraft;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
+        }
+
+        #ribbonTails {
             display: flex;
-            flex-flow: column nowrap;
+            flex-flow: row nowrap;
+            height: 12px;
 
-            div.text {
-                max-width: 150px;
-                padding: 2px 16px 4px 16px;
-                background: var(--secondary-theme-color);
-                font-size: .8rem;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-wrap: nowrap;
+            #leftTail {
+                flex: 1;
+                background: linear-gradient(to bottom right, var(--secondary-theme-color) 50%, transparent 50%);
             }
-
-            div.ribbons {
-                display: flex;
-                flex-flow: row nowrap;
-                height: 12px;
-                
-                div.leftRibbon {
-                    flex: 1;
-                    background: linear-gradient(to bottom right, var(--secondary-theme-color) 50%, transparent 50%);
-                }
-
-                div.rightRibbon {
-                    flex: 1;
-                    background: linear-gradient(to bottom left, var(--secondary-theme-color) 50%, transparent 50%);
-                }
+            #rightTail {
+                flex: 1;
+                background: linear-gradient(to bottom left, var(--secondary-theme-color) 50%, transparent 50%);
             }
         }
     }
 }
 
-div.expandableUnitInfoContainer {
+#unitInformationContainer {
     display: flex;
     flex-flow: column nowrap;
-    row-gap: 16px;
-    padding: 0px 16px 16px 16px;
+    row-gap: 12px;
 
-    p.unitDescriptionText {
-        margin: 8px 0px 0px 0px;
-    }
+    p { margin: 0px; }
 }
 
-div.prioritizedStatsContainer {
+#prioritizedStatsContainer {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
     row-gap: 8px;
-    padding: 0px 16px 8px 16px;
+
+    modified-unit-stat {
+        display: flex;
+        flex: 0 0 48%;
+    }
 }
 
-div.unitHPContainer {
+#unitHPContainer {
     display: flex;
     flex-flow: column nowrap;
-    row-gap: 4px;
+    row-gap: 2px;
     flex: 0 0 48%;
-    max-width: 50%;
 
-    div.hpValueRow {
+    p { margin: 0px; }
+
+    #hpValueRow {
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
         align-items: center;
+        font-family: macExtMinecraft;
 
-        div.label {
-            font-family: macExtMinecraft;
-        }
-
-        div.values {
+        #hpValues {
             display: flex;
-            align-items: inherit;
-
-            span.current {
-                font-size: 1.75rem;
-            }
-            span.maximum {
-                margin-left: 4px;
-            }
+            flex-flow: row nowrap;
+            align-items: center;
+            column-gap: 4px;
         }
     }
 
-    div.placeholderHPBar {
-        height: 5px;
-        border: 1px solid black;
-        background-color: green;
+    #remainingBars { 
+        display: flex;
+        flex-flow: row-reverse nowrap;
     }
 }
 
@@ -177,73 +170,45 @@ div.prioritizedStatsItem {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    align-items: center;
     flex: 0 0 48%;
-    max-width: 50%;
+    font-family: macExtMinecraft;
 
-    div.label {
-        font-family: macExtMinecraft;
-    }
+    p { margin: 0px; }
 }
 
-div.tagsRow {
+#tagsContainer {
     display: flex;
     flex-flow: row nowrap;
     column-gap: 8px;
-    padding: 0px 16px 16px 16px;
 
-    div.tagIcon {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
-    }
-
-    div.tagItems {
+    #tagItemsRow {
         display: flex;
         flex-flow: row wrap;
+        flex: 1;
         row-gap: 8px;
         column-gap: 8px;
-        flex: 1;
     }
 }
 
-div.behaviorRow {
+#unitBehaviorContainer {
     display: flex;
     flex-flow: row nowrap;
     column-gap: 8px;
-    padding: 0px 16px 8px 16px;
+    align-items: center;
 
-    div.behaviorIcon {
+    p { 
         display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
-    }
-
-    div.text {
-        display: flex;
-        flex-flow: column nowrap;
         flex: 1;
-        justify-content: center;
-
-        p {
-            margin: 0px;
-        }
+        margin: 0px; 
     }
 }
 
-div.statusConditionsRow {
+#statusConditionsContainer {
     display: flex;
     flex-flow: row nowrap;
     column-gap: 8px;
-    padding: 0px 16px 16px 16px;
 
-    div.statusConditionIcon {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
-    }
-
-    div.statusConditionItems {
+    #statusItemsColumn {
         display: flex;
         flex-flow: column nowrap;
         flex: 1;
@@ -254,14 +219,13 @@ div.statusConditionsRow {
 #statsSectionContainer {
     display: flex;
     flex-flow: column nowrap;
-    padding: 0px 16px 16px 16px;
+    row-gap: 8px;
 
     #statsHeaderRow {
         display: flex;
         display: row nowrap;
         align-items: center;
         column-gap: 8px;
-        margin-bottom: 8px;
 
         h2 {
             margin: 0px;
@@ -278,15 +242,14 @@ div.statusConditionsRow {
 
         div.statRow {
             display: flex;
-            flex: 1;
             flex-flow: row wrap;
+            flex: 1;
             justify-content: space-between;
             row-gap: 8px;
 
             modified-unit-stat {
                 display: flex;
                 flex: 0 0 48%;
-                max-width: 50%;
             }
         }
     }
@@ -295,14 +258,13 @@ div.statusConditionsRow {
 #inventorySectionContainer{
     display: flex;
     flex-flow: column nowrap;
-    padding: 0px 16px 16px 16px;
+    row-gap: 8px;
 
     #inventoryHeaderRow {
         display: flex;
         display: row nowrap;
         align-items: center;
         column-gap: 8px;
-        margin-bottom: 8px;
 
         h2 {
             margin: 0px;
@@ -312,41 +274,45 @@ div.statusConditionsRow {
         }
     }
 
-    #subsectionContainer {
+    #inventorySubsectionsContainer {
         display: flex;
         flex-flow: column nowrap;
-        row-gap: 8px;
-        margin-bottom: 16px;
+        row-gap: 16px;
 
-        h3 {
-            margin: 0px;
-            font-family: macExtMinecraft;
-            font-style: normal;
-            font-weight: normal;
+        div.inventorySubsection {
+            display: flex;
+            flex-flow: column nowrap;
+            row-gap: 8px;
+
+            h3 {
+                margin: 0px;
+                font-family: macExtMinecraft;
+                font-style: normal;
+                font-weight: normal;
+            }
         }
-    }
 
-    #emptySlots {
-        display: flex;
-        padding: 8px;
-        border: 2px solid var(--primary-theme-color);
-        border-radius: 0px 8px 0px 8px;
-        font-family: macExtMinecraft;
-        font-style: italic;
+        div.emptySlots {
+            display: flex;
+            padding: 8px;
+            border: 2px solid var(--primary-theme-color);
+            border-radius: 0px 8px 0px 8px;
+            font-family: macExtMinecraft;
+            font-style: italic;
+        }
     }
 }
 
-#skillsContainer{
+#skillsSectionContainer{
     display: flex;
     flex-flow: column nowrap;
-    padding: 0px 16px 16px 16px;
+    row-gap: 8px;
 
     #skillsHeaderRow {
         display: flex;
         display: row nowrap;
         align-items: center;
         column-gap: 8px;
-        margin-bottom: 8px;
 
         h2 {
             margin: 0px;
@@ -356,17 +322,22 @@ div.statusConditionsRow {
         }
     }
 
-    #subsectionContainer {
+    #skillsSubsectionsContainer {
         display: flex;
         flex-flow: column nowrap;
-        row-gap: 8px;
-        margin-bottom: 16px;
+        row-gap: 16px;
 
-        h3 {
-            margin: 0px;
-            font-family: macExtMinecraft;
-            font-style: normal;
-            font-weight: normal;
+        div.skillsSubsection {
+            display: flex;
+            flex-flow: column nowrap;
+            row-gap: 8px;
+
+            h3 {
+                margin: 0px;
+                font-family: macExtMinecraft;
+                font-style: normal;
+                font-weight: normal;
+            }
         }
-    }
+    } 
 }

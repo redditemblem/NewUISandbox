@@ -12,5 +12,5 @@ import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 export class ModifiedUnitStat {
   name = input.required<string>();
   values = input.required<IModifiedStatValue>();
-  expanded = input.required<boolean>();
+  expanded = input<boolean>(false);
 }

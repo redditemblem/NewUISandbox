@@ -7,8 +7,8 @@ import { Component, input } from '@angular/core';
   styleUrl: './text-fields-with-labeled-header.scss',
 })
 export class TextFieldsWithLabeledHeader {
-  label = input.required<string | undefined>();
-  title = input.required<string | undefined>();
-  titleHref = input<string | undefined>();
-  textFields = input<string[] | undefined>();
+  public label = input.required<string | undefined>();
+  public title = input.required<string | undefined>();
+  public titleHref = input<string | undefined>();
+  public textFields = input<string[] | undefined>();
 }

@@ -5,15 +5,39 @@ import { ICurrencyConstants } from '../../data/interfaces/system/currency-consta
 @Component({
   selector: 'currency',
   imports: [],
-  templateUrl: './currency.html',
-  styles: ''
+  template: `<p>{{formatCurrentString()}}</p>`,
+  styles: `p { margin: 0px; }`
 })
 export class Currency {
-  amount = input.required<number | undefined>();
-  constants : ICurrencyConstants | undefined;
+  public amount = input.required<number | undefined>();
 
-  constructor(public teamDataService : TeamDataService) {
+  private readonly constants : ICurrencyConstants | undefined;
+
+  constructor(protected teamDataService : TeamDataService) {
     this.teamDataService = inject(TeamDataService);
     this.constants = this.teamDataService.getCurrencyConstants();
+  }
+
+  protected formatCurrentString() : string {
+    const value: number = this.amount() ?? 0;
+    if(this.constants === undefined)
+      return `${value}`;
+    
+    if(this.constants.isSymbolLeftAligned) {
+      if(this.constants.includeSpace) {
+        return `${this.constants.currencySymbol} ${value}`;
+      }
+      else {
+        return `${this.constants.currencySymbol}${value}`;
+      }
+    }
+    else {
+      if(this.constants.includeSpace) {
+        return `${value} ${this.constants.currencySymbol}`;
+      }
+      else {
+        return `${value}${this.constants.currencySymbol}`;
+      }
+    }
   }
 }

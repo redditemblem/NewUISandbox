@@ -1,4 +1,4 @@
-div.headerRow {
+div.labeledHeaderRow {
     display: flex;
     flex-flow: row nowrap;
     align-items: stretch;
@@ -18,7 +18,7 @@ div.headerRow {
 
     div.labelTextPoint {
         width: 16px;
-        background: linear-gradient(to right top, var(--primary-theme-color) 50%, transparent 50%);
+        background: linear-gradient(to right top, var(--primary-theme-color) 51%, transparent 51%);
     }
 
     h2.titleText {
