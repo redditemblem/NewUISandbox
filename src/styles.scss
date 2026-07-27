@@ -4,10 +4,12 @@
 $primary-theme-color-light: #90AEFF;
 $secondary-theme-color-light: #CEFC86;
 $tertiary-theme-color-light: #60EFB8;
+$tertiary-theme-color-dim-light: #1eb77d;
 
 $primary-theme-color-dark: #3e59a3;
 $secondary-theme-color-dark: #7da43e;
 $tertiary-theme-color-dark: #1c9164;
+$tertiary-theme-color-dim-dark: #0a5538;
 
 html {
   height: 100%;
@@ -23,6 +25,7 @@ html {
   --primary-theme-color: #{light-dark($primary-theme-color-light, $primary-theme-color-dark)};
   --secondary-theme-color: #{light-dark($secondary-theme-color-light, $secondary-theme-color-dark)};
   --tertiary-theme-color: #{light-dark($tertiary-theme-color-light, $tertiary-theme-color-dark)};
+  --tertiary-theme-color-dim: #{light-dark($tertiary-theme-color-dim-light, $tertiary-theme-color-dim-dark)};
 }
 
 @mixin apply-dark-mode {

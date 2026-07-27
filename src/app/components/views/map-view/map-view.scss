@@ -55,11 +55,11 @@ button.sidenavExpandButton {
         container-shape: 0px 10px 10px 0px
     ));
     
-    position: absolute;
     position-anchor: --sidenav-anchor;
-    position-area: x-end y-start;
+    position: fixed;
+    left: anchor(right);
     position-visibility: always;
-    z-index: 99;
+    z-index: 2;
 }
 
 #segmentTabs {

@@ -1,21 +1,23 @@
-<div id="modifiedStatContainer">
-    <div id="headerRow">
-        <div id="label">
-            <div id="text">{{name()}}</div>
-            <div id="point"></div>
+<div class="modifiedStatContainer">
+    <div class="statHeaderRow">
+        <div class="labelContainer" [title]="this.name()">
+            <p>{{this.name()}}</p>
         </div>
-        <stat-with-buff-icon [base]="values().baseValue" [final]="values().finalValue" [invertColors]="values().invertModifiedDisplayColors ?? false" />
+        <div class="point"></div>
+        <div class="statContainer">
+            <stat-with-buff-icon [base]="values().baseValue" [final]="values().finalValue" [invertColors]="values().invertModifiedDisplayColors ?? false" />
+        </div> 
     </div>
     @if (expanded()) {
-        <div id="modifiersContainer">
-            <div id="swoopy"></div>
-            <div id="modifierRows">
+        <div class="modifiersContainer">
+            <div class="leftBorder"></div>
+            <div class="modifierRows">
                 <div class="modifierRow">
                     <p>Base</p>
                     <p>{{values().baseValue}}</p>
                 </div>
                 @for (mod of values().modifiers | keyvalue; track mod.key) {
-                    <div class="modifierRow" [ngClass]="{'shaded': $even}">
+                    <div class="modifierRow" [class]="{'shaded': $even}">
                         <p>{{mod.key}}</p>
                         <p>{{mod.value}}</p>
                     </div>

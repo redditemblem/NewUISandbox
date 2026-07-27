@@ -1,0 +1,15 @@
+@if(this.rank().length > 0) {
+    <div class="rankedContainer" [title]="`${this.category()} Rank ${this.rank()}`">
+        <p class="rankedCategory">
+            {{this.category()}}
+        </p>
+        <p class="rankedRank">
+            {{this.rank()}}
+        </p>
+    </div>
+}
+@else {
+    <div class="ranklessContainer" [title]="`${this.category()}`">
+        <p>{{this.category()}}</p>
+    </div>
+}

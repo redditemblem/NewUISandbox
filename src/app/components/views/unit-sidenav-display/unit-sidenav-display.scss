@@ -35,7 +35,7 @@ img.flipHorz {
     flex: 1;
     align-items: center;
     column-gap: 8px;
-    padding: 16px 32px 16px 32px;
+    padding: 16px 24px 16px 24px;
     border-radius: 0px 16px;
     background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--primary-theme-color), transparent, var(--primary-theme-color));
     font-family: macExtMinecraft;
@@ -92,7 +92,7 @@ img.flipHorz {
             max-width: 150px;
             margin: 0px;
             padding: 4px 16px 4px 16px;
-            background: var(--secondary-theme-color);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 8px), var(--tertiary-theme-color);
             font-size: .65rem;
             font-family: macExtMinecraft;
             overflow: hidden;
@@ -107,11 +107,11 @@ img.flipHorz {
 
             #leftTail {
                 flex: 1;
-                background: linear-gradient(to bottom right, var(--secondary-theme-color) 50%, transparent 50%);
+                background: linear-gradient(to bottom right, var(--tertiary-theme-color) 50%, transparent 50%);
             }
             #rightTail {
                 flex: 1;
-                background: linear-gradient(to bottom left, var(--secondary-theme-color) 50%, transparent 50%);
+                background: linear-gradient(to bottom left, var(--tertiary-theme-color) 50%, transparent 50%);
             }
         }
     }
@@ -130,6 +130,7 @@ img.flipHorz {
     flex-flow: row wrap;
     justify-content: space-between;
     row-gap: 8px;
+    column-gap: 1%;
 
     modified-unit-stat {
         display: flex;
@@ -216,12 +217,12 @@ div.prioritizedStatsItem {
     }
 }
 
-#statsSectionContainer {
+.sectionContainerWithHeader {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
 
-    #statsHeaderRow {
+    .sectionHeaderRow {
         display: flex;
         display: row nowrap;
         align-items: center;
@@ -234,39 +235,51 @@ div.prioritizedStatsItem {
             font-weight: normal;
         }
     }
+}
 
-    #statRowsContainer {
+#statSectionsContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 24px;
+
+    div.statRow {
         display: flex;
-        flex-flow: column nowrap;
-        row-gap: 24px;
+        flex-flow: row wrap;
+        flex: 1;
+        justify-content: space-between;
+        row-gap: 6px;
 
-        div.statRow {
-            display: flex;
-            flex-flow: row wrap;
-            flex: 1;
-            justify-content: space-between;
-            row-gap: 8px;
-
-            modified-unit-stat {
-                display: flex;
-                flex: 0 0 48%;
-            }
+        modified-unit-stat {
+            width: 48%;
         }
     }
 }
 
-#inventorySectionContainer{
+#weaponRanksContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 8px;
+
+    #weaponRanksRow {
+        display: flex;
+        flex-flow: row wrap;
+        flex: 1;
+        row-gap: 8px;
+        column-gap: 8px;
+    }
+}
+
+#inventorySubsectionsContainer {
     display: flex;
     flex-flow: column nowrap;
-    row-gap: 8px;
+    row-gap: 16px;
 
-    #inventoryHeaderRow {
+    div.inventorySubsection {
         display: flex;
-        display: row nowrap;
-        align-items: center;
-        column-gap: 8px;
+        flex-flow: column nowrap;
+        row-gap: 8px;
 
-        h2 {
+        h3 {
             margin: 0px;
             font-family: macExtMinecraft;
             font-style: normal;
@@ -274,70 +287,31 @@ div.prioritizedStatsItem {
         }
     }
 
-    #inventorySubsectionsContainer {
+    div.emptySlots {
         display: flex;
-        flex-flow: column nowrap;
-        row-gap: 16px;
-
-        div.inventorySubsection {
-            display: flex;
-            flex-flow: column nowrap;
-            row-gap: 8px;
-
-            h3 {
-                margin: 0px;
-                font-family: macExtMinecraft;
-                font-style: normal;
-                font-weight: normal;
-            }
-        }
-
-        div.emptySlots {
-            display: flex;
-            padding: 8px;
-            border: 2px solid var(--primary-theme-color);
-            border-radius: 0px 8px 0px 8px;
-            font-family: macExtMinecraft;
-            font-style: italic;
-        }
+        padding: 8px;
+        border: 2px solid var(--primary-theme-color);
+        border-radius: 0px 8px 0px 8px;
+        font-family: macExtMinecraft;
+        font-style: italic;
     }
 }
 
-#skillsSectionContainer{
+#skillsSubsectionsContainer {
     display: flex;
     flex-flow: column nowrap;
-    row-gap: 8px;
+    row-gap: 16px;
 
-    #skillsHeaderRow {
+    div.skillsSubsection {
         display: flex;
-        display: row nowrap;
-        align-items: center;
-        column-gap: 8px;
+        flex-flow: column nowrap;
+        row-gap: 8px;
 
-        h2 {
+        h3 {
             margin: 0px;
             font-family: macExtMinecraft;
             font-style: normal;
             font-weight: normal;
         }
     }
-
-    #skillsSubsectionsContainer {
-        display: flex;
-        flex-flow: column nowrap;
-        row-gap: 16px;
-
-        div.skillsSubsection {
-            display: flex;
-            flex-flow: column nowrap;
-            row-gap: 8px;
-
-            h3 {
-                margin: 0px;
-                font-family: macExtMinecraft;
-                font-style: normal;
-                font-weight: normal;
-            }
-        }
-    } 
-}
+} 

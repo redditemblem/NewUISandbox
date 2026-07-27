@@ -57,7 +57,7 @@
             <div id="hpValueRow">
                 <p>HP</p>
                 <div id="hpValues">
-                    <p style="font-size: 1.75rem; line-height: 1.75rem;">{{unit().stats.hp.current}}</p>
+                    <p style="font-size: 1.5rem; line-height: 1.5rem;">{{unit().stats.hp.current}}</p>
                     <p>/ {{unit().stats.hp.maximum}}</p>
                 </div>
             </div>
@@ -69,8 +69,11 @@
             }
         </div>
         @if(dictionaryHasKeys(unit().stats.system_Prioritized)) {
-            @for(stat of unit().stats.system_Prioritized | keyvalue : sortModifiedUnitStat; track stat.key) {
-                <modified-unit-stat [name]="stat.key" [values]="stat.value" />
+            @for(stat of unit().stats.system_Prioritized | keyvalue : doNotSortByKey; track stat.key) {
+                <div class="prioritizedStatsItem">
+                    <p>{{stat.key}}</p>
+                    <p>{{stat.value}}</p>
+                </div>
             }
         }
         @if((unit().stats.experience ?? 0) > 0){
@@ -102,6 +105,37 @@
             <p>{{unit().behavior}}</p>
         </div>
     }
+    <div id="statsSection" class="sectionContainerWithHeader">
+        <div class="sectionHeaderRow">
+            <button matIconButton (click)="toggleStatExpansion()" [title]="'Click to ' + (this.isStatsInfoExpanded() ? 'collapse' : 'expand') + ' the stats section'">
+                <img src="img/caret.png" [class]="{'rotate90': this.isStatsInfoExpanded()}" />
+            </button>
+            <h2>Stats</h2>
+        </div>
+        <div id="statSectionsContainer">
+            @if(dictionaryHasKeys(unit().stats.combat)) {
+            <div class="statRow">
+                @for (stat of unit().stats.combat | keyvalue : doNotSortByKey; track stat.key){
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                }
+            </div>
+            }
+            @if(dictionaryHasKeys(unit().stats.system_NonPrioritized)) {
+                <div class="statRow">
+                    @for (stat of unit().stats.system_NonPrioritized | keyvalue : doNotSortByKey; track stat.key){
+                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                    }
+                </div>
+            }
+            @if(dictionaryHasKeys(unit().stats.general)) {
+                <div class="statRow">
+                    @for (stat of unit().stats.general | keyvalue : doNotSortByKey; track stat.key){
+                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
     @if((unit().statusConditions ?? []).length > 0) {
         <div id="statusConditionsContainer">
             <img src="img/status_icon.png" height="32" width="32" title="Status conditions" />
@@ -112,40 +146,19 @@
             </div>
         </div>
     }
-    <div id="statsSectionContainer">
-        <div id="statsHeaderRow">
-            <button matIconButton (click)="toggleStatExpansion()" [title]="'Click to ' + (this.isStatsInfoExpanded() ? 'collapse' : 'expand') + ' the stats section'">
-                <img src="img/caret.png" [class]="{'rotate90': this.isStatsInfoExpanded()}" />
-            </button>
-            <h2>Stats</h2>
-        </div>
-        <div id="statRowsContainer">
-            @if(dictionaryHasKeys(unit().stats.combat)) {
-            <div class="statRow">
-                @for (stat of unit().stats.combat | keyvalue : sortModifiedUnitStat; track stat.key){
-                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+    @if(dictionaryHasKeys(unit().weaponRanks)) {
+        <div id="weaponRanksContainer">
+            <img src="img/star_icon.png" height="32" width="32" title="Weapon ranks" />
+            <div id="weaponRanksRow">
+                @for(rank of unit().weaponRanks | keyvalue : doNotSortByKey; track rank.key){
+                    <unit-weapon-rank [category]="rank.key" [rank]="rank.value" />
                 }
             </div>
-            }
-            @if(dictionaryHasKeys(unit().stats.system_NonPrioritized)) {
-                <div class="statRow">
-                    @for (stat of unit().stats.system_NonPrioritized | keyvalue : sortModifiedUnitStat; track stat.key){
-                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
-                    }
-                </div>
-            }
-            @if(dictionaryHasKeys(unit().stats.general)) {
-                <div class="statRow">
-                    @for (stat of unit().stats.general | keyvalue : sortModifiedUnitStat; track stat.key){
-                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
-                    }
-                </div>
-            }
         </div>
-    </div>
+    }
     <mat-divider />
-    <div id="inventorySectionContainer">
-        <div id="inventoryHeaderRow">
+    <div id="inventorySection" class="sectionContainerWithHeader">
+        <div class="sectionHeaderRow">
             <button matIconButton (click)="toggleInventoryExpansion()" [title]="'Click to ' + (this.isInventoryExpanded() ? 'collapse' : 'expand') + ' the inventory'">
                 <img src="img/caret.png" [class]="{'rotate90': this.isInventoryExpanded()}" />
             </button>
@@ -171,10 +184,24 @@
             </div> 
         }
     </div>
+    @if(unit().emblem !== undefined) {
+        <mat-divider />
+        <div id="emblemSection" class="sectionContainerWithHeader">
+            <div class="sectionHeaderRow">
+                <button matIconButton (click)="toggleEmblemExpansion()" [title]="'Click to ' + (this.isEmblemExpanded() ? 'collapse' : 'expand') + ' the emblem'">
+                    <img src="img/caret.png" [class]="{'rotate90': this.isEmblemExpanded()}" />
+                </button>
+                <h2>{{getEmblemLabel()}}</h2>
+            </div>
+            @if (this.isEmblemExpanded()) {
+                Emblem, engage!
+            }
+        </div>
+    }
     @if (unit().hasSkills) {
         <mat-divider />
-        <div id="skillsSectionContainer">
-            <div id="skillsHeaderRow">
+        <div id="skillsSection" class="sectionContainerWithHeader">
+            <div class="sectionHeaderRow">
                 <button matIconButton (click)="toggleSkillsExpansion()" [title]="'Click to ' + (this.isSkillsInfoExpanded() ? 'collapse' : 'expand') + ' skills'">
                     <img src="img/caret.png" [class]="{'rotate90': this.isSkillsInfoExpanded()}" />
                 </button>

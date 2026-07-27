@@ -14,10 +14,11 @@ import { UnitStatusCondition } from '../../unit-status-condition/unit-status-con
 import { MatDivider } from '@angular/material/divider';
 import { InventoryItem } from '../../inventory-item/inventory-item';
 import { UnitSkill } from "../../unit-skill/unit-skill";
+import { UnitWeaponRank } from "../../unit-weapon-rank/unit-weapon-rank";
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill, UnitWeaponRank],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
@@ -28,6 +29,7 @@ export class UnitSidenavDisplay {
   public isUnitInfoExpanded = signal<boolean>(false);
   public isStatsInfoExpanded = signal<boolean>(false);
   public isInventoryExpanded = signal<boolean>(true);
+  public isEmblemExpanded = signal<boolean>(true);
   public isSkillsInfoExpanded = signal<boolean>(true);
 
   constructor(protected teamDataService: TeamDataService) {
@@ -39,12 +41,14 @@ export class UnitSidenavDisplay {
     this.isUnitInfoExpanded.set(false);
     this.isStatsInfoExpanded.set(false);
     this.isInventoryExpanded.set(true);
+    this.isEmblemExpanded.set(true);
     this.isSkillsInfoExpanded.set(true);
   }
 
   protected toggleUnitInfoExpansion() { this.isUnitInfoExpanded.set(!this.isUnitInfoExpanded()); }
   protected toggleStatExpansion() { this.isStatsInfoExpanded.set(!this.isStatsInfoExpanded()); }
   protected toggleInventoryExpansion() { this.isInventoryExpanded.set(!this.isInventoryExpanded()); }
+  protected toggleEmblemExpansion() { this.isEmblemExpanded.set(!this.isEmblemExpanded()); }
   protected toggleSkillsExpansion() { this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded()); }
   
   protected dictionaryHasKeys(object: any) : boolean {
@@ -53,7 +57,7 @@ export class UnitSidenavDisplay {
     return Object.keys(object).length > 0;
   }
 
-  protected sortModifiedUnitStat() : number {
+  protected doNotSortByKey() : number {
     //Don't actually want a real sort here, so just return 0 for all items.
     return 0;
   }
@@ -64,6 +68,10 @@ export class UnitSidenavDisplay {
 
   protected getInventorySubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
+  }
+
+  protected getEmblemLabel() : string {
+    return this.teamDataService.getInterfaceLabels()?.emblem ?? "";
   }
 
   protected getSkillsLabel() : string {

@@ -1,52 +1,61 @@
-#modifiedStatContainer {
+div.modifiedStatContainer {
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
     row-gap: 4px;
 
-    #headerRow {
+    div.statHeaderRow {
         display: flex;
         flex-flow: row nowrap;
-        justify-content: space-between;
+        flex: 1;
         align-items: center;
         font-family: macExtMinecraft;
         font-size: .8rem;
-
-        #label {
+        
+        div.labelContainer {
             display: flex;
-            flex-flow: row nowrap;
-            align-items: stretch;
+            flex: 1;
+            justify-content: center;
+            padding: 4px 8px 4px 8px;
+            border-radius: 0px 0px 0px 8px;
+            background: var(--secondary-theme-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
 
-            #text {
-                display: flex;
-                justify-content: center;
-                width: 100px;
-                padding: 4px 0px 4px 0px;
-                border-radius: 0px 0px 0px 8px;
-                background: var(--secondary-theme-color);
+            p {
+                margin: 0px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-wrap: nowrap;
             }
+        }
 
-            #point {
-                width: 16px;
-                background: linear-gradient(to right top, var(--secondary-theme-color) 50%, transparent 50%);
-            }
+        div.point {
+            height: 28px;
+            width: 16px;
+            background: linear-gradient(to right top, var(--secondary-theme-color) 50%, transparent 50%);
+        }
+
+        div.statContainer {
+            display: flex;
+            flex-flow: row-reverse nowrap;
+            width: 35%;
         }
     }
 
-    #modifiersContainer {
+    div.modifiersContainer {
         display: flex;
         flex-flow: row nowrap;
         align-items: stretch;
         column-gap: 2px;
         
-        #swoopy {
-            display: flex;
-            flex-flow: column nowrap;
+        div.leftBorder {
             width: 12px;
             border-right: 3px solid var(--tertiary-theme-color);
         }
         
-        #modifierRows {
+        div.modifierRows {
             display: flex;
             flex-flow: column nowrap;
             flex: 1;
