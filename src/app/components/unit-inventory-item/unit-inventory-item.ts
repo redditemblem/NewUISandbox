@@ -1,9 +1,9 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, OnChanges, signal } from '@angular/core';
 import { IUnitInventoryItem } from '../../data/interfaces/unit/unit-inventory-item';
 import { IItem } from '../../data/interfaces/system/item';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from '@angular/material/divider';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { IEngraving } from '../../data/interfaces/system/engraving';
 import { ITag } from '../../data/interfaces/system/tag';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
@@ -11,43 +11,40 @@ import { ItemRangeShape } from "../../data/interfaces/system/item-range";
 import { Engraving } from '../engraving/engraving';
 
 @Component({
-  selector: 'inventory-item',
-  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, NgClass, Engraving],
-  templateUrl: './inventory-item.html',
-  styleUrl: './inventory-item.scss',
+  selector: 'unit-inventory-item',
+  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, Engraving],
+  templateUrl: './unit-inventory-item.html',
+  styleUrl: './unit-inventory-item.scss',
 })
-export class InventoryItem {
+export class UnitInventoryItem implements OnChanges {
   //Expose enum for use in the class
   protected readonly ItemRangeShape = ItemRangeShape;
 
-  item = input.required<IUnitInventoryItem>();
-  systemData : IItem | undefined;
-  isExpanded : boolean = false;
+  public item = input.required<IUnitInventoryItem>();
+  
+  protected systemData = signal<IItem | undefined>(undefined);
+  protected isExpanded = signal<boolean>(false);
 
-  constructor(public teamDataService: TeamDataService) {
+  constructor(private teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 
   ngOnChanges() {
-    this.systemData = this.teamDataService.getItemByName(this.item().name);
-    this.isExpanded = false;
+    this.systemData.set(this.teamDataService.getItemByName(this.item().name));
+    this.isExpanded.set(false);
   }
 
-  toggleExpansion() : void {
-    this.isExpanded = !this.isExpanded;
-  }
-
-  getEngravingByName(name: string) : IEngraving | undefined {
+  protected getEngravingByName(name: string) : IEngraving | undefined {
     return this.teamDataService.getEngravingByName(name);
   }
 
-  getTagByName(name: string) : ITag | undefined {
+  protected getTagByName(name: string) : ITag | undefined {
     return this.teamDataService.getTagByName(name);
   }
 
-  formatUtilizedStatsText() : string {
-    let utilized = this.systemData?.utilizedStats ?? [];
-    let targeted = this.systemData?.targetedStats ?? [];
+  protected formatUtilizedStatsText() : string {
+    const utilized = this.systemData()?.utilizedStats ?? [];
+    const targeted = this.systemData()?.targetedStats ?? [];
 
     if(utilized.length < 1)
       return "";
@@ -59,11 +56,11 @@ export class InventoryItem {
     return "(" + stats + ")";
   }
 
-  hasNonZeroStatValue() : boolean {
+  protected hasNonZeroStatValue() : boolean {
     return Object.values(this.item().stats ?? {}).some(s => s.finalValue !== 0);
   }
 
-  sortStats() : number {
+  protected sortStats() : number {
     return 0;
   }
 }

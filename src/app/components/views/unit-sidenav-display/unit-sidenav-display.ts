@@ -12,13 +12,14 @@ import { KeyValuePipe } from '@angular/common';
 import { ModifiedUnitStat } from '../../modified-unit-stat/modified-unit-stat';
 import { UnitStatusCondition } from '../../unit-status-condition/unit-status-condition';
 import { MatDivider } from '@angular/material/divider';
-import { InventoryItem } from '../../inventory-item/inventory-item';
+import { UnitInventoryItem } from '../../unit-inventory-item/unit-inventory-item';
 import { UnitSkill } from "../../unit-skill/unit-skill";
 import { UnitWeaponRank } from "../../unit-weapon-rank/unit-weapon-rank";
+import { UnitEmblem } from "../../unit-emblem/unit-emblem";
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, InventoryItem, UnitSkill, UnitWeaponRank],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

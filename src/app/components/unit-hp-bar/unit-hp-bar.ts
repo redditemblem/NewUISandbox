@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnChanges, signal } from '@angular/core';
 
 @Component({
   selector: 'unit-hp-bar',
@@ -11,8 +11,8 @@ import { Component, input } from '@angular/core';
     }
   `
 })
-export class UnitHpBar {
-  percentage = input.required<number>();
+export class UnitHpBar implements OnChanges {
+  public percentage = input.required<number>();
 
   private readonly overfilledPrimary : string = "#992DE4";
   private readonly overfilledSecondary : string = "#d9cce3";
@@ -30,34 +30,33 @@ export class UnitHpBar {
   private readonly below25Secondary : string = "#efd1d1";
   private readonly below25Border : string = "#640707";
 
-  public primaryColor : string = this.above50Primary;
-  public secondaryColor : string = this.above50Secondary;
-  public borderColor : string = this.above50Border;
+  protected primaryColor = signal<string>(this.above50Primary);
+  protected secondaryColor = signal<string>(this.above50Secondary);
+  protected borderColor = signal<string>(this.above50Border);
 
-  //Called every time this.percentage() updates
   ngOnChanges() {
     if(this.percentage() > 100){
-      this.primaryColor = this.overfilledPrimary;
-      this.secondaryColor = this.overfilledSecondary;
-      this.borderColor = this.overfilledBorder;
+      this.primaryColor.set(this.overfilledPrimary);
+      this.secondaryColor.set(this.overfilledSecondary);
+      this.borderColor.set(this.overfilledBorder);
     } 
     else if(this.percentage() <= 100 && this.percentage() > 50)
     {
-      this.primaryColor = this.above50Primary;
-      this.secondaryColor = this.above50Secondary;
-      this.borderColor = this.above50Border;
+      this.primaryColor.set(this.above50Primary);
+      this.secondaryColor.set(this.above50Secondary);
+      this.borderColor.set(this.above50Border);
     } 
     else if(this.percentage() <= 50 && this.percentage() > 25)
     {
-      this.primaryColor = this.above25Primary;
-      this.secondaryColor = this.above25Secondary;
-      this.borderColor = this.above25Border;
+      this.primaryColor.set(this.above25Primary);
+      this.secondaryColor.set(this.above25Secondary);
+      this.borderColor.set(this.above25Border);
     }
     else
     {
-      this.primaryColor = this.below25Primary;
-      this.secondaryColor = this.below25Secondary;
-      this.borderColor = this.below25Border;
+      this.primaryColor.set(this.below25Primary);
+      this.secondaryColor.set(this.below25Secondary);
+      this.borderColor.set(this.below25Border);
     }
   }
 }

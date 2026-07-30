@@ -1,14 +1,14 @@
-<div id="container">
+<div class="primaryColorCard statusContainer">
     <div id="headerRow">
         <div id="titleContainer">
             <div id="title">
-                @if ((systemData?.spriteURL ?? "").length > 0) {
-                    <img id="sprite" [src]="systemData?.spriteURL" height="12" width="12" />
+                @if ((systemData()?.spriteURL ?? "").length > 0) {
+                    <img id="sprite" [src]="systemData()?.spriteURL" height="12" width="12" />
                 }
                 {{status().name}}
                 @if ((status().remainingTurns ?? 0) > 0) {
-                    @if((systemData?.turns ?? 0) > 0) {
-                        ({{status().remainingTurns}}/{{systemData?.turns}} turns)
+                    @if((systemData()?.turns ?? 0) > 0) {
+                        ({{status().remainingTurns}}/{{systemData()?.turns}} turns)
                     }
                     @else {
                         ({{status().remainingTurns}} turns)
@@ -22,10 +22,10 @@
             </p>
         </div>
         <div id="icons">
-            @if (systemData?.isEffectConfigured) {
+            @if (systemData()?.isEffectConfigured) {
                 <img src="img/gear_icon.png" width="20" height="20" title="Effect Configured" />
             }
-            @switch (systemData?.type ?? 0) 
+            @switch (systemData()?.type ?? 0) 
             {
                 @case(1) {
                     <img src="img/positive_icon.png" width="20" height="20" title="Positive Status" />
@@ -39,7 +39,7 @@
             }
         </div>
     </div>
-    @for(text of systemData?.textFields; track $index) {
+    @for(text of systemData()?.textFields; track $index) {
         <p>{{text}}</p>
     }
 </div>

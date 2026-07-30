@@ -10,15 +10,18 @@ export class TeamListService {
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/teamList';
 
   private loading = signal<boolean>(true);
-  readonly isLoading = this.loading.asReadonly();
+  public readonly isLoading = this.loading.asReadonly();
 
   private error = signal<string>("");
-  readonly errorMessage = this.error.asReadonly();
+  public readonly errorMessage = this.error.asReadonly();
 
   private teams = signal<ITeamData[]>([]);
-  readonly teamsList = this.teams.asReadonly();
+  public readonly teamsList = this.teams.asReadonly();
 
   constructor(private http: HttpClient)  {
+    this.loading.set(true);
+    this.teams.set([]);
+    
     http.get<ITeamData[]>(this.apiUrl, {responseType: 'json'}).subscribe({
       next: (response) => {
         this.teams.set(response);

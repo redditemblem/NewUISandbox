@@ -7,8 +7,8 @@ import { Component, input } from '@angular/core';
   styleUrl: './stat-with-buff-icon.scss',
 })
 export class StatWithBuffIcon {
-  base = input.required<number>();
-  final = input.required<number>();
-  invertColors = input<boolean>(false);
-  height = input<number>(16);
+  public base = input.required<number>();
+  public final = input.required<number>();
+  public invertColors = input<boolean>(false);
+  public height = input<number>(16);
 }

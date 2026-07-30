@@ -9,6 +9,6 @@ import { Component, input } from '@angular/core';
 export class TextFieldsWithLabeledHeader {
   public label = input.required<string | undefined>();
   public title = input.required<string | undefined>();
-  public titleHref = input<string | undefined>();
-  public textFields = input<string[] | undefined>();
+  public titleHref = input<string | undefined>(undefined);
+  public textFields = input<string[] | undefined>(undefined);
 }

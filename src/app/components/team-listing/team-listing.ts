@@ -11,9 +11,9 @@ import { RouterLink } from "@angular/router";
   styleUrl: './team-listing.scss',
 })
 export class TeamListing {
-  team = input.required<ITeamData>();
+  public team = input.required<ITeamData>();
 
-  GetTeamNameWithoutSpaces(): string{
+  protected GetTeamNameWithoutSpaces(): string{
     return this.team().teamName.replace(' ', '');
   }
 }

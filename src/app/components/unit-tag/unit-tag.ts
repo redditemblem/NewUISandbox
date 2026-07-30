@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, OnChanges, signal } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
 import { ITag } from '../../data/interfaces/system/tag';
 
@@ -7,7 +7,7 @@ import { ITag } from '../../data/interfaces/system/tag';
   imports: [],
   templateUrl: './unit-tag.html',
   styles: `
-    #container {
+    div.tagContainer {
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
@@ -33,15 +33,15 @@ import { ITag } from '../../data/interfaces/system/tag';
     }
   `
 })
-export class UnitTag {
-  tag = input.required<string>();
-  systemData : ITag | undefined;
+export class UnitTag implements OnChanges {
+  public tag = input.required<string>();
+  protected systemData = signal<ITag | undefined>(undefined);
 
-  constructor(public teamDataService: TeamDataService) {
+  constructor(private teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 
   ngOnChanges() {
-    this.systemData = this.teamDataService.getTagByName(this.tag());
+    this.systemData.set(this.teamDataService.getTagByName(this.tag()));
   }
 }

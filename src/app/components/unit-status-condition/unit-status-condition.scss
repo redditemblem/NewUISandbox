@@ -1,9 +1,6 @@
-#container {
+div.statusContainer {
     display: flex;
     flex-flow: column nowrap;
-    padding: 8px;
-    border: 2px solid var(--primary-theme-color);
-    border-radius: 0px 8px 0px 8px;
     font-size: 0.8rem;
 
     #headerRow {

@@ -12,6 +12,8 @@ import { IItem } from '../data/interfaces/system/item';
 import { IEngraving } from '../data/interfaces/system/engraving';
 import { ISkill } from '../data/interfaces/system/skill';
 import { IMapConstants } from '../data/interfaces/map/map-constants';
+import { IEmblem } from '../data/interfaces/system/emblem';
+import { IEngageAttack } from '../data/interfaces/system/engage-attack';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +23,13 @@ export class TeamDataService {
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/';
 
   private loading = signal<boolean>(true);
-  readonly isLoading = this.loading.asReadonly();
+  public readonly isLoading = this.loading.asReadonly();
 
   private error = signal<string>("");
-  readonly errorMessage = this.error.asReadonly();
+  public readonly errorMessage = this.error.asReadonly();
 
   private map = signal<IMapData>({});
-  readonly mapData = this.map.asReadonly();
+  public readonly mapData = this.map.asReadonly();
 
   constructor(public http: HttpClient) {
 	this.http = inject(HttpClient);
@@ -50,70 +52,82 @@ export class TeamDataService {
 		});
   }
   
-  getWorksheetID() : string | undefined { return this.mapData().workbookID; }
-  isConvoyConfigured() : boolean { return this.mapData().showConvoyLink ?? false; }
-  isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
-  getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
+  public getWorksheetID() : string | undefined { return this.mapData().workbookID; }
+  public isConvoyConfigured() : boolean { return this.mapData().showConvoyLink ?? false; }
+  public isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
+  public getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
 
-  getUnitsList() : IUnit[] {
+  public getUnitsList() : IUnit[] {
     return this.mapData().units ?? [];
   }
 
-  getInterfaceLabels() : IInterfaceLabels | undefined {
+  public getInterfaceLabels() : IInterfaceLabels | undefined {
 	return this.mapData().system?.interfaceLabels;
   }
 
-  getCurrencyConstants() : ICurrencyConstants | undefined {
-	return this.mapData().system?.constants.currency;
-  }
-
-  getMapConstants() : IMapConstants | undefined {
+  public getMapConstants() : IMapConstants | undefined {
 	return this.mapData().map?.constants;
   }
 
-  getAffiliationByName(name: string) : IAffiliation | undefined {
-	let dict = this.mapData().system?.affiliations;
+  public getCurrencyConstants() : ICurrencyConstants | undefined {
+	return this.mapData().system?.constants.currency;
+  }
+
+  public getAffiliationByName(name: string) : IAffiliation | undefined {
+	const dict = this.mapData().system?.affiliations;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getClassByName(name: string) : IClass | undefined {
-	let dict = this.mapData().system?.classes;
+  public getClassByName(name: string) : IClass | undefined {
+	const dict = this.mapData().system?.classes;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getEngravingByName(name: string) : IEngraving | undefined { 
-	let dict = this.mapData().system?.engravings;
+  public getEmblemByName(name: string) : IEmblem | undefined { 
+	const dict = this.mapData().system?.emblems;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getItemByName(name: string) : IItem | undefined {
-	let dict = this.mapData().system?.items;
+  public getEngageAttackByName(name: string) : IEngageAttack | undefined {
+	const dict = this.mapData().system?.engageAttacks;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getSkillByName(name: string) : ISkill | undefined {
-	let dict = this.mapData().system?.skills;
+  public getEngravingByName(name: string) : IEngraving | undefined { 
+	const dict = this.mapData().system?.engravings;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getStatusConditionByName(name: string) : IStatusCondition | undefined {
-	let dict = this.mapData().system?.statusConditions;
+  public getItemByName(name: string) : IItem | undefined {
+	const dict = this.mapData().system?.items;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getTagByName(name: string) : ITag | undefined {
-	let dict = this.mapData().system?.tags;
+  public getSkillByName(name: string) : ISkill | undefined {
+	const dict = this.mapData().system?.skills;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
 
-  getUnitByName(name: string) : IUnit | undefined {
+  public getStatusConditionByName(name: string) : IStatusCondition | undefined {
+	const dict = this.mapData().system?.statusConditions;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getTagByName(name: string) : ITag | undefined {
+	const dict = this.mapData().system?.tags;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getUnitByName(name: string) : IUnit | undefined {
 	let array = this.mapData().units ?? [];
 	return array.find(unit => unit.name == name);
   }

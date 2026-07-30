@@ -1,9 +1,9 @@
-<div id="skillContainer">
+<div class="primaryColorCard skillContainer">
     <div id="headerRow">
         <div id="textContainer">
             <div id="name">
-                @if((systemData?.spriteURL ?? "").length > 0){
-                    <img [src]="systemData?.spriteURL" />
+                @if((systemData()?.spriteURL ?? "").length > 0){
+                    <img [src]="systemData()?.spriteURL" />
                 }
                 {{skill().name}}
             </div>
@@ -14,14 +14,14 @@
             }
         </div>
         <div id="iconsContainer">
-            @if (systemData?.isEffectConfigured) {
+            @if (systemData()?.isEffectConfigured) {
                 <img src="img/gear_icon.png" height="20" width="20" title="Effect Configured" />
             }
         </div>
     </div>
     @if (expanded()) {
         <mat-divider />
-        @for (text of systemData?.textFields; track $index) {
+        @for (text of systemData()?.textFields; track $index) {
             <p>{{text}}</p>
         }
     }

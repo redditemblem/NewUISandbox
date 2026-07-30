@@ -1,6 +1,6 @@
-<div id="container" [title]="tag()">
-    @if((systemData?.spriteURL ?? "").length > 0){
-        <img [src]="systemData?.spriteURL" />
+<div class="tagContainer" [title]="tag()">
+    @if((systemData()?.spriteURL ?? "").length > 0){
+        <img [src]="systemData()?.spriteURL" />
     }
     <p>{{tag()}}</p>
 </div>

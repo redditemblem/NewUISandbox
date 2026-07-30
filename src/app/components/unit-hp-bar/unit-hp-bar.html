@@ -1,4 +1,4 @@
 <div class="hpBar"
-     [style.border]="'1px solid ' + borderColor"
-     [style.background]="'linear-gradient(to right, ' + primaryColor + ' ' + percentage() + '%, ' + secondaryColor + ' ' + percentage() + '%)'"
+     [style.border]="`1px solid ${borderColor()}`"
+     [style.background]="`linear-gradient(to right, ${primaryColor()} ${percentage()}%, ${secondaryColor()} ${percentage()}%)`"
 ></div>

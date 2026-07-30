@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, OnChanges, signal } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
 import { IEngraving } from '../../data/interfaces/system/engraving';
 
@@ -8,15 +8,16 @@ import { IEngraving } from '../../data/interfaces/system/engraving';
   templateUrl: './engraving.html',
   styleUrl: './engraving.scss',
 })
-export class Engraving {
-  name = input.required<string>();
-  systemData : IEngraving | undefined;
+export class Engraving implements OnChanges {
+  public name = input.required<string>();
 
-  constructor(public teamDataService: TeamDataService) {
+  protected systemData = signal<IEngraving | undefined>(undefined);
+
+  constructor(private teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
   
   ngOnChanges() {
-    this.systemData = this.teamDataService.getEngravingByName(this.name());
+    this.systemData.set(this.teamDataService.getEngravingByName(this.name()));
   }
 }

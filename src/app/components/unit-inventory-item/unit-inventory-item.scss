@@ -1,13 +1,10 @@
-#itemContainer {
+div.itemContainer {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
-    padding: 8px;
-    border: 2px solid var(--primary-theme-color);
-    border-radius: 0px 8px 0px 8px;
     cursor: pointer;
 
-    #headerRow {
+    div.itemHeaderRow {
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;

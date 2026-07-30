@@ -93,3 +93,21 @@ img.smooth{
     image-rendering: auto;
     -ms-interpolation-mode: inherit;
 }
+
+.primaryColorCard {
+  padding: 8px;
+  border: 2px solid var(--primary-theme-color);
+  border-radius: 0px 8px 0px 8px;
+}
+
+.secondaryColorCard {
+  padding: 8px;
+  border: 2px solid var(--secondary-theme-color);
+  border-radius: 0px 8px 0px 8px;
+}
+
+.tertiaryColorCard {
+  padding: 8px;
+  border: 2px solid var(--tertiary-theme-color);
+  border-radius: 0px 8px 0px 8px;
+}

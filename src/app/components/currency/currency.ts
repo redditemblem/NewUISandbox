@@ -13,11 +13,12 @@ export class Currency {
 
   private readonly constants : ICurrencyConstants | undefined;
 
-  constructor(protected teamDataService : TeamDataService) {
+  constructor(private teamDataService : TeamDataService) {
     this.teamDataService = inject(TeamDataService);
     this.constants = this.teamDataService.getCurrencyConstants();
   }
 
+  /** Formats the `amount()` into a display string. */
   protected formatCurrentString() : string {
     const value: number = this.amount() ?? 0;
     if(this.constants === undefined)

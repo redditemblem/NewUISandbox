@@ -1,11 +1,11 @@
-<div id="itemContainer" (click)="toggleExpansion()" >
-    <div id="headerRow" [ngClass]="{'opacity50' : !item().canEquip || item().isUsePrevented}">
+<div class="primaryColorCard itemContainer" (click)="this.isExpanded.set(!this.isExpanded())" >
+    <div class="itemHeaderRow" [class]="{'opacity50' : !item().canEquip || item().isUsePrevented}">
         <div id="textContainer">
             <div id="name">
-                @if((systemData?.spriteURL ?? "").length > 0){
-                    <img [src]="systemData?.spriteURL" />
+                @if((systemData()?.spriteURL ?? "").length > 0){
+                    <img [src]="systemData()?.spriteURL" />
                 }
-                <div [ngClass]="{'droppableTextColor' : item().isDroppable}">
+                <div [class]="{'droppableTextColor' : item().isDroppable}">
                     {{item().name}} @if((item().uses ?? 0) > 0){ ({{item().uses}}) }
                 </div>
                 @if ((item().engravings ?? []).length > 0) {
@@ -24,11 +24,11 @@
                 }
             </div>
             <div id="rankCategory">
-                @if((systemData?.weaponRank ?? "").length > 0)
+                @if((systemData()?.weaponRank ?? "").length > 0)
                 { 
-                    {{systemData?.weaponRank}} - 
+                    {{systemData()?.weaponRank}} - 
                 }
-                {{systemData?.category}} {{formatUtilizedStatsText()}}
+                {{systemData()?.category}} {{formatUtilizedStatsText()}}
             </div>
         </div>
         <div id="iconsContainer">
@@ -43,13 +43,13 @@
             }
         </div>
     </div>
-    @if (isExpanded) {
+    @if (isExpanded()) {
         <div id="expansionContainer">
-            @if ((item().uses ?? 0) > 0 || (item().maxUses ?? 0) > 0 || (item().minRange?.finalValue ?? 0) > 0 || (systemData?.utilizedStats ?? []).length > 0)
+            @if ((item().uses ?? 0) > 0 || (item().maxUses ?? 0) > 0 || (item().minRange?.finalValue ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0)
             {
                 <mat-divider />
                 <div id="statsContainer">
-                    @if ((systemData?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
+                    @if ((systemData()?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
                     {
                         @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
                             <div class="stat">
@@ -71,12 +71,12 @@
                             </div>
                         </div>
                     }
-                    @if ((systemData?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
+                    @if ((systemData()?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
                     {
                         <div class="stat">
                             <div>Shp</div>
                             <div>
-                                @switch (systemData?.range?.shape)
+                                @switch (systemData()?.range?.shape)
                                 {
                                     @case (ItemRangeShape.Square) { Square }
                                     @case (ItemRangeShape.Cross) { Cross }
@@ -97,23 +97,23 @@
                                 @if((item().uses ?? 0) > 0) { {{item().uses}} }
                                 @if((item().maxUses ?? 0) > 0) {
                                     @if((item().uses ?? 0) > 0) { /&nbsp; } 
-                                    <stat-with-buff-icon [base]="systemData?.maxUses ?? 0" [final]="item().maxUses ?? 0" [invertColors]="false" [height]="12" />
+                                    <stat-with-buff-icon [base]="systemData()?.maxUses ?? 0" [final]="item().maxUses ?? 0" [invertColors]="false" [height]="12" />
                                 }
                             </div>
                         </div>
                     }
                 </div>
             }
-            @if ((systemData?.textFields ?? []).length > 0 || (systemData?.graphicURL ?? "").length > 0) {
+            @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0) {
                 <mat-divider />
                 @for (engraving of item().engravings; track engraving) {
                     <engraving [name]="engraving" />
                 }
-                @for (text of systemData?.textFields; track $index) {
+                @for (text of systemData()?.textFields; track $index) {
                     <p>{{text}}</p>
                 }
-                @if ((systemData?.graphicURL ?? "").length > 0) {
-                    <img id="graphic" [src]="systemData?.graphicURL" />
+                @if ((systemData()?.graphicURL ?? "").length > 0) {
+                    <img id="graphic" [src]="systemData()?.graphicURL" />
                 }
             }
         </div>

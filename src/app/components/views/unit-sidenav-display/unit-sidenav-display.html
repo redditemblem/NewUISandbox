@@ -99,7 +99,7 @@
             </div>
         </div>
     }
-    @if(unit().behavior){
+    @if((unit().behavior ?? '').length > 0){
         <div id="unitBehaviorContainer">
             <img src="img/behavior_icon.png" height="32" width="32" title="Unit behavior" />
             <p>{{unit().behavior}}</p>
@@ -172,10 +172,10 @@
                             <h3>{{getInventorySubsectionLabel($index)}}</h3>
                         }
                         @for (item of subsection.items; track $index) {
-                            <inventory-item [item]="item" />
+                            <unit-inventory-item [item]="item" />
                         }
                         @if (subsection.emptySlotCount > 0){
-                            <div class="emptySlots">
+                            <div class="primaryColorCard emptySlots">
                                 <span [style.opacity]="0.5">Empty x{{subsection.emptySlotCount}}</span>
                             </div>
                         }
@@ -194,7 +194,7 @@
                 <h2>{{getEmblemLabel()}}</h2>
             </div>
             @if (this.isEmblemExpanded()) {
-                Emblem, engage!
+                <unit-emblem [emblem]="unit().emblem!" /> <!--force non-null assertion-->
             }
         </div>
     }

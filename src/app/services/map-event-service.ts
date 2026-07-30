@@ -13,19 +13,25 @@ export class MapEventService {
   @Output() unpinUnit = new EventEmitter<string>();
   @Output() updateCurrentTile = new EventEmitter<[number, number]>();
 
-  private unitPinnedStatuses: StringDictionary<boolean> = {};
+  /** Dictionary for tracking the pinned states of units */
+  private unitPinnedStates: StringDictionary<boolean> = {};
 
   public triggerMapImageDownload() {
     this.downloadMapAsImage.emit();
   }
 
+  /**
+   *  Inverts the pinned state of `unitName` and emits a matching pin/unpin event.
+   * 
+   * @returns The updated pinned state of `unitName`
+   */
   public toggleUnitPinnedState(unitName: string) : boolean {
 
     //Determine the current status, invert it, and update
-    let isPinned = this.unitPinnedStatuses[unitName] ?? false;
+    let isPinned = this.unitPinnedStates[unitName] ?? false;
     isPinned = !isPinned;
 
-    this.unitPinnedStatuses[unitName] = isPinned;
+    this.unitPinnedStates[unitName] = isPinned;
 
     //Emit the correct event for subscribers
     if(isPinned) this.pinUnit.emit(unitName);
@@ -34,8 +40,9 @@ export class MapEventService {
     return isPinned;
   }
 
+  /** @returns The current pinned state of `unitName` */
   public getPinnedStateForUnit(unitName: string) : boolean {
-    return this.unitPinnedStatuses[unitName] ?? false;
+    return this.unitPinnedStates[unitName] ?? false;
   }
 
   public updateCurrentTileCoordinates(x: number, y: number) {

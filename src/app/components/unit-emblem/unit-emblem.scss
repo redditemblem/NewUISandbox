@@ -1,0 +1,51 @@
+div.emblemContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    cursor: pointer;
+
+    h4 {
+        margin: 0px;
+        font-family: macExtMinecraft;
+    }
+
+    p { margin: 0px; }
+}
+
+div.emblemHeaderRow {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    column-gap: 8px;
+
+    img.emblemSprite {
+        max-height: 32px;
+        max-width: 32px;
+        object-fit: scale-down;
+    }
+
+    div.emblemNameColumn {
+        display: flex;
+        flex-flow: column nowrap;
+        flex: 1;
+        font-family: macExtMinecraft;
+
+        h3 {
+            margin: 0px;
+            font-weight: normal;
+
+        }
+
+        p { 
+            margin-left: 16px;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+div.bondLevelRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    justify-content: space-between;
+}
