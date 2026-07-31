@@ -1,11 +1,18 @@
 div.emblemContainer {
+    position: relative;
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
+    padding: 8px;
+    border-radius: 0px 8px 0px 8px;
     cursor: pointer;
 
+    //Assert this over the engaged card styling
+    z-index: 1;
+    background-color: var(--mat-sys-surface);
+
     h4 {
-        margin: 0px;
+        margin: 8px 0px 0px 0px;
         font-family: macExtMinecraft;
     }
 
@@ -15,7 +22,14 @@ div.emblemContainer {
 div.emblemHeaderRow {
     display: flex;
     flex-flow: row nowrap;
-    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+}
+
+div.emblemNameSpriteRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
     column-gap: 8px;
 
     img.emblemSprite {
@@ -48,4 +62,45 @@ div.bondLevelRow {
     flex-flow: row nowrap;
     flex: 1;
     justify-content: space-between;
+}
+
+div.engagedEffectCard {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px 8px 0px 8px;
+    overflow: hidden;
+
+    &.unengaged {
+        border: 2px solid var(--primary-theme-color);
+    }
+
+    &.engaged {
+        padding: 4px;
+    }
+}
+.engaged::before {
+    content: "";
+    display: block;
+    background: linear-gradient(
+        90deg,
+        hsl(from var(--engaged-aura-color) calc(h - 90) s l) 0%,
+        var(--engaged-aura-color) 50%,
+        hsl(from var(--engaged-aura-color) calc(h + 90) s l) 100%,
+    );
+    position: absolute;
+    animation: spin 2s linear infinite;
+    z-index: 0;
+    height: 2000px;
+    width: 2000px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

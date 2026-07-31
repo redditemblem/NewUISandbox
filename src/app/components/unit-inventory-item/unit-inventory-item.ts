@@ -21,9 +21,11 @@ export class UnitInventoryItem implements OnChanges {
   protected readonly ItemRangeShape = ItemRangeShape;
 
   public item = input.required<IUnitInventoryItem>();
-  
+  public disableClick = input<boolean>(false);
+  public forceExpand = input<boolean>(false);
+
   protected systemData = signal<IItem | undefined>(undefined);
-  protected isExpanded = signal<boolean>(false);
+  protected isExpanded = signal<boolean>(this.forceExpand());
 
   constructor(private teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
@@ -31,7 +33,7 @@ export class UnitInventoryItem implements OnChanges {
 
   ngOnChanges() {
     this.systemData.set(this.teamDataService.getItemByName(this.item().name));
-    this.isExpanded.set(false);
+    this.isExpanded.set(this.forceExpand());
   }
 
   protected getEngravingByName(name: string) : IEngraving | undefined {

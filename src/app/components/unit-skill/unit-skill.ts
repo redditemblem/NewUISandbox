@@ -14,6 +14,7 @@ export class UnitSkill implements OnChanges {
   
   public skill = input.required<IUnitSkill>();
   public expanded = input<boolean>(true);
+  public disabled = input<boolean>(false);
 
   protected systemData = signal<ISkill | undefined>(undefined);
 

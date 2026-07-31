@@ -31,7 +31,7 @@ export class TeamDataService {
   private map = signal<IMapData>({});
   public readonly mapData = this.map.asReadonly();
 
-  constructor(public http: HttpClient) {
+  constructor(private http: HttpClient) {
 	this.http = inject(HttpClient);
   }
 

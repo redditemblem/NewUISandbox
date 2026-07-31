@@ -1,4 +1,4 @@
-import { Component, inject, input, OnChanges, signal } from '@angular/core';
+import { Component, computed, inject, input, OnChanges, Signal, signal } from '@angular/core';
 import { IUnitEmblem } from '../../data/interfaces/unit/unit-emblem';
 import { TeamDataService } from '../../services/team-data-service';
 import { IEmblem } from '../../data/interfaces/system/emblem';
@@ -18,6 +18,8 @@ export class UnitEmblem implements OnChanges {
 
   protected systemData = signal<IEmblem | undefined>(undefined);
   protected isExpanded = signal<boolean>(false);
+  protected isEngaged: Signal<boolean> = computed(() => this.emblem().isEngaged ?? false);
+  protected engagedAuraColor: Signal<string> = computed(() => this.systemData()?.engagedUnitAura ?? "var(--primary-theme-color)");
 
   constructor(private teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);

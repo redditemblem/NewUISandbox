@@ -72,7 +72,7 @@
             @for(stat of unit().stats.system_Prioritized | keyvalue : doNotSortByKey; track stat.key) {
                 <div class="prioritizedStatsItem">
                     <p>{{stat.key}}</p>
-                    <p>{{stat.value}}</p>
+                    <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" />
                 </div>
             }
         }

@@ -16,10 +16,11 @@ import { UnitInventoryItem } from '../../unit-inventory-item/unit-inventory-item
 import { UnitSkill } from "../../unit-skill/unit-skill";
 import { UnitWeaponRank } from "../../unit-weapon-rank/unit-weapon-rank";
 import { UnitEmblem } from "../../unit-emblem/unit-emblem";
+import { StatWithBuffIcon } from "../../stat-with-buff-icon/stat-with-buff-icon";
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })

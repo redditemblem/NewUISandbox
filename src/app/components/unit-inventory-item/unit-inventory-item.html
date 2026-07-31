@@ -1,4 +1,4 @@
-<div class="primaryColorCard itemContainer" (click)="this.isExpanded.set(!this.isExpanded())" >
+<div class="primaryColorCard itemContainer" (click)="!disableClick() && this.isExpanded.set(!this.isExpanded())" >
     <div class="itemHeaderRow" [class]="{'opacity50' : !item().canEquip || item().isUsePrevented}">
         <div id="textContainer">
             <div id="name">

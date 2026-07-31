@@ -5,8 +5,10 @@
         }
         <p>{{attack()}}</p>
     </div>
-    <mat-divider />
-    @for (text of systemData()?.textFields; track $index) {
-        <p>{{text}}</p>
+    @if(expanded()) {
+        <mat-divider />
+        @for (text of systemData()?.textFields; track $index) {
+            <p>{{text}}</p>
+        }
     }
 </div>

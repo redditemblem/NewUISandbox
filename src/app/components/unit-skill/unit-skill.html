@@ -1,6 +1,6 @@
 <div class="primaryColorCard skillContainer">
     <div id="headerRow">
-        <div id="textContainer">
+        <div id="textContainer" [class]="{'opacity50' : disabled()}">
             <div id="name">
                 @if((systemData()?.spriteURL ?? "").length > 0){
                     <img [src]="systemData()?.spriteURL" />
@@ -19,7 +19,7 @@
             }
         </div>
     </div>
-    @if (expanded()) {
+    @if (expanded() && (systemData()?.textFields ?? []).length > 0) {
         <mat-divider />
         @for (text of systemData()?.textFields; track $index) {
             <p>{{text}}</p>

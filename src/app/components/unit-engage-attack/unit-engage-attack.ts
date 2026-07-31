@@ -11,6 +11,7 @@ import { MatDivider } from "@angular/material/divider";
 })
 export class UnitEngageAttack implements OnChanges {
   public attack = input.required<string>();
+  public expanded = input<boolean>(true);
 
   protected systemData = signal<IEngageAttack | undefined>(undefined);
 
