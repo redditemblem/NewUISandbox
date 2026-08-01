@@ -6,25 +6,13 @@ import { StringDictionary } from '../data/interfaces/common/dictionaries';
 })
 export class MapEventService {
 
-  /** Dictionary for tracking the pinned states of units */
+  // #region Units Tab
+
+  /** Internal dictionary for tracking the pinned state of units */
   private unitPinnedStates: StringDictionary<boolean> = {};
 
-  //These outputs can be subscribed to and will trigger on emit()
-  @Output() downloadMapAsImage = new EventEmitter<void>();
   @Output() pinUnit = new EventEmitter<string>();
   @Output() unpinUnit = new EventEmitter<string>();
-  @Output() updateCurrentTile = new EventEmitter<[number, number]>();
-  @Output() updatePaintMode = new EventEmitter<boolean>();
-  
-  private penColor = signal<string>('#000000');
-  public drawingPenColor: Signal<string> = this.penColor.asReadonly();
-
-  private penWidth = signal<number>(2);
-  public drawingPenWidth: Signal<number> = this.penWidth.asReadonly();
-
-  public triggerMapImageDownload() {
-    this.downloadMapAsImage.emit();
-  }
 
   /**
    *  Inverts the pinned state of `unitName` and emits a matching pin/unpin event.
@@ -51,19 +39,54 @@ export class MapEventService {
     return this.unitPinnedStates[unitName] ?? false;
   }
 
+  // #endregion Units Tab
+
+  // #region Tiles Tab  
+
+  @Output() updateCurrentTile = new EventEmitter<[number, number]>();
+
   public updateCurrentTileCoordinates(x: number, y: number) {
     this.updateCurrentTile.emit([x, y]);
+  }
+
+  // #endregion Tiles Tab
+
+  // #region Paint Tab
+
+  @Output() downloadMapAsImage = new EventEmitter<void>();
+  @Output() updatePaintMode = new EventEmitter<boolean>();
+  @Output() clearPaintContainer = new EventEmitter();
+  @Output() undoLastPaintContainerLine = new EventEmitter();
+
+  private penColor = signal<string>('#000000');
+  public drawingPenColor: Signal<string> = this.penColor.asReadonly();
+
+  private penWidth = signal<number>(2);
+  public drawingPenWidth: Signal<number> = this.penWidth.asReadonly();
+
+  public triggerMapImageDownload() {
+    this.downloadMapAsImage.emit();
   }
 
   public setPaintMode(inPaintMode: boolean) {
     this.updatePaintMode.emit(inPaintMode);
   }
 
-  public setPenColor(hexCode: string) {
-    this.penColor.set(hexCode);
+  public setPenColor(colorCode: string) {
+    this.penColor.set(colorCode);
   }
 
   public setPenWidth(width: number) {
     this.penWidth.set(width);
   }
+
+  public eraseAllPaint() {
+    this.clearPaintContainer.emit();
+  }
+
+  public undoLastLine() {
+    this.undoLastPaintContainerLine.emit();
+  }
+
+  // #endregion Paint Tab
 }

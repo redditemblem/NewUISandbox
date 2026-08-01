@@ -3,17 +3,19 @@ import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { MapEventService } from '../../../services/map-event-service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatInputModule, MatLabel } from "@angular/material/input";
+import { MatInputModule } from "@angular/material/input";
+import { ThemeService } from '../../../services/theme-service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'map-paint-sidenav',
-  imports: [MatListModule, MatIconModule, MatButtonToggleModule, MatLabel, MatInputModule],
+  imports: [MatListModule, MatIconModule, MatButtonToggleModule, MatInputModule, MatButtonModule],
   templateUrl: './map-paint-sidenav.html',
   styleUrl: './map-paint-sidenav.scss',
 })
 export class MapPaintSidenav {
 
-  constructor(private eventService: MapEventService) {
+  constructor(protected themeService: ThemeService, private eventService: MapEventService) {
     this.eventService = inject(MapEventService);
   }
 
@@ -29,8 +31,15 @@ export class MapPaintSidenav {
     this.eventService.setPenWidth(event.value as number);
   }
 
-  protected penColorPicker_OnChange(event: Event) {
-    const inputElem = event.target as HTMLInputElement;
-    this.eventService.setPenColor(inputElem.value as string);
+  protected setPenColor(color: string) {
+    this.eventService.setPenColor(color);
+  }
+
+  protected eraseAllPaint() {
+    this.eventService.eraseAllPaint();
+  }
+
+  protected undoLastLine() {
+    this.eventService.undoLastLine();
   }
 }

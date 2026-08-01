@@ -50,6 +50,10 @@ export class MapSegment {
       .subscribe(() => this.downloadMapAsImage());
     this.eventService.updatePaintMode
       .subscribe((inPaintMode: boolean) => this.updatePaintMode(inPaintMode));
+    this.eventService.clearPaintContainer
+      .subscribe(() => this.clearPaintContainer());
+    this.eventService.undoLastPaintContainerLine
+      .subscribe(() => this.undoLastPaintContainerLine());
   }
 
   async ngOnInit() {
@@ -126,6 +130,7 @@ export class MapSegment {
       this.segmentContainers[segment.title] = container;
 
       //Add segment to stage and make it invisible
+      container.visible = false;
       this.pixiApp.stage.addChild(container);
     }));
   }
@@ -196,6 +201,20 @@ export class MapSegment {
       this.activeSegment?.enableInteraction();
       paintContainer?.disableInteraction();
     }
+  }
+
+  private async clearPaintContainer() {
+    if(!this.inPaintMode) return;
+
+    const paintContainer = this.paintContainers[this.currentSegmentTitle()];
+    paintContainer?.clearGraphicsBuffer();
+  }
+
+  private async undoLastPaintContainerLine() {
+    if(!this.inPaintMode) return;
+
+    const paintContainer = this.paintContainers[this.currentSegmentTitle()];
+    paintContainer?.destroyLatestGraphic();
   }
 }
 
@@ -300,6 +319,7 @@ export class PaintContainer extends Container {
 
   private userIsDrawing: boolean = false;
   private currentDrawing: Graphics | undefined;
+  private graphicsBuffer: Graphics[] = [];
 
   constructor(eventService: MapEventService, label: string, height: number, width: number) {
     super(); //call the parent Container() constructor
@@ -340,6 +360,21 @@ export class PaintContainer extends Container {
 
   // #region Event Handlers
 
+  public async clearGraphicsBuffer() {
+    //Destroy all graphics in parallel
+    await Promise.all(this.graphicsBuffer.map(async(graphic) => {
+      graphic?.destroy();
+    }));
+
+    //Flush the buffer
+    this.graphicsBuffer = [];
+  }
+
+  public async destroyLatestGraphic() {
+    const latestGraphic = this.graphicsBuffer.pop();
+    latestGraphic?.destroy();
+  }
+
   private PaintContainer_PointerDown(event: FederatedPointerEvent) {
     this.userIsDrawing = true;
 
@@ -347,6 +382,7 @@ export class PaintContainer extends Container {
     newLine.moveTo(event.screen.x, event.screen.y);
 
     this.currentDrawing = newLine;
+    this.graphicsBuffer.push(newLine);
     this.addChild(newLine);
   }
 

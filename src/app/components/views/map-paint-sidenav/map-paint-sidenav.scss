@@ -1,5 +1,45 @@
-#paintContainer {
+@use '@angular/material' as mat;
+
+#paintSidenavContainer {
     display: flex;
     flex-flow: column nowrap;
     padding: 8px;
+    row-gap: 12px;
+}
+
+h2 {
+    margin: 0px;
+    font-family: macExtMinecraft;
+    font-weight: normal;
+}
+
+div.undoButtonRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.penWidthToggles {
+    @include mat.button-toggle-overrides((
+        label-text-font: macExtMinecraft
+    ));
+}
+
+div.colorButtonsRow { 
+    display: flex;
+    flex-flow: row wrap;
+    flex: 1;
+    align-items: center;
+    justify-content: space-around;
+    row-gap: 16px;
+    padding: 0px 16px 0px 16px;
+}
+
+button.penColorButton {
+    @include mat.fab-overrides((
+        container-shape: 50%
+    ));
+
+    width: 18%;
 }
