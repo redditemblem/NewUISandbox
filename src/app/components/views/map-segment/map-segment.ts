@@ -331,7 +331,7 @@ export class PaintContainer extends Container {
 
     //Without a child, the container collapses to 0 height and width
     const rect = new Graphics()
-      .rect(0, 0, height, width)
+      .rect(0, 0, width, height)
       .fill({
         color: '#ffffff',
         alpha: 0
