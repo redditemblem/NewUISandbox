@@ -13,7 +13,7 @@
         <button matButton="outlined" (click)="eraseAllPaint()">Erase</button>
         <button matButton="outlined" (click)="undoLastLine()">Undo</button>
     </div>
-    <mat-button-toggle-group name="penWidth" class="penWidthToggles" aria-label="Pen width" hideSingleSelectionIndicator (change)="penWidth_OnChange($event)">
+    <mat-button-toggle-group name="penWidth" value="2" (change)="penWidth_OnChange($event)" class="penWidthToggles" aria-label="Pen width" hideSingleSelectionIndicator>
         <mat-button-toggle value="2">
             <img src="img/thin_line_icon.png" height="20px" width="20px" [style.filter]="themeService.inDarkMode() ? 'invert(1)' : ''" /> Thin
         </mat-button-toggle>
@@ -29,7 +29,7 @@
         <button matButton="elevated" (click)="setPenColor('red')" class="penColorButton" [style.background-color]="'red'"></button>
         <button matButton="elevated" (click)="setPenColor('orange')" class="penColorButton" [style.background-color]="'orange'"></button>
         <button matButton="elevated" (click)="setPenColor('yellow')" class="penColorButton" [style.background-color]="'yellow'"></button>
-        <button matButton="elevated" (click)="setPenColor('green')" class="penColorButton" [style.background-color]="'green'"></button>
+        <button matButton="elevated" (click)="setPenColor('lawngreen')" class="penColorButton" [style.background-color]="'lawngreen'"></button>
         <button matButton="elevated" (click)="setPenColor('cyan')" class="penColorButton" [style.background-color]="'cyan'"></button>
         <button matButton="elevated" (click)="setPenColor('blue')" class="penColorButton" [style.background-color]="'blue'"></button>
         <button matButton="elevated" (click)="setPenColor('blueviolet')" class="penColorButton" [style.background-color]="'blueviolet'"></button>

@@ -318,7 +318,7 @@ export class PaintContainer extends Container {
   private eventService: MapEventService;
 
   private userIsDrawing: boolean = false;
-  private currentDrawing: Graphics | undefined;
+  private currentLine: Graphics | undefined;
   private graphicsBuffer: Graphics[] = [];
 
   constructor(eventService: MapEventService, label: string, height: number, width: number) {
@@ -340,8 +340,8 @@ export class PaintContainer extends Container {
 
     this.on('pointerdown', this.PaintContainer_PointerDown);
     this.on('pointermove', this.PaintContainer_PointerMove);
-    this.on('pointerup', this.PaintContainer_PointerUp_PointerLeave);
-    this.on('pointerleave', this.PaintContainer_PointerUp_PointerLeave)
+    this.on('pointerup', this.PaintContainer_PointerUp);
+    this.on('pointerupoutside', this.PaintContainer_PointerUp)
   }
 
   /** Makes the container visible and enables interaction. */
@@ -378,17 +378,21 @@ export class PaintContainer extends Container {
   private PaintContainer_PointerDown(event: FederatedPointerEvent) {
     this.userIsDrawing = true;
 
-    const newLine = new Graphics();
+    const newLine = new Graphics({
+      eventMode: 'static',
+      interactive: false,
+      interactiveChildren: false
+    });
     newLine.moveTo(event.screen.x, event.screen.y);
 
-    this.currentDrawing = newLine;
+    this.currentLine = newLine;
     this.graphicsBuffer.push(newLine);
     this.addChild(newLine);
   }
 
   private PaintContainer_PointerMove(event: FederatedPointerEvent) {
     if(!this.userIsDrawing) return;
-    this.currentDrawing?.lineTo(event.screen.x, event.screen.y)
+    this.currentLine?.lineTo(event.screen.x, event.screen.y)
       .stroke({
         color: this.eventService.drawingPenColor(),
         width: this.eventService.drawingPenWidth(),
@@ -397,8 +401,16 @@ export class PaintContainer extends Container {
       });
   }
 
-  private PaintContainer_PointerUp_PointerLeave(event: FederatedPointerEvent) {
+  private PaintContainer_PointerUp(event: FederatedPointerEvent) {
     this.userIsDrawing = false;
+
+    //Check if we actually drew something, instead of just clicking on the canvas
+    const lineHeight = this.currentLine?.height ?? 0;
+    const lineWidth = this.currentLine?.width ?? 0;
+    if(lineHeight < 1 || lineWidth < 1) {
+      this.currentLine?.destroy();
+      this.graphicsBuffer.pop();
+    }
   }
 
   // #endregion Event Handlers
@@ -463,7 +475,7 @@ export class SegmentContainer extends Container {
   public async init() {
 
     //Load the segment's background
-    const assetAlias = `segment ${this.segment.title}`;
+    const assetAlias = '';//`segment ${this.segment.title}`;
     const segmentBackground = await SpriteLoader.getExternalSprite(assetAlias, this.segment.imageURL);
     if(segmentBackground !== undefined)
       this.addChild(segmentBackground);
