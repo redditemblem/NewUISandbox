@@ -13,6 +13,7 @@ import { LinksSidenav } from "../links-sidenav/links-sidenav";
 import { MapSegment } from '../map-segment/map-segment';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'map-view',
@@ -23,12 +24,14 @@ import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 export class MapView {
   
   protected currentSegment = signal<IMapSegment | undefined>(undefined);
+  private isPaintTabSelected: boolean = false;
 
-  constructor(public route: ActivatedRoute, public breakpointService: BreakpointService, public themeService: ThemeService, public teamDataService: TeamDataService) {
+  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, private themeService: ThemeService, protected teamDataService: TeamDataService, private eventService: MapEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
     this.themeService = inject(ThemeService);
     this.teamDataService = inject(TeamDataService);
+    this.eventService = inject(MapEventService);
 
     this.loadDataForTeam();
   }
@@ -42,6 +45,18 @@ export class MapView {
       this.setCurrentSegment(firstSegment);
   }
 
+  protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {
+    const tabLabel = event.tab.ariaLabel;
+    const nonPaintTabSelected: boolean = (tabLabel !== "Paint Tools");
+
+    //If we switched between two non-paint tabs, we do not need to emit an event
+    if(nonPaintTabSelected && !this.isPaintTabSelected)
+      return;
+
+    this.isPaintTabSelected = !nonPaintTabSelected;
+    this.eventService.setPaintMode(this.isPaintTabSelected);
+  }
+
   protected SegmentTabs_selectedTabChange(event: MatTabChangeEvent) {
     const segment: IMapSegment | undefined = this.teamDataService.mapData().map?.segments[event.index];
     if(segment === undefined)
@@ -49,7 +64,7 @@ export class MapView {
 
     this.setCurrentSegment(segment);
   }
-
+  
   protected setCurrentSegment(segment: IMapSegment) { 
     this.currentSegment.set(segment);
   }

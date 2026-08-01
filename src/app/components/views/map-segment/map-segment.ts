@@ -1,10 +1,9 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, inject, input } from '@angular/core';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
-import { Application, Assets, ColorMatrixFilter, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, ImageLike, NineSliceSprite, Rectangle, Sprite, Texture, TextureSource } from 'pixi.js';
+import { Application, Assets, ColorMatrixFilter, Container, FederatedPointerEvent, FillGradient, Filter, Graphics, GraphicsPath, ImageLike, NineSliceSprite, Rectangle, Sprite, Text, Texture, TextureSource } from 'pixi.js';
 import { GifSource, GifSprite } from 'pixi.js/gif';
 import { GlowFilter } from 'pixi-filters';
-import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TeamDataService } from '../../../services/team-data-service';
 import { IMapConstants } from '../../../data/interfaces/map/map-constants';
 import { ICoordinate } from '../../../data/interfaces/map/coordinate';
@@ -32,27 +31,25 @@ import { MapEventService } from '../../../services/map-event-service';
 export class MapSegment {
   currentSegmentTitle = input.required<string>();
 
-  private snackBar : MatSnackBar;
-  private snackBarMessageQueue : string[];
-  private currentSnackBar : MatSnackBarRef<TextOnlySnackBar> | undefined;
-
   private pixiApp : Application;
   private segmentContainers : StringDictionary<SegmentContainer>;
+  private paintContainers: StringDictionary<PaintContainer>;
   private activeSegment: SegmentContainer | undefined;
+  private inPaintMode: boolean = false;
 
-  constructor(public teamDataService: TeamDataService, public eventService: MapEventService) {
+  constructor(private teamDataService: TeamDataService, private eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
     this.eventService = inject(MapEventService);
-    this.snackBar = inject(MatSnackBar);
     
     this.pixiApp = new Application();
-
-    this.snackBarMessageQueue = [];
     this.segmentContainers = {};
+    this.paintContainers = {};
 
     //Subscribe to external events
     this.eventService.downloadMapAsImage
       .subscribe(() => this.downloadMapAsImage());
+    this.eventService.updatePaintMode
+      .subscribe((inPaintMode: boolean) => this.updatePaintMode(inPaintMode));
   }
 
   async ngOnInit() {
@@ -71,6 +68,7 @@ export class MapSegment {
     await this.loadBundledAssets();
     await this.initializePixiApp(pixiContainer);
     await this.createSegmentContainers();
+    await this.createPaintContainers(this.eventService);
 
     this.updateActiveSegment();
   }
@@ -81,49 +79,6 @@ export class MapSegment {
 
     this.updateActiveSegment();
   }
-
-  // #region Snack Bar Queue
-
-  /** Appends a new message to the end of the snack bar queue.
-   * 
-   * @param imageUrl - Used to build the snack bar message
-   */
-  private queueImageLoadFailedSnackBar(imageUrl: string) {
-    var message = `Image \"${imageUrl}\" failed to load`;
-    this.snackBarMessageQueue.push(message);
-
-    if (this.currentSnackBar === undefined)
-      this.showNextSnackBarInQueue();
-  }
-
-  /** If there is a message present at the front of the snack bar queue, presents that message as a new snack bar. */
-  private showNextSnackBarInQueue() {
-    this.currentSnackBar = undefined;
-
-    var nextMessage = this.snackBarMessageQueue.shift() ?? "";
-    if (nextMessage === "") return;
-
-    this.showSnackBar(nextMessage, 5000);
-  }
-
-  /** Opens an Angular Material snackbar in the upper right of the screen for a specifed duration. 
-   * 
-   * @param message - The text displayed on the snackbar
-   * @param duration - The number of milliseconds the snackbar will remain visible
-  */
-  private showSnackBar(message: string, duration: number) {
-    this.currentSnackBar = this.snackBar.open(message, undefined, {
-      duration: duration,
-      horizontalPosition: "right",
-      verticalPosition: "top"
-    });
-
-    this.currentSnackBar.afterDismissed().subscribe(() => {
-      this.showNextSnackBarInQueue();
-    });
-  }
-
-  // #endregion Snack Bar Queue
 
   private async loadBundledAssets() {
     //Unit number sprites
@@ -171,8 +126,18 @@ export class MapSegment {
       this.segmentContainers[segment.title] = container;
 
       //Add segment to stage and make it invisible
-      container.visible = false;
       this.pixiApp.stage.addChild(container);
+    }));
+  }
+
+  private async createPaintContainers(eventService: MapEventService) {
+
+    //In parallel, create a paint container per segment
+    await Promise.all(Object.entries(this.segmentContainers).map(async([name, container]) => {
+      const paintContainer = new PaintContainer(eventService, name, container.segment.heightInPixels, container.segment.widthInPixels);
+
+      this.paintContainers[name] = paintContainer;
+      this.pixiApp.stage.addChild(paintContainer);
     }));
   }
 
@@ -183,15 +148,18 @@ export class MapSegment {
     //If there is a current active segment, inactivate it first
     if(this.activeSegment !== undefined) {
       this.activeSegment.visible = false;
-      this.activeSegment.interactive = false;
-      this.activeSegment.interactiveChildren = false;
+      this.activeSegment.disableInteraction();
+    }
+    if(this.inPaintMode) {
+      const paintContainer = this.paintContainers[this.activeSegment?.label ?? ''];
+      paintContainer?.disableInteraction();
     }
 
     //Update the active segment
+    //updatePaintMode() takes care of enabling the paint container if needed
     this.activeSegment = container;
     this.activeSegment.visible = true;
-    this.activeSegment.interactive = true;
-    this.activeSegment.interactiveChildren = true;
+    this.updatePaintMode(this.inPaintMode);
 
     //Resize canvas to this new segment
     this.pixiApp.renderer.resize(
@@ -212,6 +180,22 @@ export class MapSegment {
     downloadLink.download = `${this.currentSegmentTitle()}.png`;
     downloadLink.click();
     downloadLink.remove();
+  }
+
+  private async updatePaintMode(inPaintMode: boolean) {
+    this.inPaintMode = inPaintMode;
+
+    //Fetch the paint container linked to the active map segment
+    const paintContainer = this.paintContainers[this.currentSegmentTitle()];
+    
+    if(inPaintMode) {
+      this.activeSegment?.disableInteraction();
+      paintContainer?.enableInteraction();
+    }
+    else {
+      this.activeSegment?.enableInteraction();
+      paintContainer?.disableInteraction();
+    }
   }
 }
 
@@ -310,6 +294,80 @@ export abstract class SpriteFilters {
   }
 }
 
+export class PaintContainer extends Container {
+
+  private eventService: MapEventService;
+
+  private userIsDrawing: boolean = false;
+  private currentDrawing: Graphics | undefined;
+
+  constructor(eventService: MapEventService, label: string, height: number, width: number) {
+    super(); //call the parent Container() constructor
+
+    this.eventService = eventService;
+    this.label = label;
+    this.disableInteraction();
+    this.zIndex = 10000;
+
+    //Without a child, the container collapses to 0 height and width
+    const rect = new Graphics()
+      .rect(0, 0, height, width)
+      .fill({
+        color: '#ffffff',
+        alpha: 0
+      });
+    this.addChild(rect);
+
+    this.on('pointerdown', this.PaintContainer_PointerDown);
+    this.on('pointermove', this.PaintContainer_PointerMove);
+    this.on('pointerup', this.PaintContainer_PointerUp_PointerLeave);
+    this.on('pointerleave', this.PaintContainer_PointerUp_PointerLeave)
+  }
+
+  /** Makes the container visible and enables interaction. */
+  public enableInteraction() {
+    this.visible = true;
+    this.interactive = true;
+    this.interactiveChildren = true;
+  }
+
+  /** Makes the container invisible and disables interaction. */
+  public disableInteraction() {
+    this.visible = false;
+    this.interactive = false;
+    this.interactiveChildren = false;
+  }
+
+  // #region Event Handlers
+
+  private PaintContainer_PointerDown(event: FederatedPointerEvent) {
+    this.userIsDrawing = true;
+
+    const newLine = new Graphics();
+    newLine.moveTo(event.screen.x, event.screen.y);
+
+    this.currentDrawing = newLine;
+    this.addChild(newLine);
+  }
+
+  private PaintContainer_PointerMove(event: FederatedPointerEvent) {
+    if(!this.userIsDrawing) return;
+    this.currentDrawing?.lineTo(event.screen.x, event.screen.y)
+      .stroke({
+        color: this.eventService.drawingPenColor(),
+        width: this.eventService.drawingPenWidth(),
+        cap: 'round',
+        join: 'round'
+      });
+  }
+
+  private PaintContainer_PointerUp_PointerLeave(event: FederatedPointerEvent) {
+    this.userIsDrawing = false;
+  }
+
+  // #endregion Event Handlers
+}
+
 export class SegmentContainer extends Container {
   private teamDataService: TeamDataService;
   private eventService: MapEventService;
@@ -346,9 +404,6 @@ export class SegmentContainer extends Container {
 
     //Set this container's base attributes
     this.label = this.segment.title;
-    this.interactive = false;
-    this.interactiveChildren = false;
-
     this.height = this.segment.heightInPixels;
     this.width = this.segment.widthInPixels;
 
@@ -363,7 +418,10 @@ export class SegmentContainer extends Container {
       .subscribe((name: string) => this.unpinUnit(name));
 
     this.on('pointermove', this.SegmentContainer_PointerMove_PointerTap);
-    this.on('pointertap', this.SegmentContainer_PointerMove_PointerTap)
+    this.on('pointertap', this.SegmentContainer_PointerMove_PointerTap);
+
+    //Needs to be last, as it also hides the tile cursor
+    this.disableInteraction();
   }
 
   public async init() {
@@ -428,7 +486,6 @@ export class SegmentContainer extends Container {
     sprite.zIndex = 10000;
     sprite.interactive = false;
     sprite.interactiveChildren = false;
-    sprite.visible = false; //default to invisible
 
     //Set up animation interval
     setInterval(() => {
@@ -454,6 +511,19 @@ export class SegmentContainer extends Container {
 
     this.currTileXY = [x, y];
     this.eventService.updateCurrentTileCoordinates(x, y);
+  }
+
+  /** Enables interaction. Does not affect visibility. */
+  public enableInteraction() {
+    this.interactive = true;
+    this.interactiveChildren = true;
+  }
+
+  /** Disables interaction. Does not affect visibility. */
+  public disableInteraction() {
+    this.interactive = false;
+    this.interactiveChildren = false;
+    this.tileCursor.visible = false;
   }
 
   // #region Event Handling

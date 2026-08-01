@@ -1,4 +1,17 @@
 <div id="paintContainer">
+    <mat-button-toggle-group name="drawingTool" aria-label="Drawing tool" hideSingleSelectionIndicator (change)="this.drawingTool_OnChange($event)">
+        <mat-button-toggle value="pen">Pen</mat-button-toggle>
+        <mat-button-toggle value="eraser">Eraser</mat-button-toggle>
+    </mat-button-toggle-group>
+    <mat-button-toggle-group name="penWidth" aria-label="Pen width" hideSingleSelectionIndicator (change)="this.penWidth_OnChange($event)">
+        <mat-button-toggle value="2">Thin</mat-button-toggle>
+        <mat-button-toggle value="4">Medium</mat-button-toggle>
+        <mat-button-toggle value="6">Thick</mat-button-toggle>
+    </mat-button-toggle-group>
+    <mat-form-field>
+        <mat-label>Pen color</mat-label>
+        <input matInput type="color" value="#000000" (change)="this.penColorPicker_OnChange($event)" />
+    </mat-form-field>
     <mat-action-list>
         <button mat-list-item (click)="exportMapAsImage()">
             <img matListItemIcon src="img/map_icon.png" />

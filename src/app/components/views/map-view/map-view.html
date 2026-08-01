@@ -1,26 +1,26 @@
 <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
     <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'">
-        <mat-tab-group id="sidebarTabs" mat-stretch-tabs disablePagination>
-            <mat-tab>
+        <mat-tab-group id="sidebarTabs" mat-stretch-tabs disablePagination (selectedTabChange)="SidebarTabs_selectedTabChange($event)"> 
+            <mat-tab aria-label="Units">
                 <ng-template mat-tab-label>
                     U
                 </ng-template>
                 <map-units-sidenav />
             </mat-tab>
-            <mat-tab>
+            <mat-tab aria-label="Tiles">
                 <ng-template mat-tab-label>
                     <img src="img/tile_icon.png" height="30" width="30" />
                 </ng-template>
                 <map-tiles-sidenav />
             </mat-tab>
-            <mat-tab>
+            <mat-tab aria-label="Paint Tools">
                 <ng-template mat-tab-label>
                     <img src="img/paint_icon.png" height="30" width="30" />
                 </ng-template>
                 <map-paint-sidenav />
             </mat-tab>
-            <mat-tab>
+            <mat-tab aria-label="Links">
                 <ng-template mat-tab-label>
                     <img src="img/links_icon.png" height="30" width="30" />
                 </ng-template>
@@ -30,7 +30,7 @@
                                [showShopLink]="this.teamDataService.isShopConfigured()"
                                [showMapAnalyzerLink]="true" />
             </mat-tab>
-            <mat-tab>
+            <mat-tab aria-label="Dice Roller">
                 <ng-template mat-tab-label>
                     <img src="img/die_icon.png" height="32" width="32" />
                 </ng-template>
