@@ -111,3 +111,66 @@ img.smooth{
   border: 2px solid var(--tertiary-theme-color);
   border-radius: 0px 8px 0px 8px;
 }
+
+// Common values for sidebar layouts
+mat-sidenav-container {
+  height: 100vh;
+  width: 100vw;
+}
+
+mat-sidenav {
+    @include mat.sidenav-overrides((
+        container-shape: var(--mat-sys-corner-none),
+        container-width: min(calc(100vw - 58px), 450px)
+    ));
+
+    anchor-name: --sidenav-anchor;
+
+    .mat-drawer-inner-container {
+        overflow: hidden;
+    }
+
+    .mat-mdc-tab-body-content {
+        overflow: hidden;
+    }
+}
+
+mat-sidenav-content {
+    height: 100vh;
+    overflow: hidden;
+    background-image: url('../public/img/background.png');
+    background-repeat: repeat;
+}
+
+mat-tab-group.sideNavTabs {
+    @include mat.tabs-overrides((
+        active-focus-indicator-color: var(--primary-theme-color),
+        active-indicator-color: var(--primary-theme-color),
+        active-hover-indicator-color: var(--primary-theme-color),
+    ));
+
+    height: 100vh;
+
+    ::ng-deep .mat-mdc-tab.mdc-tab {
+        min-width: 48px;
+        padding: 0px;
+    }
+}
+
+button.sidenavExpandButton {
+    @include mat.fab-overrides((
+        container-color: var(--primary-theme-color),
+        container-elevation-shadow: none,
+        focus-container-elevation-shadow: none,
+        hover-container-elevation-shadow: none,
+        extended-focus-container-elevation-shadow: none,
+        extended-hover-container-elevation-shadow: none,
+        container-shape: 0px 10px 10px 0px
+    ));
+    
+    position-anchor: --sidenav-anchor;
+    position: fixed;
+    left: anchor(right);
+    position-visibility: always;
+    z-index: 2;
+}

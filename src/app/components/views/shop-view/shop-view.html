@@ -1,1 +1,24 @@
-<p>shop-view works!</p>
+<button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
+<mat-sidenav-container>
+    <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'">
+        <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
+            <mat-tab aria-label="Units">
+                <ng-template mat-tab-label>
+                    F
+                </ng-template>
+                Shop filters
+            </mat-tab>
+            <mat-tab aria-label="Links">
+                <ng-template mat-tab-label>
+                    <img src="img/links_icon.png" height="30" width="30" />
+                </ng-template>
+                <links-sidenav [googleWorksheetID]="this.shopDataService.getWorksheetID()"
+                               [showConvoyLink]="this.shopDataService.isConvoyConfigured()"
+                               [showMapAnalyzerLink]="true" />
+            </mat-tab>
+        </mat-tab-group>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        Hello, this is the shop!
+    </mat-sidenav-content>
+</mat-sidenav-container>

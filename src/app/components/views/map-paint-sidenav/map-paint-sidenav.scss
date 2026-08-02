@@ -4,7 +4,7 @@
     display: flex;
     flex-flow: column nowrap;
     padding: 8px;
-    row-gap: 12px;
+    row-gap: 16px;
 }
 
 h2 {
@@ -13,17 +13,14 @@ h2 {
     font-weight: normal;
 }
 
-div.undoButtonRow {
-    display: flex;
-    flex-flow: row nowrap;
-    flex: 1;
-    justify-content: space-between;
-}
-
 .penWidthToggles {
     @include mat.button-toggle-overrides((
         label-text-font: macExtMinecraft
     ));
+
+    .mat-button-toggle {
+        flex: 1;
+    }
 }
 
 div.colorButtonsRow { 
@@ -37,9 +34,18 @@ div.colorButtonsRow {
 }
 
 button.penColorButton {
-    @include mat.fab-overrides((
-        container-shape: 50%
+    @include mat.button-overrides((
+        outlined-container-shape: 50%,
+        protected-label-text-font: macExtMinecraft,
+        protected-label-text-color: 'black'
     ));
 
     width: 18%;
+
+    ::ng-deep .mdc-button__label {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: center;
+    }
 }

@@ -1,7 +1,7 @@
 <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
 <mat-sidenav-container>
     <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'">
-        <mat-tab-group id="sidebarTabs" mat-stretch-tabs disablePagination (selectedTabChange)="SidebarTabs_selectedTabChange($event)"> 
+        <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination (selectedTabChange)="SidebarTabs_selectedTabChange($event)"> 
             <mat-tab aria-label="Units">
                 <ng-template mat-tab-label>
                     U

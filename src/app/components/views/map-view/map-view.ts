@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MapDiceRollerSidenav } from '../map-dice-roller-sidenav/map-dice-roller-sidenav';
@@ -21,7 +21,7 @@ import { MapEventService } from '../../../services/map-event-service';
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })
-export class MapView {
+export class MapView implements OnInit {
   
   protected currentSegment = signal<IMapSegment | undefined>(undefined);
   private isPaintTabSelected: boolean = false;
@@ -32,11 +32,9 @@ export class MapView {
     this.themeService = inject(ThemeService);
     this.teamDataService = inject(TeamDataService);
     this.eventService = inject(MapEventService);
-
-    this.loadDataForTeam();
   }
 
-  protected async loadDataForTeam() { 
+  async ngOnInit(): Promise<void> {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     await this.teamDataService.loadDataForTeam(teamName);
 
