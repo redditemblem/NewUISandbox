@@ -7,7 +7,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 })
 export class ConvoyDataService {
 
-  private readonly apiUrl = 'http://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/convoy/';
+  private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/convoy/';
 
   private loading = signal<boolean>(true);
   public readonly isLoading = this.loading.asReadonly();
