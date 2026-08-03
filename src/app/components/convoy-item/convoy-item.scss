@@ -1,0 +1,77 @@
+div.convoyItemContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    background-color: var(--mat-sys-surface);
+
+    p {
+        margin: 0;
+    }
+}
+
+div.itemHeaderRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    column-gap: 16px;
+}
+
+div.headerTextContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+
+    div.name {
+        display: flex;
+        display: row nowrap;
+        align-items: center;
+        column-gap: 6px;
+        font-family: macExtMinecraft;
+        font-size: 0.9rem;
+    }
+
+    div.rankCategory {
+        padding-left: 16px;
+    }
+
+    //Applies to all sprites in the item header, including engravings and tags
+    img {
+        max-height: 24px;
+        max-width: 24px;
+        object-fit: scale-down;
+    }
+}
+
+div.convoyTextContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: end;
+}
+
+div.itemStatsContainer {
+    display: flex;
+    flex-flow: row wrap;
+    column-gap: 5%;
+    padding: 0px 8px 0px 8px;
+
+    div.stat {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        flex: 0 0 30%;
+        column-gap: 6px;
+
+        //Forces values with complex displays (range, uses) to stay on the same line
+        div.statValue {
+            display: flex;
+            flex-flow: row nowrap;
+        }
+    }
+}
+
+img.itemGraphic {
+    max-height: 100px; 
+    max-width: 250px;
+    object-fit: scale-down;
+}

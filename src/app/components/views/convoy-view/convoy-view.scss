@@ -1,1 +1,19 @@
 @use '@angular/material' as mat;
+
+#convoyItemsContainer { 
+    display: flex;
+    flex-flow: row wrap;
+    row-gap: 8px;
+    padding: 16px;
+
+    convoy-item {
+        width: 100%;
+    }
+}
+
+div.convoyFiltersColumn { 
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    padding: 8px;
+}

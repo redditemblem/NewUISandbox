@@ -6,7 +6,16 @@
                 <ng-template mat-tab-label>
                     F
                 </ng-template>
-                Convoy filters
+                <div class="convoyFiltersColumn">
+                    <mat-form-field>
+                        <mat-label>Sort Items By</mat-label>
+                        <mat-select [(value)]="sortBy">
+                            @for (sort of convoyDataService.getConvoyItemSorts(); track $index) {
+                                <mat-option [value]="sort">{{sort.displayName}}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
             </mat-tab>
             <mat-tab aria-label="Links">
                 <ng-template mat-tab-label>
@@ -19,11 +28,10 @@
         </mat-tab-group>
     </mat-sidenav>
     <mat-sidenav-content>
-        @if(this.convoyDataService.convoyData() !== undefined) {
-            <p>Convoy data loaded!</p>
-        }
-        @else { 
-            <p>Convoy data pending...</p>
-        }
+        <div id="convoyItemsContainer">
+            @for(item of getFilteredConvoyItemsList(); track $index) {
+                <convoy-item [item]="item" />
+            }
+        </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

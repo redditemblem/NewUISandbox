@@ -1,6 +1,12 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { IConvoyData } from '../data/interfaces/storage/convoy/convoy-data';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { IConvoyItem } from '../data/interfaces/storage/convoy/convoy-item';
+import { IItem } from '../data/interfaces/system/item';
+import { IEngraving } from '../data/interfaces/system/engraving';
+import { ITag } from '../data/interfaces/system/tag';
+import { ISkill } from '../data/interfaces/system/skill';
+import { IItemSort } from '../data/interfaces/storage/item-sort';
 
 @Injectable({
   providedIn: 'root',
@@ -41,4 +47,36 @@ export class ConvoyDataService {
 
   public getWorksheetID() : string | undefined { return this.convoyData()?.workbookID ?? ''; }
   public isShopConfigured() : boolean { return this.convoyData()?.showShopLink ?? false; }
+
+  public getConvoyItemsList() : IConvoyItem[] {
+    return this.convoyData()?.convoyItems ?? [];
+  }
+
+  public getConvoyItemSorts() : IItemSort[] {
+    return this.convoyData()?.parameters?.sorts ?? [];
+  }
+
+  public getEngravingByName(name: string) : IEngraving | undefined {
+    const dict = this.convoyData()?.engravings;
+    if(!dict || !name) return undefined;
+    else return dict[name];
+  }
+
+  public getItemByName(name: string) : IItem | undefined {
+    const dict = this.convoyData()?.items;
+    if(!dict || !name) return undefined;
+    else return dict[name];
+  }
+
+  public getSkillByName(name: string) : ISkill | undefined {
+    const dict = this.convoyData()?.skills;
+    if(!dict || !name) return undefined;
+    else return dict[name];
+  }
+
+  public getTagByName(name: string) : ITag | undefined {
+    const dict = this.convoyData()?.tags;
+    if(!dict || !name) return undefined;
+    else return dict[name];
+  }
 }
