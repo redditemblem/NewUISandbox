@@ -56,6 +56,22 @@ export class ConvoyDataService {
     return this.convoyData()?.parameters?.sorts ?? [];
   }
 
+  public getConvoyItemCategories(): string[] { 
+	return this.convoyData()?.parameters.itemCategories ?? [];
+  }
+
+  public getConvoyItemOwners() : string[] {
+	return this.convoyData()?.parameters.owners ?? [];
+  }
+
+  public getConvoyItemUtilizedStats() : string[] {
+	return this.convoyData()?.parameters.utilizedStats ?? [];
+  }
+
+  public getConvoyItemTargetedStats() : string[] {
+	return this.convoyData()?.parameters.targetedStats ?? [];
+  }
+
   public getEngravingByName(name: string) : IEngraving | undefined {
     const dict = this.convoyData()?.engravings;
     if(!dict || !name) return undefined;

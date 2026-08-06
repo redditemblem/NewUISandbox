@@ -1,4 +1,4 @@
-<div class="convoyItemContainer primaryColorCard">
+<div class="convoyItemContainer primaryColorCard" (click)="isExpanded.set(!isExpanded())">
     <div class="itemHeaderRow">
         <div class="headerTextContainer">
             <div class="name">
@@ -40,7 +40,7 @@
             }
         </div>
     </div>
-    @if (true) {
+    @if (expand() || isExpanded()) {
         @if (item().uses > 0 || (systemData()?.maxUses ?? 0) > 0 || (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0)
         {
             <mat-divider />

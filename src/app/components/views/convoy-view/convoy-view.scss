@@ -1,19 +1,52 @@
-@use '@angular/material' as mat;
+#convoyBanner {
+    position: absolute;
+    height: 96px;
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+}
+
+div.bannerStripe {
+    display: flex;
+    flex-flow: column nowrap;
+
+    div.flat {
+        flex: 1;
+        
+        &.secondaryColor { 
+            background: linear-gradient(to bottom, var(--secondary-theme-color) 80%, var(--secondary-theme-color-dim));
+        }
+
+        &.tertiaryColor {
+            background: linear-gradient(to bottom, var(--tertiary-theme-color) 80%, var(--tertiary-theme-color-dim));
+        }
+    }
+
+    div.round {
+        height: 48px;
+        border-radius: 0% 0% 50% 50%;
+        
+        &.secondaryColor { 
+            background: linear-gradient(to bottom, var(--secondary-theme-color-dim), var(--secondary-theme-color) 75%);
+        }
+
+        &.tertiaryColor {
+            background: linear-gradient(to bottom, var(--tertiary-theme-color-dim), var(--tertiary-theme-color) 75%);
+        }
+    }
+}
 
 #convoyItemsContainer { 
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column nowrap;
     row-gap: 8px;
-    padding: 16px;
+    margin-top: 80px;
+    padding: 24px 16px 16px 16px;
+    height: calc(100% - 88px - 32px);
+    overflow: auto;
 
     convoy-item {
         width: 100%;
     }
-}
-
-div.convoyFiltersColumn { 
-    display: flex;
-    flex-flow: column nowrap;
-    row-gap: 8px;
-    padding: 8px;
 }

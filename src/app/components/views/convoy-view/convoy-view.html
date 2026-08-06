@@ -2,20 +2,11 @@
 <mat-sidenav-container>
     <mat-sidenav #sidenav opened [mode]="breakpointService.isScreenSmallWidth() ? 'over' : 'side'">
         <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
-            <mat-tab aria-label="Units">
+            <mat-tab aria-label="Filters">
                 <ng-template mat-tab-label>
-                    F
+                    <img src="img/filter_icon.png" height="30" width="30" />
                 </ng-template>
-                <div class="convoyFiltersColumn">
-                    <mat-form-field>
-                        <mat-label>Sort Items By</mat-label>
-                        <mat-select [(value)]="sortBy">
-                            @for (sort of convoyDataService.getConvoyItemSorts(); track $index) {
-                                <mat-option [value]="sort">{{sort.displayName}}</mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+                <convoy-filters-sidenav />
             </mat-tab>
             <mat-tab aria-label="Links">
                 <ng-template mat-tab-label>
@@ -28,9 +19,18 @@
         </mat-tab-group>
     </mat-sidenav>
     <mat-sidenav-content>
+        <div id="convoyBanner">
+            @for(item of [].constructor(numberOfStripes()); track $index) {
+                <div class="bannerStripe" [style]="`flex: 1 0 ${100 / numberOfStripes()}%`">
+                    @let colorClass = $even ? 'secondaryColor' : 'tertiaryColor';
+                    <div class="flat" [class]="colorClass"></div>
+                    <div class="round" [class]="colorClass"></div>
+                </div>
+            }
+        </div>
         <div id="convoyItemsContainer">
             @for(item of getFilteredConvoyItemsList(); track $index) {
-                <convoy-item [item]="item" />
+                <convoy-item [item]="item" [expand]="convoyEventService.showExpandedItemData()" />
             }
         </div>
     </mat-sidenav-content>

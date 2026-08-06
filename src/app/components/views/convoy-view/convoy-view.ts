@@ -1,39 +1,37 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatTabsModule } from "@angular/material/tabs";
 import { LinksSidenav } from "../links-sidenav/links-sidenav";
 import { ConvoyDataService } from '../../../services/convoy-data-service';
-import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute } from '@angular/router';
 import { ConvoyItem } from '../../convoy-item/convoy-item';
 import { IConvoyItem } from '../../../data/interfaces/storage/convoy/convoy-item';
-import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
-import { IItemSort } from '../../../data/interfaces/storage/item-sort';
+import { ConvoyFiltersSidenav } from "../convoy-filters-sidenav/convoy-filters-sidenav";
+import { MatButtonModule } from '@angular/material/button';
+import { ConvoyEventService } from '../../../services/convoy-event-service';
 import { IItem } from '../../../data/interfaces/system/item';
 
 @Component({
   selector: 'convoy-view',
-  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, MatButtonModule, ConvoyItem, MatInputModule, MatSelectModule],
+  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, ConvoyItem, ConvoyFiltersSidenav, MatButtonModule],
   templateUrl: './convoy-view.html',
   styleUrl: './convoy-view.scss',
 })
 export class ConvoyView implements OnInit {
 
-  protected sortBy = signal<IItemSort | undefined>(undefined);
+  protected readonly numberOfStripes = computed(() => 
+    this.breakpointService.isScreenSmallWidth() ? 8 : 12
+  );
 
-  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, protected convoyDataService: ConvoyDataService) {
+  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, protected convoyDataService: ConvoyDataService, protected convoyEventService: ConvoyEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
     this.convoyDataService = inject(ConvoyDataService);
+    this.convoyEventService = inject(ConvoyEventService);
   }
 
-  ngOnInit() {
-    this.loadDataForTeam();
-  }
-
-  private async loadDataForTeam() { 
+  async ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     await this.convoyDataService.loadDataForTeam(teamName);
   }
@@ -41,33 +39,41 @@ export class ConvoyView implements OnInit {
   protected getFilteredConvoyItemsList(): IConvoyItem[] {
     return this.convoyDataService.getConvoyItemsList()
       .filter(item =>
-        true
+           this.itemOwnerMatchesFilter(item)
+        && this.itemCategoryMatchesFilter(item)
+        && this.itemUtilizedStatsMatchFilter(item)
+        && this.itemTargetedStatsMatchFilter(item)
       )
       .sort((a, b) => this.sortItems(a, b));
   }
 
-  /** Sorts `unitA` and `unitB` alphabetically by name, case insensitive. */
+  /** 
+   * Sorts `unitA` and `unitB` by the currently selected `sortItemsBy` parameter. 
+   * If nothing is selected, fall back to an alphabetical sort.
+  */
   private sortItems(convoyItemA: IConvoyItem, convoyItemB: IConvoyItem) {
-    const sortAttribute = this.sortBy()?.sortAttribute ?? '';
+    const itemSort = this.convoyEventService.sortItemsBy();
+    const sortAttribute = itemSort?.sortAttribute ?? '';
 
     //If no sort has been set yet, default to sorting by name
     if(sortAttribute.length < 1)
       return convoyItemA.name.toLowerCase().localeCompare(convoyItemB.name.toLowerCase());
 
-    let sortValueA: string  = "";
-    let sortValueB: string = "";
-    if(this.sortBy()?.isDeepSort ?? false){
+    //Intentionally use `any` typings here, so that we can correctly sort both strings and numbers
+    let sortValueA: any = undefined;
+    let sortValueB: any = undefined;
+    if(itemSort?.isDeepSort ?? false){
         const itemA = this.convoyDataService.getItemByName(convoyItemA.name);
         if(itemA !== undefined) 
-          sortValueA = itemA[sortAttribute as keyof IItem] as string;
+          sortValueA = itemA[sortAttribute as keyof IItem] as any;
         
         const itemB = this.convoyDataService.getItemByName(convoyItemB.name);
         if(itemB !== undefined)
-          sortValueB = itemB[sortAttribute as keyof IItem] as string;
+          sortValueB = itemB[sortAttribute as keyof IItem] as any;
     }
     else {
-        sortValueA = convoyItemA[sortAttribute as keyof IConvoyItem] as string;
-        sortValueB = convoyItemB[sortAttribute as keyof IConvoyItem] as string;
+        sortValueA = convoyItemA[sortAttribute as keyof IConvoyItem] as any;
+        sortValueB = convoyItemB[sortAttribute as keyof IConvoyItem] as any;
     }
             
     if(sortValueA.length === 0) return 1;
@@ -78,5 +84,42 @@ export class ConvoyView implements OnInit {
       return convoyItemA.name.toLowerCase().localeCompare(convoyItemB.name.toLowerCase());
     
     return sortValueA < sortValueB ? -1 : 1;
+  }
+
+  private itemOwnerMatchesFilter(item: IConvoyItem) : boolean { 
+    const ownerFilter = this.convoyEventService.itemsOwnedBy() ?? '';
+    if(ownerFilter.length < 1 || ownerFilter === 'All')
+      return true;
+
+    return item.owner.toLowerCase().localeCompare(ownerFilter.toLowerCase()) === 0;
+  }
+
+  private itemCategoryMatchesFilter(item: IConvoyItem) : boolean {
+    const i : IItem | undefined = this.convoyDataService.getItemByName(item.name);
+    if(i === undefined) return true;
+
+    return this.convoyEventService.getItemCategoryFilter(i.category);
+  }
+
+  private itemUtilizedStatsMatchFilter(item: IConvoyItem) : boolean {
+    const allStatsChecked = this.convoyEventService.allUtilizedStatsSelected();
+    if(allStatsChecked) return true;
+    
+    const i : IItem | undefined = this.convoyDataService.getItemByName(item.name);
+    if(i === undefined) return true;
+
+    const stats = i.utilizedStats ?? [];
+    return stats.some(stat => this.convoyEventService.getUtilizedStatFilter(stat));
+  }
+
+  private itemTargetedStatsMatchFilter(item: IConvoyItem) : boolean {     
+    const allStatsChecked = this.convoyEventService.allTargetedStatsSelected();
+    if(allStatsChecked) return true;
+    
+    const i : IItem | undefined = this.convoyDataService.getItemByName(item.name);
+    if(i === undefined) return true;
+
+    const stats = i.targetedStats ?? [];
+    return stats.some(stat => this.convoyEventService.getTargetedStatFilter(stat));
   }
 }

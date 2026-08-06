@@ -21,7 +21,10 @@ export class ConvoyItem implements OnChanges {
   protected readonly ItemRangeShape = ItemRangeShape;
   
   public item = input.required<IConvoyItem>();
+  public expand = input.required<boolean>(); //global expand
+
   protected systemData = signal<IItem | undefined>(undefined);
+  protected isExpanded = signal<boolean>(false); //individual expand
 
   constructor(private convoyDataService: ConvoyDataService) {
     this.convoyDataService = inject(ConvoyDataService);
@@ -29,6 +32,7 @@ export class ConvoyItem implements OnChanges {
 
   ngOnChanges() {
     this.systemData.set(this.convoyDataService.getItemByName(this.item().name));
+    this.isExpanded.set(false);
   }
 
   protected getEngravingByName(name: string) : IEngraving | undefined {

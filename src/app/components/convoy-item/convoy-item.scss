@@ -3,6 +3,7 @@ div.convoyItemContainer {
     flex-flow: column nowrap;
     row-gap: 8px;
     background-color: var(--mat-sys-surface);
+    cursor: pointer;
 
     p {
         margin: 0;
