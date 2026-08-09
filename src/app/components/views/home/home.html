@@ -1,11 +1,11 @@
 <div id="decorativePanelTop"></div>
 <div id="homeViewContainer">
-    <div [class]="breakpointService.isScreenSmallWidth() ? 'logoSectionColumn' : 'logoSectionRow'">
+    <div [class]="breakpointService.isSmallWidth() ? 'logoSectionColumn' : 'logoSectionRow'">
         <div id="logoColumn">
             <img id="logo" src="img/logo.png" alt="Reddit Emblem Maps Logo" />
             <button (click)="themeService.toggleTheme()">Toggle Theme</button>
         </div>
-        <div id="teamListingColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '60%'}">
+        <div id="teamListingColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '60%'}">
             @if (teamListService.isLoading()){
                 <loading-icon />
             }
@@ -30,8 +30,8 @@
             }
         </div>
     </div>
-    <div [class]="breakpointService.isScreenSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
-        <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+    <div [class]="breakpointService.isSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
+        <div class="informationColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '50%'}">
             <h1 class="pixelFont">Information</h1>
             <p>Reddit Emblem Maps is web-based display that is custom built for the Reddit Emblem play-by-post community on Discord! Maps is backed by a highly configurable API, with the goal of supporting a wide range of system designs and customized mechanics.</p>
             <h2 class="pixelFont">Resources</h2>
@@ -62,7 +62,7 @@
             <p>Maps has a developer sandbox called "Team Example", which showcases a wide range of its available functionality.</p>
             <team-listing [team]="teamExample" />
         </div>
-        <div class="informationColumn" [style]="{'width': breakpointService.isScreenSmallWidth() ? '100%' : '50%'}">
+        <div class="informationColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '50%'}">
             <h2 class="pixelFont">Credits</h2>
             <ul>
                 <li><a href="https://www.transparenttextures.com/" target="_blank">Website background texture "Az Subtle" by Anli</a></li>

@@ -20,10 +20,6 @@ import { IItem } from '../../../data/interfaces/system/item';
 })
 export class ConvoyView implements OnInit {
 
-  protected readonly numberOfStripes = computed(() => 
-    this.breakpointService.isScreenSmallWidth() ? 8 : 12
-  );
-
   constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, protected convoyDataService: ConvoyDataService, protected convoyEventService: ConvoyEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
@@ -34,6 +30,13 @@ export class ConvoyView implements OnInit {
   async ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     await this.convoyDataService.loadDataForTeam(teamName);
+  }
+
+  protected calculateNumberOfStripes() : number {
+    if(this.breakpointService.isSmallWidth()) return 8;
+    if(this.breakpointService.isMediumWidth()) return 12;
+    
+    return 16;
   }
 
   protected getFilteredConvoyItemsList(): IConvoyItem[] {
