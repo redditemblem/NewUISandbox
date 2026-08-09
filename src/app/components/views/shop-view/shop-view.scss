@@ -1,0 +1,58 @@
+#convoyBanner {
+    position: absolute;
+    height: 112px;
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+}
+
+#convoyLabel {
+    position: relative;
+    float: right;
+    margin: 8px 8px 0px 0px;
+}
+
+div.bannerStripe {
+    display: flex;
+    flex-flow: column nowrap;
+
+    div.flat {
+        flex: 1;
+        
+        &.secondaryColor { 
+            background: linear-gradient(to bottom, var(--secondary-theme-color) 80%, var(--secondary-theme-color-dim));
+        }
+
+        &.tertiaryColor {
+            background: linear-gradient(to bottom, var(--tertiary-theme-color) 80%, var(--tertiary-theme-color-dim));
+        }
+    }
+
+    div.round {
+        height: 48px;
+        border-radius: 0% 0% 50% 50%;
+        
+        &.secondaryColor { 
+            background: linear-gradient(to bottom, var(--secondary-theme-color-dim), var(--secondary-theme-color) 75%);
+        }
+
+        &.tertiaryColor {
+            background: linear-gradient(to bottom, var(--tertiary-theme-color-dim), var(--tertiary-theme-color) 75%);
+        }
+    }
+}
+
+#convoyItemsContainer { 
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    margin-top: 100px;
+    padding: 24px 16px 16px 16px;
+    height: calc(100% - 108px - 32px);
+    overflow: auto;
+
+    shop-item {
+        width: 100%;
+    }
+}

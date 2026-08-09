@@ -1,0 +1,120 @@
+<div class="convoyItemContainer primaryColorCard" (click)="isExpanded.set(!isExpanded())">
+    <div class="itemHeaderRow">
+        <div class="headerTextContainer">
+            <div class="name">
+                @if((systemData()?.spriteURL ?? "").length > 0){
+                    <img [src]="systemData()?.spriteURL" />
+                }
+                <div>
+                    {{item().name}}
+                </div>
+                @if (item().engravings.length > 0) {
+                    @for(engraving of item().engravings; track engraving) {
+                        @if((getEngravingByName(engraving)?.spriteURL ?? "").length > 0) {
+                            <img [src]="getEngravingByName(engraving)?.spriteURL" [title]="engraving" />
+                        }
+                    }
+                }
+                @if (item().tags.length > 0) {
+                    @for(tag of item().tags; track tag) {
+                        @if((getTagByName(tag)?.spriteURL ?? "").length > 0) {
+                            <img [src]="getTagByName(tag)?.spriteURL" [title]="tag" />
+                        }
+                    }
+                }
+            </div>
+            <div class="rankCategory">
+                @if((systemData()?.weaponRank ?? "").length > 0)
+                { 
+                    {{systemData()?.weaponRank}} - 
+                }
+                {{systemData()?.category}} {{formatUtilizedStatsText()}}
+            </div>
+        </div>
+        <div class="convoyTextContainer">
+            Text
+        </div>
+    </div>
+    @if (expand() || isExpanded()) {
+        @if ((systemData()?.maxUses ?? 0) > 0 || (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0)
+        {
+            <mat-divider />
+            <div class="itemStatsContainer">
+                @if ((systemData()?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
+                {
+                    @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
+                        <div class="stat">
+                            <div>{{stat.key}}</div>
+                            <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" [height]="12" />
+                        </div>
+                    }
+                }
+                @if ((systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.range?.minimumRequiresCalculation ?? false))
+                {
+                    <div class="stat">
+                        <div>Rng</div>
+                        <div class="statValue">
+                            @if ((systemData()?.range?.minimum ?? 0) > 0) {
+                                <stat-with-buff-icon [base]="systemData()?.range?.minimum ?? 0" [final]="systemData()?.range?.minimum ?? 0" [height]="12" />
+                            }
+                            @else {
+                                <p>?</p>
+                            }
+                            @if ((systemData()?.range?.minimum ?? 0) !== (systemData()?.range?.maximum ?? 0) || (systemData()?.range?.maximumRequiresCalculation ?? false))
+                            {
+                                <p>&nbsp;-&nbsp;</p>
+                                @if ((systemData()?.range?.maximum ?? 0) > 0) {
+                                    <stat-with-buff-icon [base]="systemData()?.range?.maximum ?? 0" [final]="systemData()?.range?.maximum ?? 0" [height]="12" />
+                                }
+                                @else {
+                                    <p>?</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+                @if ((systemData()?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
+                {
+                    <div class="stat">
+                        <div>Shp</div>
+                        <div>
+                            @switch (systemData()?.range?.shape)
+                            {
+                                @case (ItemRangeShape.Square) { Square }
+                                @case (ItemRangeShape.Cross) { Cross }
+                                @case (ItemRangeShape.Saltire) { Saltire }
+                                @case (ItemRangeShape.Star) { Star }
+                            }
+                        </div>
+                    </div>
+                }
+                @if ((systemData()?.maxUses ?? 0) > 0)
+                {
+                    <div class="stat">
+                        <p>
+                            @if((systemData()?.maxUses ?? 0) === 0) { Quantity }
+                            @else { Uses }
+                        </p>
+                        <div class="statValue">
+                            @if((systemData()?.maxUses ?? 0) > 0) {
+                                <stat-with-buff-icon [base]="systemData()?.maxUses ?? 0" [final]="systemData()?.maxUses ?? 0" [invertColors]="false" [height]="12" />
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0) {
+            <mat-divider />
+            @for (engraving of item().engravings; track engraving) {
+                <engraving [name]="engraving" />
+            }
+            @for (text of systemData()?.textFields; track $index) {
+                <p>{{text}}</p>
+            }
+            @if ((systemData()?.graphicURL ?? "").length > 0) {
+                <img class="itemGraphic" [src]="systemData()?.graphicURL" />
+            }
+        }
+    }
+</div>
