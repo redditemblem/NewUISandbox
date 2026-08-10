@@ -26,7 +26,7 @@ export class ConvoyItem implements OnChanges {
   protected systemData = signal<IItem | undefined>(undefined);
   protected isExpanded = signal<boolean>(false); //individual expand
 
-  constructor(private convoyDataService: ConvoyDataService) {
+  constructor(protected convoyDataService: ConvoyDataService) {
     this.convoyDataService = inject(ConvoyDataService);
   }
 

@@ -1,4 +1,9 @@
-#convoyBanner {
+$shop-banner-color-1: #e92700;
+$shop-banner-color-1-shaded: #9b220a;
+$shop-banner-color-2: #df5500;
+$shop-banner-color-2-shaded: #953900;
+
+#shopBanner {
     position: absolute;
     height: 112px;
     width: 100%;
@@ -7,7 +12,7 @@
     align-items: stretch;
 }
 
-#convoyLabel {
+#shopLabel {
     position: relative;
     float: right;
     margin: 8px 8px 0px 0px;
@@ -21,11 +26,11 @@ div.bannerStripe {
         flex: 1;
         
         &.secondaryColor { 
-            background: linear-gradient(to bottom, var(--secondary-theme-color) 80%, var(--secondary-theme-color-dim));
+            background: linear-gradient(to bottom, $shop-banner-color-1 80%, $shop-banner-color-1-shaded);
         }
 
         &.tertiaryColor {
-            background: linear-gradient(to bottom, var(--tertiary-theme-color) 80%, var(--tertiary-theme-color-dim));
+            background: linear-gradient(to bottom, $shop-banner-color-2 80%, $shop-banner-color-2-shaded);
         }
     }
 
@@ -34,16 +39,16 @@ div.bannerStripe {
         border-radius: 0% 0% 50% 50%;
         
         &.secondaryColor { 
-            background: linear-gradient(to bottom, var(--secondary-theme-color-dim), var(--secondary-theme-color) 75%);
+            background: linear-gradient(to bottom, $shop-banner-color-1-shaded, $shop-banner-color-1 75%);
         }
 
         &.tertiaryColor {
-            background: linear-gradient(to bottom, var(--tertiary-theme-color-dim), var(--tertiary-theme-color) 75%);
+            background: linear-gradient(to bottom, $shop-banner-color-2-shaded, $shop-banner-color-2 75%);
         }
     }
 }
 
-#convoyItemsContainer { 
+#shopItemsContainer { 
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
@@ -55,4 +60,17 @@ div.bannerStripe {
     shop-item {
         width: 100%;
     }
+}
+
+#emptyShopItemsContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+
+    font-family: macExtMinecraft;
+    font-size: 1.5rem;
+    line-height: 1.6rem;
+    text-align: center;
 }

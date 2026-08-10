@@ -9,10 +9,11 @@ import { Engraving } from "../engraving/engraving";
 import { MatDivider } from "@angular/material/divider";
 import { KeyValuePipe } from '@angular/common';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
+import { Currency } from "../currency/currency";
 
 @Component({
   selector: 'shop-item',
-  imports: [Engraving, MatDivider, KeyValuePipe, StatWithBuffIcon],
+  imports: [Engraving, MatDivider, KeyValuePipe, StatWithBuffIcon, Currency],
   templateUrl: './shop-item.html',
   styleUrl: './shop-item.scss',
 })
@@ -26,7 +27,7 @@ export class ShopItem implements OnChanges {
   protected systemData = signal<IItem | undefined>(undefined);
   protected isExpanded = signal<boolean>(false); //individual expand
 
-  constructor(private shopDataService: ShopDataService) {
+  constructor(protected shopDataService: ShopDataService) {
     this.shopDataService = inject(ShopDataService);
   }
 

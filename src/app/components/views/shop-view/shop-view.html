@@ -19,7 +19,7 @@
         </mat-tab-group>
     </mat-sidenav>
     <mat-sidenav-content>
-        <div id="convoyBanner">
+        <div id="shopBanner">
             @for(item of [].constructor(calculateNumberOfStripes()); track $index) {
                 <div class="bannerStripe" [style]="`flex: 1 0 ${100 / calculateNumberOfStripes()}%`">
                     @let colorClass = $even ? 'secondaryColor' : 'tertiaryColor';
@@ -28,10 +28,15 @@
                 </div>
             }
         </div>
-        <img id="convoyLabel" src="img/convoy_logo.png" />
-        <div id="convoyItemsContainer">
+        <img id="shopLabel" src="img/shop_logo.png" />
+        <div id="shopItemsContainer">
             @for(item of getFilteredShopItemsList(); track $index) {
                 <shop-item [item]="item" [expand]="shopEventService.showExpandedItemData()" />
+            }
+            @empty {
+                <div id="emptyShopItemsContainer">
+                    <p>There are no shop items to display.</p>
+                </div>
             }
         </div>
     </mat-sidenav-content>

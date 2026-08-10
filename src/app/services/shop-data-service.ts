@@ -7,11 +7,14 @@ import { IShopItem } from '../data/interfaces/storage/shop/shop-item';
 import { IItemSort } from '../data/interfaces/storage/item-sort';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { IShopData } from '../data/interfaces/storage/shop/shop-data';
+import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
+import { ICurrencyConstantsLookupService } from './interfaces/currency-constants-lookup-service';
+import { ICurrencyConstants } from '../data/interfaces/system/currency-constants';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ShopDataService {
+export class ShopDataService implements ICurrencyConstantsLookupService, IEngravingLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/shop/';
 
@@ -47,6 +50,10 @@ export class ShopDataService {
 
   public getWorksheetID() : string | undefined { return this.shopData()?.workbookID ?? ''; }
   public isConvoyConfigured() : boolean { return this.shopData()?.showConvoyLink ?? false; }
+  
+  public getCurrencyConstants() : ICurrencyConstants | undefined {
+	return this.shopData()?.currency;
+  }
 
   public getShopItemsList() : IShopItem[] {
     return this.shopData()?.shopItems ?? [];

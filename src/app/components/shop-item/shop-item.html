@@ -1,4 +1,4 @@
-<div class="convoyItemContainer primaryColorCard" (click)="isExpanded.set(!isExpanded())">
+<div class="shopItemContainer primaryColorCard" (click)="isExpanded.set(!isExpanded())">
     <div class="itemHeaderRow">
         <div class="headerTextContainer">
             <div class="name">
@@ -31,8 +31,19 @@
                 {{systemData()?.category}} {{formatUtilizedStatsText()}}
             </div>
         </div>
-        <div class="convoyTextContainer">
-            Text
+        <div class="shopTextContainer">
+            <p>
+                @if(item().stock >= 99) { ∞ Available }
+                @else { {{item().stock }} Available }
+            </p>
+            <div class="priceRow">
+                @if (item().salePrice !== item().price) {
+                    <currency [amount]="item().salePrice" [dataService]="shopDataService" class="onSaleBolded" />
+                }
+                @if (item().price > 0) {
+                    <currency [amount]="item().price" [dataService]="shopDataService" [class]="{'onSaleStrikethrough': item().salePrice !== item().price}" />
+                }
+            </div>
         </div>
     </div>
     @if (expand() || isExpanded()) {
@@ -107,7 +118,7 @@
         @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0) {
             <mat-divider />
             @for (engraving of item().engravings; track engraving) {
-                <engraving [name]="engraving" />
+                <engraving [name]="engraving" [dataService]="shopDataService" />
             }
             @for (text of systemData()?.textFields; track $index) {
                 <p>{{text}}</p>

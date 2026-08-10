@@ -14,11 +14,13 @@ import { ISkill } from '../data/interfaces/system/skill';
 import { IMapConstants } from '../data/interfaces/map/map-constants';
 import { IEmblem } from '../data/interfaces/system/emblem';
 import { IEngageAttack } from '../data/interfaces/system/engage-attack';
+import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
+import { ICurrencyConstantsLookupService } from './interfaces/currency-constants-lookup-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TeamDataService {
+export class TeamDataService implements ICurrencyConstantsLookupService, IEngravingLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/';
 

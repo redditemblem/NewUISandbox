@@ -85,7 +85,7 @@
         @if((unit().stats.heldCurrency ?? 0) > 0){
             <div class="prioritizedStatsItem">
                 <p>Money</p>
-                <currency [amount]="unit().stats.heldCurrency" />
+                <currency [amount]="unit().stats.heldCurrency" [dataService]="teamDataService" />
             </div>
         }
     </div>

@@ -1,6 +1,7 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import { TeamDataService } from '../../services/team-data-service';
 import { ICurrencyConstants } from '../../data/interfaces/system/currency-constants';
+import { ICurrencyConstantsLookupService } from '../../services/interfaces/currency-constants-lookup-service';
 
 @Component({
   selector: 'currency',
@@ -8,14 +9,14 @@ import { ICurrencyConstants } from '../../data/interfaces/system/currency-consta
   template: `<p>{{formatCurrentString()}}</p>`,
   styles: `p { margin: 0px; }`
 })
-export class Currency {
+export class Currency implements OnInit{
   public amount = input.required<number | undefined>();
+  public dataService = input.required<ICurrencyConstantsLookupService>();
 
-  private readonly constants : ICurrencyConstants | undefined;
+  private constants : ICurrencyConstants | undefined;
 
-  constructor(private teamDataService : TeamDataService) {
-    this.teamDataService = inject(TeamDataService);
-    this.constants = this.teamDataService.getCurrencyConstants();
+  ngOnInit() {
+    this.constants = this.dataService()?.getCurrencyConstants();
   }
 
   /** Formats the `amount()` into a display string. */

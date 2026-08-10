@@ -7,11 +7,12 @@ import { IEngraving } from '../data/interfaces/system/engraving';
 import { ITag } from '../data/interfaces/system/tag';
 import { ISkill } from '../data/interfaces/system/skill';
 import { IItemSort } from '../data/interfaces/storage/item-sort';
+import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ConvoyDataService {
+export class ConvoyDataService implements IEngravingLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/convoy/';
 

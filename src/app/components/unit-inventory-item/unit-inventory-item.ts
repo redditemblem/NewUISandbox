@@ -27,7 +27,7 @@ export class UnitInventoryItem implements OnChanges {
   protected systemData = signal<IItem | undefined>(undefined);
   protected isExpanded = signal<boolean>(this.forceExpand());
 
-  constructor(private teamDataService: TeamDataService) {
+  constructor(protected teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 

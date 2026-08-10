@@ -33,6 +33,11 @@
             @for(item of getFilteredConvoyItemsList(); track $index) {
                 <convoy-item [item]="item" [expand]="convoyEventService.showExpandedItemData()" />
             }
+            @empty {
+                <div id="emptyConvoyItemsContainer">
+                    <p>There are no convoy items to display.</p>
+                </div>
+            }
         </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

@@ -1,4 +1,4 @@
-div.convoyItemContainer {
+div.shopItemContainer {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 8px;
@@ -43,10 +43,25 @@ div.headerTextContainer {
     }
 }
 
-div.convoyTextContainer {
+div.shopTextContainer {
     display: flex;
     flex-flow: column nowrap;
     align-items: end;
+
+    div.priceRow {
+        display: flex;
+        flex-flow: row nowrap;
+        column-gap: 8px;
+    }
+}
+
+.onSaleBolded {
+    font-weight: bold;
+}
+
+.onSaleStrikethrough {
+    color: crimson;
+    text-decoration: line-through crimson;
 }
 
 div.itemStatsContainer {

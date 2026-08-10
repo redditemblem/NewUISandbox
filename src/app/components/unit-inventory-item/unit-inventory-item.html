@@ -107,7 +107,7 @@
             @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0) {
                 <mat-divider />
                 @for (engraving of item().engravings; track engraving) {
-                    <engraving [name]="engraving" />
+                    <engraving [name]="engraving" [dataService]="teamDataService" />
                 }
                 @for (text of systemData()?.textFields; track $index) {
                     <p>{{text}}</p>
