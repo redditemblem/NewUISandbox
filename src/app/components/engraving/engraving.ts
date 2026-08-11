@@ -13,7 +13,6 @@ import { ShopDataService } from '../../services/shop-data-service';
 })
 export class Engraving implements OnChanges {
   public name = input.required<string>();
-  /** Because engravings can appear as children of multiple different item parents, pass the correct data service in. */
   public dataService = input.required<IEngravingLookupService>();
 
   protected systemData = signal<IEngraving | undefined>(undefined);

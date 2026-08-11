@@ -11,8 +11,13 @@ export class MapEventService {
   /** Internal dictionary for tracking the pinned state of units */
   private unitPinnedStates: StringDictionary<boolean> = {};
 
+  @Output() switchDisplayToUnit = new EventEmitter<string>();
   @Output() pinUnit = new EventEmitter<string>();
   @Output() unpinUnit = new EventEmitter<string>();
+
+  public switchDisplayedUnit(unitName: string) {
+    this.switchDisplayToUnit.emit(unitName);
+  }
 
   /**
    *  Inverts the pinned state of `unitName` and emits a matching pin/unpin event.

@@ -21,7 +21,7 @@ export class UnitEmblem implements OnChanges {
   protected isEngaged: Signal<boolean> = computed(() => this.emblem().isEngaged ?? false);
   protected engagedAuraColor: Signal<string> = computed(() => this.systemData()?.engagedUnitAura ?? "var(--primary-theme-color)");
 
-  constructor(private teamDataService: TeamDataService) {
+  constructor(protected teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 

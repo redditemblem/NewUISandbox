@@ -1,6 +1,7 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { IUnit } from '../../../data/interfaces/unit/unit';
 import { MatIconButton } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TeamDataService } from '../../../services/team-data-service';
 import { TextFieldsWithLabeledHeader } from "../../text-fields-with-labeled-header/text-fields-with-labeled-header";
 import { IAffiliation } from '../../../data/interfaces/system/affiliation';
@@ -17,10 +18,12 @@ import { UnitSkill } from "../../unit-skill/unit-skill";
 import { UnitWeaponRank } from "../../unit-weapon-rank/unit-weapon-rank";
 import { UnitEmblem } from "../../unit-emblem/unit-emblem";
 import { StatWithBuffIcon } from "../../stat-with-buff-icon/stat-with-buff-icon";
+import { IBattleStyle } from '../../../data/interfaces/system/battle-style';
+import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon, MatTooltipModule],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
@@ -34,7 +37,7 @@ export class UnitSidenavDisplay {
   public isEmblemExpanded = signal<boolean>(true);
   public isSkillsInfoExpanded = signal<boolean>(true);
 
-  constructor(protected teamDataService: TeamDataService) {
+  constructor(protected teamDataService: TeamDataService, private eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
   }
 
@@ -53,6 +56,10 @@ export class UnitSidenavDisplay {
   protected toggleEmblemExpansion() { this.isEmblemExpanded.set(!this.isEmblemExpanded()); }
   protected toggleSkillsExpansion() { this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded()); }
   
+  protected pairedUnitLink_OnClick(pairedUnitName: string) {
+    this.eventService.switchDisplayedUnit(pairedUnitName);
+  }
+
   protected dictionaryHasKeys(object: any) : boolean {
     if(object === null || object === undefined)
       return false;
@@ -64,12 +71,22 @@ export class UnitSidenavDisplay {
     return 0;
   }
 
+  // #region Section Label Functions
+
   protected getInventoryLabel() : string {
     return this.teamDataService.getInterfaceLabels()?.inventory ?? "";
   }
 
   protected getInventorySubsectionLabel(index: number) : string {
     return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
+  }
+
+  protected getClassLabel() : string {
+    return this.teamDataService.getInterfaceLabels()?.class ?? "";
+  }
+
+  protected getBattleStyleLabel() : string { 
+    return this.teamDataService.getInterfaceLabels()?.battleStyle ?? "";
   }
 
   protected getEmblemLabel() : string {
@@ -84,13 +101,23 @@ export class UnitSidenavDisplay {
     return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
   }
 
+  protected getStatusConditionsLabel() : string {
+    return this.teamDataService.getInterfaceLabels()?.statusConditions ?? "";
+  }
+
+  // #endregion Section Label Functions
+
   protected getUnitAffiliation() : IAffiliation | undefined {
     return this.teamDataService.getAffiliationByName(this.unit().affiliation);
   }
 
   protected shouldFlipUnitSprite() : boolean {
-    let aff = this.getUnitAffiliation();
+    const aff = this.getUnitAffiliation();
     return aff?.flipUnitSprites ?? false;
+  }
+
+  protected getUnitBattleStyle(name: string) : IBattleStyle | undefined {
+    return this.teamDataService.getBattleStyleByName(name);
   }
 
   protected getUnitClass(name: string) : IClass | undefined {

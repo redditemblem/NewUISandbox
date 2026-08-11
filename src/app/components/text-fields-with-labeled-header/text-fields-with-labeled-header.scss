@@ -4,36 +4,54 @@ div.labeledHeaderRow {
     align-items: stretch;
     font-family: macExtMinecraft;
     font-size: .5rem;
+}
 
-    h2.labelText {
-        max-width: 40%;
-        align-content: center;
-        margin: 0px;
-        padding: 4px 8px 4px 16px;
-        border-radius: 0px 0px 0px 8px;
-        background: var(--primary-theme-color);
-        font-style: normal;
-        font-weight: normal;
+h2.label {
+    max-width: 45%;
+    align-content: center;
+    margin: 0px;
+    padding: 4px 8px 4px 16px;
+    border-radius: 0px 0px 0px 8px;
+    background: var(--primary-theme-color);
+    font-style: normal;
+    font-weight: normal;
+}
+
+div.labelPoint {
+    width: 16px;
+    background: linear-gradient(to right top, var(--primary-theme-color) 51%, transparent 51%);
+}
+
+div.title {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+    column-gap: 8px;
+    align-items: center;
+    padding: 4px 8px 4px 8px;
+    box-shadow: inset 0px -2px var(--primary-theme-color);
+    border-radius: 0px 8px 0px 0px;
+
+    img.sprite {
+        max-height: 18px;
+        max-width: 18px;
+        object-fit: scale-down;
     }
 
-    div.labelTextPoint {
-        width: 16px;
-        background: linear-gradient(to right top, var(--primary-theme-color) 51%, transparent 51%);
-    }
-
-    h2.titleText {
-        flex-grow: 1;
-        align-content: center;
+    h2 {
         margin: 0px;
-        padding: 4px 8px 4px 8px;
-        box-shadow: inset 0px -2px var(--primary-theme-color);
-        border-radius: 0px 8px 0px 0px;
         font-style: normal;
         font-weight: normal;
     }
 }
 
-p {
-    margin: 4px 16px 0px 16px;
+div.textFieldsContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 4px;
+    margin-top: 4px;
+    padding: 0px 16px 0px 16px;
     font-size: .8rem;
+
+    p { margin: 0px; }
 }

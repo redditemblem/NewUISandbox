@@ -3,6 +3,7 @@ import { IUnitSkill } from '../../data/interfaces/unit/unit-skill';
 import { ISkill } from '../../data/interfaces/system/skill';
 import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from "@angular/material/divider";
+import { ISkillLookupService } from '../../services/interfaces/skill-lookup-service';
 
 @Component({
   selector: 'unit-skill',
@@ -13,17 +14,15 @@ import { MatDivider } from "@angular/material/divider";
 export class UnitSkill implements OnChanges {
   
   public skill = input.required<IUnitSkill>();
+  public dataService = input.required<ISkillLookupService>();
+
   public expanded = input<boolean>(true);
   public disabled = input<boolean>(false);
 
   protected systemData = signal<ISkill | undefined>(undefined);
 
-  constructor(private teamDataService: TeamDataService) {
-    this.teamDataService = inject(TeamDataService);
-  }
-  
   ngOnChanges() {
-    this.systemData.set(this.teamDataService.getSkillByName(this.skill().name));
+    this.systemData.set(this.dataService().getSkillByName(this.skill().name));
   }
 
   protected getAdditionalStatsText() : string {

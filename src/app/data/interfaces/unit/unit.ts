@@ -38,8 +38,9 @@ export interface IUnit {
     //3H
     combatArts?: string[],
     battalion?: IUnitBattalion,
-    adjutants?: string[]
+    adjutants?: string[],
 
     //Engage
-    emblem?: IUnitEmblem
+    emblem?: IUnitEmblem,
+    battleStyle?: string
 }

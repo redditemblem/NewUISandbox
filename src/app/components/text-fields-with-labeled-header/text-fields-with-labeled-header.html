@@ -1,14 +1,23 @@
 <div class="labeledHeaderRow">
-    <h2 class="labelText">{{label()}}</h2>
-    <div class="labelTextPoint"></div>
-    <h2 class="titleText">
-        @if(titleHref()) {
-            <a [href]="titleHref()" target="_blank">{{title()}}</a>
-        } @else {
-            {{title()}}
+    <h2 class="label" [title]="label()">{{label()}}</h2>
+    <div class="labelPoint"></div>
+    <div class="title">
+        @if((spriteURL() ?? "").length > 0) {
+            <img [src]="spriteURL()" class="sprite" />
         }
-    </h2>
+        <h2>
+            @if((titleHref() ?? "").length > 0) {
+                <a [href]="titleHref()" target="_blank">{{title()}}</a>
+            } @else {
+                {{title()}}
+            }
+        </h2>
+    </div>
 </div>
-@for (textField of textFields(); track $index) {
-    <p>{{textField}}</p>
+@if ((textFields() ?? []).length > 0) {
+    <div class="textFieldsContainer">
+        @for (textField of textFields(); track $index) {
+            <p>{{textField}}</p>
+        }
+    </div>
 }

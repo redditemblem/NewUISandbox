@@ -118,6 +118,9 @@
             }
         </div>
     }
+    @for(skill of systemData()?.equippedSkills; track $index) {
+        <unit-skill [skill]="skill" [dataService]="teamDataService" [expanded]="(item().isPrimaryEquipped || item().isSecondaryEquipped) ?? false" [disabled]="(!item().isPrimaryEquipped && !item().isSecondaryEquipped) ?? true" />
+    }
     @if (item().maxRangeExceedsCalculationLimit || item().isNotInInventory) {
         <mat-divider />
         @if (item().maxRangeExceedsCalculationLimit) {

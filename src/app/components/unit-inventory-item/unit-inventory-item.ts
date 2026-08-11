@@ -9,10 +9,11 @@ import { ITag } from '../../data/interfaces/system/tag';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 import { ItemRangeShape } from "../../data/interfaces/system/item-range";
 import { Engraving } from '../engraving/engraving';
+import { UnitSkill } from '../unit-skill/unit-skill';
 
 @Component({
   selector: 'unit-inventory-item',
-  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, Engraving],
+  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, Engraving, UnitSkill],
   templateUrl: './unit-inventory-item.html',
   styleUrl: './unit-inventory-item.scss',
 })

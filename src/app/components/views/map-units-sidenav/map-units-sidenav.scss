@@ -38,11 +38,24 @@ img.grayscale {
     filter: grayscale(1);
 }
 
-.autocompleteOptionContainer {
-    display: flex;
-    flex-flow: row nowrap;
-    column-gap: 8px;
-    align-items: center;
+mat-option {
+    ::ng-deep .mdc-list-item__primary-text {
+        display: flex;
+        flex-flow: row nowrap;
+        flex: 1;
+        column-gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+
+        .unitName {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            column-gap: 8px;
+        }
+
+        p { margin: 8px 0px 8px 0px; }
+    }
 }
 
 .autocompleteUnitSprite {

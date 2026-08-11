@@ -38,7 +38,7 @@
                 <h4>Sync Skills</h4>
             }
             @for(skill of emblem().syncSkills; track $index) {
-                <unit-skill [skill]="skill" />
+                <unit-skill [skill]="skill" [dataService]="teamDataService" />
             }
         }
         @if((emblem().engageSkills ?? []).length > 0) {
@@ -46,7 +46,7 @@
                 <h4>Engage Skills</h4>
             }
             @for(skill of emblem().engageSkills; track $index) {
-                <unit-skill [skill]="skill" [expanded]="isExpanded() || isEngaged()" [disabled]="!isEngaged()" />
+                <unit-skill [skill]="skill" [expanded]="isExpanded() || isEngaged()" [disabled]="!isEngaged()" [dataService]="teamDataService" />
             }
         }
         @if((emblem().engageWeapons ?? []).length > 0) {

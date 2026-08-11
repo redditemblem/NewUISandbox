@@ -16,11 +16,13 @@ import { IEmblem } from '../data/interfaces/system/emblem';
 import { IEngageAttack } from '../data/interfaces/system/engage-attack';
 import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
 import { ICurrencyConstantsLookupService } from './interfaces/currency-constants-lookup-service';
+import { ISkillLookupService } from './interfaces/skill-lookup-service';
+import { IBattleStyle } from '../data/interfaces/system/battle-style';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TeamDataService implements ICurrencyConstantsLookupService, IEngravingLookupService {
+export class TeamDataService implements ICurrencyConstantsLookupService, IEngravingLookupService, ISkillLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/';
 
@@ -77,6 +79,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public getAffiliationByName(name: string) : IAffiliation | undefined {
 	const dict = this.mapData().system?.affiliations;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getBattleStyleByName(name: string) : IBattleStyle | undefined {
+	const dict = this.mapData().system?.battleStyles;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

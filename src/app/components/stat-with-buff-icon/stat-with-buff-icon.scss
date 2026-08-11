@@ -9,6 +9,10 @@ span.container {
     font-weight: inherit;
     font-size: inherit;
 
+    img {
+        object-fit: scale-down;
+    }
+
     //Filters created using https://codepen.io/sosuke/pen/Pjoqqp
     img.pos {
         filter: invert(65%) sepia(85%) saturate(1072%) hue-rotate(176deg) brightness(94%) contrast(99%);

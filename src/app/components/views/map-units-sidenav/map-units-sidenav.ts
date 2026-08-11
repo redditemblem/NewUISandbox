@@ -28,6 +28,8 @@ export class MapUnitsSidenav {
     this.filteredUnits = [];
 
     //Subscribe to external events
+    this.eventService.switchDisplayToUnit
+      .subscribe((unitName) => this.switchDisplayToUnit(unitName));
     this.eventService.pinUnit
       .subscribe((unitName) => this.pinUnit(unitName));
     this.eventService.unpinUnit
@@ -46,6 +48,12 @@ export class MapUnitsSidenav {
 
   /** Sorts `unitA` and `unitB` alphabetically by name, case insensitive. */
   private sortUnits(unitA: IUnit, unitB: IUnit) {
+    const isUnitAPinned: boolean = this.eventService.getPinnedStateForUnit(unitA.name);
+    const isUnitBPinned: boolean = this.eventService.getPinnedStateForUnit(unitB.name);
+
+    if(isUnitAPinned && !isUnitBPinned) return -1;
+    if(!isUnitAPinned && isUnitBPinned) return 1;
+    
     return unitA.name.toLowerCase().localeCompare(unitB.name.toLowerCase());
   }
 
@@ -58,6 +66,17 @@ export class MapUnitsSidenav {
   protected shouldFlipUnitSprite(unit: IUnit) : boolean {
     const aff = this.teamDataService.getAffiliationByName(unit.affiliation);
     return aff?.flipUnitSprites ?? false;
+  }
+
+  private switchDisplayToUnit(unitName: string) {
+    const unit: IUnit | undefined = this.teamDataService.getUnitByName(unitName);
+    if(unit === undefined) return;
+
+    this.selectedUnit.setValue(unit);
+
+    //Sync pinned button status
+    const isPinned: boolean = this.eventService.getPinnedStateForUnit(unitName);
+    this.selectedUnitIsPinned.set(isPinned);
   }
 
   /** Gets the unit with a name matching `unitName` and sets it as the currently selected unit. */

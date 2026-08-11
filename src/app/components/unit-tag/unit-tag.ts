@@ -26,7 +26,8 @@ import { ITag } from '../../data/interfaces/system/tag';
         margin: 0px;
         max-width: 125px;
         overflow: hidden;
-        font-size: 0.8rem;
+        font-family: macExtMinecraft;
+        font-size: 0.7rem;
         text-overflow: ellipsis;
         text-wrap: nowrap;
       }
