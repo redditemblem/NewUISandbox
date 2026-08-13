@@ -1,11 +1,16 @@
-<div id="engravingContainer">
-    <div id="nameRow">
+<div class="primaryColorCard engravingContainer">
+    <div class="headerRow">
         @if ((systemData()?.spriteURL ?? "").length > 0) {
-            <img id="sprite" [src]="systemData()?.spriteURL" />
+            <img [src]="systemData()?.spriteURL" class="sprite" />
         }
-        <span>{{name()}}</span>
+        <p>{{name()}}</p>
     </div>
-    @for (text of systemData()?.textFields; track $index) {
-        <p>{{text}}</p>
+    @if ((systemData()?.textFields ?? []).length > 0) {
+        <mat-divider />
+        <div class="textFieldsContainer">
+            @for (text of systemData()?.textFields; track $index) {
+                <p>{{text}}</p>
+            }
+        </div>
     }
 </div>

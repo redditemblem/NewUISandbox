@@ -10,12 +10,14 @@ import { MatDivider } from "@angular/material/divider";
   styleUrl: './unit-engage-attack.scss',
 })
 export class UnitEngageAttack implements OnChanges {
+  //External inputs
   public attack = input.required<string>();
   public expanded = input<boolean>(true);
 
+  //Internal attributes
   protected systemData = signal<IEngageAttack | undefined>(undefined);
 
-  constructor(private teamDataService: TeamDataService) {
+  constructor(private readonly teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 

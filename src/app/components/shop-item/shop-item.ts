@@ -18,22 +18,25 @@ import { Currency } from "../currency/currency";
   styleUrl: './shop-item.scss',
 })
 export class ShopItem implements OnChanges {
-  //Expose enum for use in the class
-  protected readonly ItemRangeShape = ItemRangeShape;
-  
+  //External inputs  
   public item = input.required<IShopItem>();
   public expand = input.required<boolean>(); //global expand
 
-  protected systemData = signal<IItem | undefined>(undefined);
-  protected isExpanded = signal<boolean>(false); //individual expand
+  //Constants
+  protected readonly ItemRangeShape = ItemRangeShape; //expose enum options
+  private readonly defaultExpansionState: boolean = false;
 
-  constructor(protected shopDataService: ShopDataService) {
+  //Internal attributes
+  protected systemData = signal<IItem | undefined>(undefined);
+  protected isExpanded = signal<boolean>(this.defaultExpansionState); //individual expand
+
+  constructor(protected readonly shopDataService: ShopDataService) {
     this.shopDataService = inject(ShopDataService);
   }
 
   ngOnChanges() {
     this.systemData.set(this.shopDataService.getItemByName(this.item().name));
-    this.isExpanded.set(false);
+    this.isExpanded.set(this.defaultExpansionState);
   }
 
   protected getEngravingByName(name: string) : IEngraving | undefined {
@@ -55,7 +58,7 @@ export class ShopItem implements OnChanges {
     if(targeted.length > 0)
       stats += " » " + targeted.join("/");
 
-    return "(" + stats + ")";
+    return `(${stats})`;
   }
 
   protected hasNonZeroStatValue() : boolean {

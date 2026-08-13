@@ -1,48 +1,45 @@
 div.statusContainer {
     display: flex;
     flex-flow: column nowrap;
-    font-size: 0.8rem;
+    row-gap: 8px;
 
-    #headerRow {
+    p { margin: 0px; }
+}
+
+div.headerRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    justify-content: space-between;
+    column-gap: 16px;
+}
+
+div.titleColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    font-family: macExtMinecraft;
+    
+    div.title {
         display: flex;
         flex-flow: row nowrap;
-        flex: 1;
-        justify-content: space-between;
-        column-gap: 16px;
-
-        #titleContainer {
-            display: flex;
-            flex-flow: column nowrap;
-
-            #title {
-                display: flex;
-                flex-flow: row nowrap;
-                align-items: center;
-                font-family: macExtMinecraft;
-                font-size: 0.8rem;
-
-                #sprite {
-                    max-height: 12px;
-                    max-width: 12px;
-                    object-fit: scale-down;
-                    margin-right: 4px;
-                }
-            }
-
-            p {
-                margin: 0px 0px 0px 16px;
-            }
-        }
-
-        #icons {
-            display: flex;
-            flex-flow: row-reverse nowrap;
-            justify-content: space-between;
-            column-gap: 4px;
-        }
+        column-gap: 6px;
+        font-size: var(--card-header-pixel-font-size);
     }
 
-    p {
-        margin: 4px 0px 0px 0px;
+    img.sprite {
+        max-height: var(--card-header-sprite-max-dimensions);
+        max-width: var(--card-header-sprite-max-dimensions);
+        object-fit: scale-down;
     }
+
+    p.additionalStats {
+        margin-left: 16px;
+        font-size: var(--card-subheader-pixel-font-size);
+    }
+}
+
+div.iconsRow {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+    column-gap: 4px;
 }

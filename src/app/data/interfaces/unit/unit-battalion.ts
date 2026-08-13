@@ -2,6 +2,6 @@
 export interface IUnitBattalion {
     name: string,
     endurance?: number,
-    gamitUses?: number,
+    gambitUses?: number,
     gambitName?: string
 }

@@ -17,22 +17,25 @@ import { Engraving } from "../engraving/engraving";
   styleUrl: './convoy-item.scss',
 })
 export class ConvoyItem implements OnChanges {
-  //Expose enum for use in the class
-  protected readonly ItemRangeShape = ItemRangeShape;
-  
+  //External inputs
   public item = input.required<IConvoyItem>();
   public expand = input.required<boolean>(); //global expand
 
-  protected systemData = signal<IItem | undefined>(undefined);
-  protected isExpanded = signal<boolean>(false); //individual expand
+  //Constants  
+  protected readonly ItemRangeShape = ItemRangeShape; //expose enum options
+  private readonly defaultExpansionState = false;
 
-  constructor(protected convoyDataService: ConvoyDataService) {
+  //Internal attributes
+  protected systemData = signal<IItem | undefined>(undefined);
+  protected isExpanded = signal<boolean>(this.defaultExpansionState); //individual expand
+
+  constructor(protected readonly convoyDataService: ConvoyDataService) {
     this.convoyDataService = inject(ConvoyDataService);
   }
 
   ngOnChanges() {
     this.systemData.set(this.convoyDataService.getItemByName(this.item().name));
-    this.isExpanded.set(false);
+    this.isExpanded.set(this.defaultExpansionState);
   }
 
   protected getEngravingByName(name: string) : IEngraving | undefined {

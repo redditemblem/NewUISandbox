@@ -12,13 +12,14 @@ import { ISkillLookupService } from '../../services/interfaces/skill-lookup-serv
   styleUrl: './unit-skill.scss',
 })
 export class UnitSkill implements OnChanges {
-  
+  //External inputs
   public skill = input.required<IUnitSkill>();
   public dataService = input.required<ISkillLookupService>();
 
   public expanded = input<boolean>(true);
   public disabled = input<boolean>(false);
 
+  //Internal attributes
   protected systemData = signal<ISkill | undefined>(undefined);
 
   ngOnChanges() {

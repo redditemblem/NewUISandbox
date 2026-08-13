@@ -1,12 +1,39 @@
-mat-card-title {
-    font-family: 'macExtMinecraft';
-    font-weight: normal;
+@use '@angular/material' as mat;
+
+div.teamContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+    background-color: var(--mat-sys-surface-container-low);
 }
 
-.buttonContent{
+h1.teamNameHeader {
+    margin: 8px 0px 0px 8px;
+    font-family: macExtMinecraft;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+div.actionButtonRow {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
+    flex: 1;
+    justify-content: flex-end;
+    column-gap: 8px;
+
+    @include mat.button-overrides((
+        text-label-text-font: macExtMinecraft,
+        text-label-text-size: 0.8rem,
+        text-label-text-color: var(--primary-theme-color)
+    ));
+
+    ::ng-deep .mdc-button__label {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        column-gap: 8px;
+
+        p { margin: 0px; }
+    }
 }

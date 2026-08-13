@@ -32,8 +32,8 @@ div.itemContainer {
 
             //Applies to all sprites in the item header, including engravings and tags
             img {
-                max-height: 24px;
-                max-width: 24px;
+                max-height: var(--card-header-sprite-max-dimensions);
+                max-width: var(--card-header-sprite-max-dimensions);
                 object-fit: scale-down;
             }
         }

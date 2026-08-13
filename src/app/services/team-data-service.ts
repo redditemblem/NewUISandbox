@@ -18,6 +18,8 @@ import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
 import { ICurrencyConstantsLookupService } from './interfaces/currency-constants-lookup-service';
 import { ISkillLookupService } from './interfaces/skill-lookup-service';
 import { IBattleStyle } from '../data/interfaces/system/battle-style';
+import { IBattalion } from '../data/interfaces/system/battalion';
+import { IGambit } from '../data/interfaces/system/gambit';
 
 @Injectable({
   providedIn: 'root',
@@ -65,10 +67,6 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
     return this.mapData().units ?? [];
   }
 
-  public getInterfaceLabels() : IInterfaceLabels | undefined {
-	return this.mapData().system?.interfaceLabels;
-  }
-
   public getMapConstants() : IMapConstants | undefined {
 	return this.mapData().map?.constants;
   }
@@ -77,8 +75,76 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 	return this.mapData().system?.constants.currency;
   }
 
+  // #region Interface Labels
+
+  private getInterfaceLabels() : IInterfaceLabels | undefined {
+	return this.mapData().system?.interfaceLabels;
+  }
+
+  public getAdjutantsInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.adjutants ?? "Adjutants";
+  }
+
+  public getBattalionInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.battalion ?? "Battalion";
+  }
+
+  public getBattleStyleInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.battleStyle ?? "Battle Style";
+  }
+
+  public getClassInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.class ?? "Class";
+  }
+
+  public getCombatArtsInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.combatArts ?? "Combat Arts";
+  }
+
+  public getEmblemInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.emblem ?? "Emblem";
+  }
+
+  public getGambitInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.gambit ?? "Gambit";
+  }
+
+  public getInventoryInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.inventory ?? "Inventory";
+  }
+
+  public getInventorySubsectionInterfaceLabel(subsectionIndex: number) : string {
+	const labels = this.getInterfaceLabels()?.inventorySubsections ?? [];
+	return labels[subsectionIndex] ?? "";
+  }
+
+  public getSkillsInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.skills ?? "Skills";
+  }
+
+  public getSkillSubsectionInterfaceLabel(subsectionIndex: number) : string {
+	const labels = this.getInterfaceLabels()?.skillSubsections ?? [];
+	return labels[subsectionIndex] ?? "";
+  }
+
+  public getStatusConditionsInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.statusConditions ?? "Status Conditions";
+  }
+
+  public getWeaponRanksInterfaceLabel() : string {
+	return this.getInterfaceLabels()?.weaponRanks ?? "Weapon Ranks";
+  }
+
+  // #endregion Interface Labels
+
   public getAffiliationByName(name: string) : IAffiliation | undefined {
 	const dict = this.mapData().system?.affiliations;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getBattalionByName(name: string) : IBattalion | undefined {
+	const dict = this.mapData().system?.battalions;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }
@@ -109,6 +175,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public getEngravingByName(name: string) : IEngraving | undefined { 
 	const dict = this.mapData().system?.engravings;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getGambitByName(name: string) : IGambit | undefined {
+	const dict = this.mapData().system?.gambits;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

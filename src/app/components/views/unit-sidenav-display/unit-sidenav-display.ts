@@ -20,33 +20,36 @@ import { UnitEmblem } from "../../unit-emblem/unit-emblem";
 import { StatWithBuffIcon } from "../../stat-with-buff-icon/stat-with-buff-icon";
 import { IBattleStyle } from '../../../data/interfaces/system/battle-style';
 import { MapEventService } from '../../../services/map-event-service';
+import { UnitBattalion } from '../../unit-battalion/unit-battalion';
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon, MatTooltipModule],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon, MatTooltipModule, UnitBattalion],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
 export class UnitSidenavDisplay {
   unit = input.required<IUnit>();
 
-  public isPinned = signal<boolean>(false);
-  public isUnitInfoExpanded = signal<boolean>(false);
-  public isStatsInfoExpanded = signal<boolean>(false);
-  public isInventoryExpanded = signal<boolean>(true);
-  public isEmblemExpanded = signal<boolean>(true);
-  public isSkillsInfoExpanded = signal<boolean>(true);
+  protected isPinned = signal<boolean>(false);
+  protected isUnitInfoExpanded = signal<boolean>(false);
+  protected isStatsInfoExpanded = signal<boolean>(false);
+  protected isInventoryExpanded = signal<boolean>(true);
+  protected isEmblemExpanded = signal<boolean>(true);
+  protected isBattalionExpanded = signal<boolean>(true); 
+  protected isSkillsInfoExpanded = signal<boolean>(true);
 
   constructor(protected teamDataService: TeamDataService, private eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
   }
 
   ngOnChanges() {
-    //Every time unit() changes, reset defaults
+    //Every time unit() changes, reset expansion defaults
     this.isUnitInfoExpanded.set(false);
     this.isStatsInfoExpanded.set(false);
     this.isInventoryExpanded.set(true);
     this.isEmblemExpanded.set(true);
+    this.isBattalionExpanded.set(true);
     this.isSkillsInfoExpanded.set(true);
   }
 
@@ -54,6 +57,7 @@ export class UnitSidenavDisplay {
   protected toggleStatExpansion() { this.isStatsInfoExpanded.set(!this.isStatsInfoExpanded()); }
   protected toggleInventoryExpansion() { this.isInventoryExpanded.set(!this.isInventoryExpanded()); }
   protected toggleEmblemExpansion() { this.isEmblemExpanded.set(!this.isEmblemExpanded()); }
+  protected toggleBattalionExpansion() { this.isBattalionExpanded.set(!this.isBattalionExpanded()); }
   protected toggleSkillsExpansion() { this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded()); }
   
   protected pairedUnitLink_OnClick(pairedUnitName: string) {
@@ -70,42 +74,6 @@ export class UnitSidenavDisplay {
     //Don't actually want a real sort here, so just return 0 for all items.
     return 0;
   }
-
-  // #region Section Label Functions
-
-  protected getInventoryLabel() : string {
-    return this.teamDataService.getInterfaceLabels()?.inventory ?? "";
-  }
-
-  protected getInventorySubsectionLabel(index: number) : string {
-    return this.teamDataService.getInterfaceLabels()?.inventorySubsections[index] ?? "";
-  }
-
-  protected getClassLabel() : string {
-    return this.teamDataService.getInterfaceLabels()?.class ?? "";
-  }
-
-  protected getBattleStyleLabel() : string { 
-    return this.teamDataService.getInterfaceLabels()?.battleStyle ?? "";
-  }
-
-  protected getEmblemLabel() : string {
-    return this.teamDataService.getInterfaceLabels()?.emblem ?? "";
-  }
-
-  protected getSkillsLabel() : string {
-    return this.teamDataService.getInterfaceLabels()?.skills ?? "";
-  }
-
-  protected getSkillSubsectionLabel(index: number) : string {
-    return this.teamDataService.getInterfaceLabels()?.skillSubsections[index] ?? "";
-  }
-
-  protected getStatusConditionsLabel() : string {
-    return this.teamDataService.getInterfaceLabels()?.statusConditions ?? "";
-  }
-
-  // #endregion Section Label Functions
 
   protected getUnitAffiliation() : IAffiliation | undefined {
     return this.teamDataService.getAffiliationByName(this.unit().affiliation);

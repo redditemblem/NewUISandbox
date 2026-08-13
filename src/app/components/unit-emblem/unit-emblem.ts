@@ -14,18 +14,25 @@ import { UnitEngageAttack } from "../unit-engage-attack/unit-engage-attack";
   styleUrl: './unit-emblem.scss',
 })
 export class UnitEmblem implements OnChanges {
+  //External inputs
   public emblem = input.required<IUnitEmblem>();
 
+  //Constants
+  private readonly defaultExpansionState: boolean = false;
+
+  //Internal attributes
   protected systemData = signal<IEmblem | undefined>(undefined);
-  protected isExpanded = signal<boolean>(false);
+  protected isExpanded = signal<boolean>(this.defaultExpansionState);
+  
   protected isEngaged: Signal<boolean> = computed(() => this.emblem().isEngaged ?? false);
   protected engagedAuraColor: Signal<string> = computed(() => this.systemData()?.engagedUnitAura ?? "var(--primary-theme-color)");
 
-  constructor(protected teamDataService: TeamDataService) {
+  constructor(protected readonly teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 
   ngOnChanges() {
     this.systemData.set(this.teamDataService.getEmblemByName(this.emblem().name));
+    this.isExpanded.set(this.defaultExpansionState);
   }
 }

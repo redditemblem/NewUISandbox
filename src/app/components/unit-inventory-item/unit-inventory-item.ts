@@ -18,17 +18,19 @@ import { UnitSkill } from '../unit-skill/unit-skill';
   styleUrl: './unit-inventory-item.scss',
 })
 export class UnitInventoryItem implements OnChanges {
-  //Expose enum for use in the class
-  protected readonly ItemRangeShape = ItemRangeShape;
-
+  //External inputs
   public item = input.required<IUnitInventoryItem>();
   public disableClick = input<boolean>(false);
   public forceExpand = input<boolean>(false);
 
+  //Constants
+  protected readonly ItemRangeShape = ItemRangeShape; //expose enum options
+
+  //Internal attributes
   protected systemData = signal<IItem | undefined>(undefined);
   protected isExpanded = signal<boolean>(this.forceExpand());
 
-  constructor(protected teamDataService: TeamDataService) {
+  constructor(protected readonly teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 
@@ -56,7 +58,7 @@ export class UnitInventoryItem implements OnChanges {
     if(targeted.length > 0)
       stats += " » " + targeted.join("/");
 
-    return "(" + stats + ")";
+    return `(${stats})`;
   }
 
   protected hasNonZeroStatValue() : boolean {

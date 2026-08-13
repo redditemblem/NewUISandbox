@@ -7,6 +7,7 @@ import { Component, input } from '@angular/core';
   styleUrl: './text-fields-with-labeled-header.scss',
 })
 export class TextFieldsWithLabeledHeader {
+  //External inputs
   public label = input.required<string | undefined>();
   public title = input.required<string | undefined>();
 

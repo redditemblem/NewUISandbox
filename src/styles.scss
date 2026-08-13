@@ -29,6 +29,13 @@ html {
   --secondary-theme-color-dim: #{light-dark($secondary-theme-color-dim-light, $secondary-theme-color-dim-dark)};
   --tertiary-theme-color: #{light-dark($tertiary-theme-color-light, $tertiary-theme-color-dark)};
   --tertiary-theme-color-dim: #{light-dark($tertiary-theme-color-dim-light, $tertiary-theme-color-dim-dark)};
+
+  //Create global font size variables
+  --h1-pixel-font-size: 1.5rem;
+  --card-header-pixel-font-size: 0.9rem;
+  --card-subheader-pixel-font-size: 0.7rem;
+
+  --card-header-sprite-max-dimensions: 24px;
 }
 
 @mixin apply-dark-mode {
@@ -149,7 +156,7 @@ mat-tab-group.sideNavTabs {
 
     height: 100vh;
 
-    ::ng-deep .mat-mdc-tab.mdc-tab {
+    div.mdc-tab {
         min-width: 48px;
         padding: 0px;
     }

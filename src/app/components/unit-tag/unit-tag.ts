@@ -35,10 +35,13 @@ import { ITag } from '../../data/interfaces/system/tag';
   `
 })
 export class UnitTag implements OnChanges {
+  //External inputs
   public tag = input.required<string>();
+
+  //Internal attributes
   protected systemData = signal<ITag | undefined>(undefined);
 
-  constructor(private teamDataService: TeamDataService) {
+  constructor(private readonly teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 

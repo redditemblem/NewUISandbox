@@ -10,6 +10,7 @@ import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
   styleUrl: './modified-unit-stat.scss',
 })
 export class ModifiedUnitStat {
+  //External inputs
   public name = input.required<string>();
   public values = input.required<IModifiedStatValue>();
   public expanded = input<boolean>(false);

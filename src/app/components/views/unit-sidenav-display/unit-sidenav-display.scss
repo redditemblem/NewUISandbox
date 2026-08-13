@@ -64,7 +64,7 @@ img.flipHorz {
         h1 {
             margin: 0px;
             font-weight: normal;
-            font-size: 1.5rem;
+            font-size: var(--h1-pixel-font-size);
             line-height: 1.5rem;
         }
 
@@ -95,7 +95,7 @@ img.flipHorz {
             margin: 0px;
             padding: 4px 16px 4px 16px;
             background: linear-gradient(to bottom, var(--tertiary-theme-color-dim) 0px, transparent 8px), var(--tertiary-theme-color);
-            font-size: .65rem;
+            font-size: var(--card-subheader-pixel-font-size);
             font-family: macExtMinecraft;
             overflow: hidden;
             text-overflow: ellipsis;
