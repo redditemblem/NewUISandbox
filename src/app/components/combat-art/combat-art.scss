@@ -1,16 +1,25 @@
-div.battalionContainer {
+div.combatArtContainer { 
     display: flex;
-    flex-flow: column;
+    flex-flow: column nowrap;
     row-gap: 8px;
     cursor: pointer;
 
     p { margin: 0px; }
 }
 
-div.headerColumn {
+div.headerRow { 
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+    font-family: macExtMinecraft;
+}
+
+div.titlesColumn {
     display: flex;
     flex-flow: column nowrap;
-    font-family: macExtMinecraft;
 }
 
 div.titleRow {
@@ -20,7 +29,8 @@ div.titleRow {
     column-gap: 8px;
     font-size: var(--card-header-pixel-font-size);
 
-    img.sprite { 
+    //Applies to all sprites in the title row, including tag sprites
+    img { 
         max-height: var(--card-header-sprite-max-dimensions);
         max-width: var(--card-header-sprite-max-dimensions);
         object-fit: scale-down;
@@ -46,10 +56,16 @@ div.statsContainer {
         flex: 0 0 30%;
         column-gap: 6px;
 
-        //Forces values with complex displays (endurance) to stay on the same line
+        //Forces values with complex displays (range) to stay on the same line
         .statValue {
             display: flex;
             flex-flow: row nowrap;
         }
     }
+}
+
+div.textFieldContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 4px;
 }

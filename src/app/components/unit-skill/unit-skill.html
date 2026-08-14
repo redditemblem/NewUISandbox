@@ -3,7 +3,7 @@
         <div id="textContainer" [class]="{'opacity50' : disabled()}">
             <div id="name">
                 @if((systemData()?.spriteURL ?? "").length > 0){
-                    <img [src]="systemData()?.spriteURL" />
+                    <img [src]="systemData()?.spriteURL" [aria-label]="`${skill().name} sprite`" />
                 }
                 {{skill().name}}
             </div>

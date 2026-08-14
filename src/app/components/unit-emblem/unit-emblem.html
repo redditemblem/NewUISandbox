@@ -3,7 +3,7 @@
         <div class="emblemHeaderRow">
             <div class="emblemNameSpriteRow">
                 @if ((systemData()?.spriteURL ?? '').length > 0) {
-                <img class="emblemSprite" [src]="systemData()?.spriteURL" />
+                <img class="emblemSprite" [src]="systemData()?.spriteURL" [aria-label]="`${emblem().name} sprite`" />
                 }
                 <div class="emblemNameColumn">
                     <h3>{{emblem().name}}</h3>
@@ -13,7 +13,7 @@
                 </div>
             </div>
             @if(isEngaged()) {
-                <img src="img/star_icon.png" height="20" width="20" title="Engaged" />
+                <img src="img/star_icon.png" height="20" width="20" matTooltip="Engaged" matTooltipPosition="left" />
             }
         </div>
         <mat-divider />

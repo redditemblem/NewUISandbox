@@ -20,6 +20,8 @@ import { ISkillLookupService } from './interfaces/skill-lookup-service';
 import { IBattleStyle } from '../data/interfaces/system/battle-style';
 import { IBattalion } from '../data/interfaces/system/battalion';
 import { IGambit } from '../data/interfaces/system/gambit';
+import { IAdjutant } from '../data/interfaces/system/adjutant';
+import { ICombatArt } from '../data/interfaces/system/combat-art';
 
 @Injectable({
   providedIn: 'root',
@@ -143,6 +145,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 	else return dict[name];
   }
 
+  public getAdjutantByName(name: string) : IAdjutant | undefined {
+	const dict = this.mapData().system?.adjutants;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
   public getBattalionByName(name: string) : IBattalion | undefined {
 	const dict = this.mapData().system?.battalions;
 	if(!dict || !name) return undefined;
@@ -157,6 +165,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public getClassByName(name: string) : IClass | undefined {
 	const dict = this.mapData().system?.classes;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getCombatArtByName(name: string) : ICombatArt | undefined {
+	const dict = this.mapData().system?.combatArts;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

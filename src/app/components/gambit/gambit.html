@@ -2,7 +2,7 @@
     <div class="headerColumn">
         <div class="titleRow">
             @if ((systemData()?.spriteURL ?? "").length > 0) {
-                <img [src]="systemData()?.spriteURL" class="sprite" />
+                <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${name()} sprite`" />
             }
             <p>
                 {{name()}} ({{uses() ?? 0}})

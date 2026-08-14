@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, OnChanges, signal } from '@angular/core';
 import { IUnit } from '../../../data/interfaces/unit/unit';
 import { MatIconButton } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -21,23 +21,36 @@ import { StatWithBuffIcon } from "../../stat-with-buff-icon/stat-with-buff-icon"
 import { IBattleStyle } from '../../../data/interfaces/system/battle-style';
 import { MapEventService } from '../../../services/map-event-service';
 import { UnitBattalion } from '../../unit-battalion/unit-battalion';
+import { Adjutant } from '../../adjutant/adjutant';
+import { CombatArt } from "../../combat-art/combat-art";
 
 @Component({
   selector: 'unit-sidenav-display',
-  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon, MatTooltipModule, UnitBattalion],
+  imports: [MatIconButton, TextFieldsWithLabeledHeader, Currency, UnitTag, UnitHpBar, KeyValuePipe, ModifiedUnitStat, UnitStatusCondition, MatDivider, UnitInventoryItem, UnitSkill, UnitWeaponRank, UnitEmblem, StatWithBuffIcon, MatTooltipModule, UnitBattalion, Adjutant, CombatArt],
   templateUrl: './unit-sidenav-display.html',
   styleUrl: './unit-sidenav-display.scss',
 })
-export class UnitSidenavDisplay {
+export class UnitSidenavDisplay implements OnChanges {
+  //External inputs
   unit = input.required<IUnit>();
 
-  protected isPinned = signal<boolean>(false);
-  protected isUnitInfoExpanded = signal<boolean>(false);
-  protected isStatsInfoExpanded = signal<boolean>(false);
-  protected isInventoryExpanded = signal<boolean>(true);
-  protected isEmblemExpanded = signal<boolean>(true);
-  protected isBattalionExpanded = signal<boolean>(true); 
-  protected isSkillsInfoExpanded = signal<boolean>(true);
+  //Constants
+  private readonly defaultUnitInfoExpansionState: boolean = false;
+  private readonly defaultStatsExpansionState: boolean = false;
+  private readonly defaultInventoryExpansionState: boolean = true;
+  private readonly defaultEmblemExpansionState: boolean = true;
+  private readonly defaultBattalionExpansionState: boolean = true;
+  private readonly defaultSkillsExpansionState: boolean = true;
+  private readonly defaultAdjutantsExpansionState: boolean = true;
+
+  //Internal attributes
+  protected isUnitInfoExpanded = signal<boolean>(this.defaultUnitInfoExpansionState);
+  protected isStatsInfoExpanded = signal<boolean>(this.defaultStatsExpansionState);
+  protected isInventoryExpanded = signal<boolean>(this.defaultInventoryExpansionState);
+  protected isEmblemExpanded = signal<boolean>(this.defaultEmblemExpansionState);
+  protected isBattalionExpanded = signal<boolean>(this.defaultBattalionExpansionState); 
+  protected isSkillsInfoExpanded = signal<boolean>(this.defaultSkillsExpansionState);
+  protected isAdjutantsExpanded = signal<boolean>(this.defaultAdjutantsExpansionState);
 
   constructor(protected teamDataService: TeamDataService, private eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
@@ -45,12 +58,13 @@ export class UnitSidenavDisplay {
 
   ngOnChanges() {
     //Every time unit() changes, reset expansion defaults
-    this.isUnitInfoExpanded.set(false);
-    this.isStatsInfoExpanded.set(false);
-    this.isInventoryExpanded.set(true);
-    this.isEmblemExpanded.set(true);
-    this.isBattalionExpanded.set(true);
-    this.isSkillsInfoExpanded.set(true);
+    this.isUnitInfoExpanded.set(this.defaultUnitInfoExpansionState);
+    this.isStatsInfoExpanded.set(this.defaultStatsExpansionState);
+    this.isInventoryExpanded.set(this.defaultInventoryExpansionState);
+    this.isEmblemExpanded.set(this.defaultEmblemExpansionState);
+    this.isBattalionExpanded.set(this.defaultBattalionExpansionState);
+    this.isSkillsInfoExpanded.set(this.defaultSkillsExpansionState);
+    this.isAdjutantsExpanded.set(this.defaultAdjutantsExpansionState);
   }
 
   protected toggleUnitInfoExpansion() { this.isUnitInfoExpanded.set(!this.isUnitInfoExpanded()); }
@@ -59,6 +73,7 @@ export class UnitSidenavDisplay {
   protected toggleEmblemExpansion() { this.isEmblemExpanded.set(!this.isEmblemExpanded()); }
   protected toggleBattalionExpansion() { this.isBattalionExpanded.set(!this.isBattalionExpanded()); }
   protected toggleSkillsExpansion() { this.isSkillsInfoExpanded.set(!this.isSkillsInfoExpanded()); }
+  protected toggleAdjutantExpansion() { this.isAdjutantsExpanded.set(!this.isAdjutantsExpanded()); }
   
   protected pairedUnitLink_OnClick(pairedUnitName: string) {
     this.eventService.switchDisplayedUnit(pairedUnitName);

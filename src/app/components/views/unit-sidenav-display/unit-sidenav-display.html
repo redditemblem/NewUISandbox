@@ -202,6 +202,14 @@
                         }
                     </div>
                 }
+                @if ((unit().combatArts ?? []).length > 0) {
+                    <div class="inventorySubsection">
+                        <h3>{{teamDataService.getCombatArtsInterfaceLabel()}}</h3>
+                        @for (combatArt of unit().combatArts; track $index) {
+                            <combat-art [name]="combatArt" />
+                        }
+                    </div>
+                }
             </div> 
         }
     </div>
@@ -267,6 +275,25 @@
                         }
                     }
                 </div>
+            }
+        </div>
+    }
+    @if ((unit().adjutants ?? []).length > 0) {
+        <mat-divider />
+        <div id="adjutantSection" class="sectionContainerWithHeader">
+            <div class="sectionHeaderRow">
+                <button matIconButton 
+                        (click)="toggleAdjutantExpansion()" 
+                        [matTooltip]="`${isAdjutantsExpanded() ? 'Collapse' : 'Expand'} adjutants`"
+                        matTooltipPosition="right">
+                    <img src="img/caret.png" [class]="{'rotate90': isAdjutantsExpanded()}" />
+                </button>
+                <h2>{{teamDataService.getAdjutantsInterfaceLabel()}}</h2>
+            </div>
+            @if (isAdjutantsExpanded()) {
+                @for (adjutant of unit().adjutants; track adjutant) {
+                    <adjutant [name]="adjutant" />
+                }
             }
         </div>
     }

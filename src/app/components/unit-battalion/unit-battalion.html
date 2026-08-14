@@ -2,11 +2,11 @@
     <div class="headerColumn">
         <div class="titleRow">
             @if ((systemData()?.spriteURL ?? "").length > 0) {
-                <img [src]="systemData()?.spriteURL" class="sprite" />
+                <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${battalion().name} sprite`" />
             }
             <p>{{battalion().name}} ({{battalion().endurance ?? 0}})</p>
         </div>
-        <p class="rankRow">
+        <p class="subtitleRow">
             @if ((systemData()?.rank ?? "").length > 0) {
                 {{systemData()?.rank}} - 
             }

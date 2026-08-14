@@ -6,10 +6,11 @@ import { MatDivider } from '@angular/material/divider';
 import { UnitSkill } from "../unit-skill/unit-skill";
 import { UnitInventoryItem } from '../unit-inventory-item/unit-inventory-item';
 import { UnitEngageAttack } from "../unit-engage-attack/unit-engage-attack";
+import { MatTooltip } from "@angular/material/tooltip";
 
 @Component({
   selector: 'unit-emblem',
-  imports: [MatDivider, UnitSkill, UnitInventoryItem, UnitEngageAttack],
+  imports: [MatDivider, UnitSkill, UnitInventoryItem, UnitEngageAttack, MatTooltip],
   templateUrl: './unit-emblem.html',
   styleUrl: './unit-emblem.scss',
 })

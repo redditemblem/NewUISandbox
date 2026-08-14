@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 #decorativePanelTop{
     position: absolute;
     width: 100%;
@@ -15,7 +17,7 @@
     display: flex;
     flex-flow: column nowrap;
     row-gap: 50px;
-    padding: 50px 8px 25px 8px;
+    padding: 50px 16px 25px 16px;
     background-image: url('../../../../../public/img/background.png');
     background-repeat: repeat;
 }
@@ -66,14 +68,18 @@ div.noResultsColumn{
 div.informationSectionRow {
     display: flex;
     flex-flow: row nowrap;
+    justify-content: center;
 }
 
-div.informationSectionColumn {
+div.informationColumn {
     display: flex;
     flex-flow: column nowrap;
 }
 
-div.informationColumn{
-    display: flex;
-    flex-flow: column nowrap;
+#resourcesList {
+    @include mat.list-overrides((
+        list-item-label-text-font: macExtMinecraft,
+        list-item-supporting-text-font: macExtMinecraft,
+        list-item-supporting-text-size: var(--card-subheader-pixel-font-size)
+    ));
 }

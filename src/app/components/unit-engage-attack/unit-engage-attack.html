@@ -1,7 +1,7 @@
 <div class="primaryColorCard engageAttackContainer">
     <div class="engageAttackHeader">
         @if ((systemData()?.spriteURL ?? '').length > 0) {
-            <img class="engageAttackSprite" [src]="systemData()?.spriteURL" />
+            <img class="engageAttackSprite" [src]="systemData()?.spriteURL" [aria-label]="`${attack()} sprite`" />
         }
         <p>{{attack()}}</p>
     </div>

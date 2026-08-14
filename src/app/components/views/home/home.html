@@ -30,44 +30,48 @@
             }
         </div>
     </div>
-    <div [class]="breakpointService.isSmallWidth() ? 'informationSectionColumn' : 'informationSectionRow'">
-        <div class="informationColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '50%'}">
-            <h1 class="pixelFont">Information</h1>
-            <p>Reddit Emblem Maps is web-based display that is custom built for the Reddit Emblem play-by-post community on Discord! Maps is backed by a highly configurable API, with the goal of supporting a wide range of system designs and customized mechanics.</p>
+    <div class="informationSectionRow">
+        <div class="informationColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '60%'}">
+            <h1 class="pixelFont">About Maps</h1>
+            <p>Reddit Emblem Maps is an interactive web application that is custom built for members of the Reddit Emblem play-by-post community on Discord! Maps' goal is to improve the gameplay experience for players and GMs alike by presenting team information using a video game-esque UI. Its flexible web display is backed by a highly configurable API that can support a wide range of system designs and customized mechanics.</p>
             <h2 class="pixelFont">Resources</h2>
-            <mat-action-list>
+            <mat-action-list id="resourcesList">
                 <a mat-list-item href="https://docs.google.com/document/d/150h2pxQbrd3uZOKM_r3iniCRBPtnfIJbSTnWlm-pRUM/edit?usp=sharing" target="_blank">
-                    <img matListItemIcon src="img/star_icon.png" />
-                    <p class="matListItemTitle pixelFont">User Documentation</p>
+                    <img matListItemIcon src="img/books_icon.png" />
+                    <p matListItemTitle>User Documentation</p>
+                    <p matListItemLine [style.padding-left]="'16px'">Read about Maps' functionality</p>
+                    <div matListItemMeta>
+                        <mat-icon>open_in_new</mat-icon>
+                    </div>
+                </a>
+                <a mat-list-item href="https://discord.gg/d3N7TXZMq9" target="_blank">
+                    <img matListItemIcon src="img/chat_icon.png" />
+                    <p matListItemTitle>Maps Discord Server</p>
+                    <p matListItemLine [style.padding-left]="'16px'">Ask questions, request features, and report bugs</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
                 <a mat-list-item href="https://github.com/redditemblem/RedditEmblemAPI" target="_blank">
-                    <img matListItemIcon src="img/star_icon.png" />
-                    <p class="matListItemTitle pixelFont">API Github Repository</p>
+                    <img matListItemIcon src="img/code_icon.png" />
+                    <p matListItemTitle>API Github Repository</p>
+                    <p matListItemLine [style.padding-left]="'16px'">C# code for Maps' backing API</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
                 <a mat-list-item href="https://github.com/redditemblem/redditemblem.github.io" target="_blank">
-                    <img matListItemIcon src="img/star_icon.png" />
-                    <p class="matListItemTitle pixelFont">UI Github Repository</p>
+                    <img matListItemIcon src="img/code_icon.png" />
+                    <p matListItemTitle>UI Github Repository</p>
+                    <p matListItemLine [style.padding-left]="'16px'">HTML + Typescript code for Maps' web display</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
             </mat-action-list>
-            <h2 class="pixelFont">Sandbox</h2>
+            <h2 class="pixelFont">Dev Sandbox</h2>
             <p>Maps has a developer sandbox called "Team Example", which showcases a wide range of its available functionality.</p>
             <team-listing [team]="teamExample" />
-        </div>
-        <div class="informationColumn" [style]="{'width': breakpointService.isSmallWidth() ? '100%' : '50%'}">
-            <h2 class="pixelFont">Credits</h2>
-            <ul>
-                <li><a href="https://www.transparenttextures.com/" target="_blank">Website background texture "Az Subtle" by Anli</a></li>
-                <li><a href="https://www.dafont.com/mac-s-minecraft.font" target="_blank">Pixel font "Mac's Minecraft" by macimas bahnsisk</a></li>
-            </ul>
         </div>
     </div>
 </div>

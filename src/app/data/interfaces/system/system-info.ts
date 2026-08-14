@@ -10,7 +10,7 @@ import { ISkill } from "./skill";
 import { IStatusCondition } from "./status-condition";
 import { ITag } from "./tag";
 import { IEngraving } from "./engraving";
-import { CombatArt } from "./combat-art";
+import { ICombatArt } from "./combat-art";
 import { IBattalion } from "./battalion";
 import { IGambit } from "./gambit";
 import { IAdjutant } from "./adjutant";
@@ -31,7 +31,7 @@ export interface ISystemInfo {
     statusConditions?: StringDictionary<IStatusCondition>,
     tags?: StringDictionary<ITag>,
     engravings?: StringDictionary<IEngraving>,
-    combatArts?: StringDictionary<CombatArt>,
+    combatArts?: StringDictionary<ICombatArt>,
     battalions?: StringDictionary<IBattalion>,
     gambits?: StringDictionary<IGambit>,
     adjutants?: StringDictionary<IAdjutant>,

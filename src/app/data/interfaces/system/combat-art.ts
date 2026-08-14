@@ -1,8 +1,8 @@
 import { StringDictionary } from "../common/dictionaries";
 import { ICombatArtRange } from "./combat-art-range";
 
-//Equivalent to CombatArt.cs
-export interface CombatArt {
+/** Equivalent to `CombatArt.cs` */
+export interface ICombatArt {
     name: string,
     spriteURL?: string,
     weaponRank?: string,
