@@ -16,8 +16,8 @@ div.titleRow {
     font-size: var(--card-header-pixel-font-size);
 
     img.sprite { 
-        max-height: 32px;
-        max-width: 32px;
+        max-height: var(--card-header-unit-sprite-max-dimensions);
+        max-width: var(--card-header-unit-sprite-max-dimensions);
         object-fit: scale-down;
     }
 }

@@ -36,6 +36,7 @@ html {
   --card-subheader-pixel-font-size: 0.7rem;
 
   --card-header-sprite-max-dimensions: 24px;
+  --card-header-unit-sprite-max-dimensions: 48px;
 }
 
 @mixin apply-dark-mode {
@@ -160,6 +161,7 @@ mat-sidenav-content {
 
 mat-tab-group.sideNavTabs {
     @include mat.tabs-overrides((
+        container-height: 56px,
         active-focus-indicator-color: var(--primary-theme-color),
         active-indicator-color: var(--primary-theme-color),
         active-hover-indicator-color: var(--primary-theme-color),

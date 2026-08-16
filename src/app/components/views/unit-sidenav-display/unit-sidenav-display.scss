@@ -40,8 +40,8 @@
     -ms-interpolation-mode: nearest-neighbor;
 
     img.unitNameplateSprite {
-        max-height: 48px;
-        max-width: 48px;
+        max-height: var(--card-header-unit-sprite-max-dimensions);
+        max-width: var(--card-header-unit-sprite-max-dimensions);
         object-fit: scale-down;
     }
 

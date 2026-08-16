@@ -4,25 +4,25 @@
         <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination (selectedTabChange)="SidebarTabs_selectedTabChange($event)"> 
             <mat-tab aria-label="Units">
                 <ng-template mat-tab-label>
-                    U
+                    <img src="img/star_icon.png" height="32" width="32" aria-hidden="true" />
                 </ng-template>
                 <map-units-sidenav />
             </mat-tab>
             <mat-tab aria-label="Tiles">
                 <ng-template mat-tab-label>
-                    <img src="img/tile_icon.png" height="30" width="30" />
+                    <img src="img/tile_icon.png" height="32" width="32" aria-hidden="true" />
                 </ng-template>
                 <map-tiles-sidenav />
             </mat-tab>
-            <mat-tab aria-label="Paint Tool">
+            <mat-tab aria-label="Paintbrush">
                 <ng-template mat-tab-label>
-                    <img src="img/paint_icon.png" height="30" width="30" />
+                    <img src="img/paint_icon.png" height="32" width="32" aria-hidden="true" />
                 </ng-template>
                 <map-paint-sidenav />
             </mat-tab>
             <mat-tab aria-label="Links">
                 <ng-template mat-tab-label>
-                    <img src="img/links_icon.png" height="30" width="30" />
+                    <img src="img/links_icon.png" height="32" width="32" aria-hidden="true" />
                 </ng-template>
                 <links-sidenav [googleWorksheetID]="this.teamDataService.getWorksheetID()"
                                [chapterPostUrl]="this.teamDataService.getChapterPostUrl()"
@@ -30,9 +30,9 @@
                                [showShopLink]="this.teamDataService.isShopConfigured()"
                                [showMapAnalyzerLink]="true" />
             </mat-tab>
-            <mat-tab aria-label="Dice Roller">
+            <mat-tab aria-label="Dice roller">
                 <ng-template mat-tab-label>
-                    <img src="img/die_icon.png" height="32" width="32" />
+                    <img src="img/die_icon.png" height="32" width="32" aria-hidden="true" />
                 </ng-template>
                 <map-dice-roller-sidenav />
             </mat-tab>

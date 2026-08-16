@@ -1,3 +1,6 @@
+$droppable-text-color: light-dark(#2ab759, #40d472);
+$warning-text-color: light-dark(#f1a000, #ffc800);
+
 div.itemContainer {
     display: flex;
     flex-flow: column nowrap;
@@ -26,17 +29,24 @@ div.titleColumn {
 div.titleRow {
     display: flex;
     flex-flow: row nowrap;
-    align-items: center;
     column-gap: 8px;
-    font-size: var(--card-header-pixel-font-size);
 
-    img.sprite { 
+    div.title {
+        display: flex;
+        flex-flow: row wrap;
+        flex: 1;
+        align-items: center;
+        column-gap: 8px;
+        font-size: var(--card-header-pixel-font-size);
+    }
+
+    img.sprite {
         max-height: var(--card-header-sprite-max-dimensions);
         max-width: var(--card-header-sprite-max-dimensions);
         object-fit: scale-down;
     }
 
-    p.droppableTextColor { color: #3CD66F; }
+    p.droppableTextColor { color: $droppable-text-color; }
 }
 
 p.subtitleRow {
@@ -90,6 +100,9 @@ div.graphicRow {
 div.messageRow {
     display: flex;
     flex-flow: row nowrap;
-    column-gap: 4px;
-    color: #ff6600;
+    align-items: center;
+    column-gap: 8px;
+    font-family: macExtMinecraft;
+    font-size: var(--card-subheader-pixel-font-size);
+    color: $warning-text-color;
 }

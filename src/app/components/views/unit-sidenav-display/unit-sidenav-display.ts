@@ -39,7 +39,7 @@ export class UnitSidenavDisplay implements OnChanges {
   private readonly defaultUnitInfoExpansionState: boolean = false;
   private readonly defaultStatsExpansionState: boolean = false;
   private readonly defaultInventoryExpansionState: boolean = true;
-  private readonly defaultEmblemExpansionState: boolean = true;
+  private readonly defaultEmblemExpansionState: boolean = false;
   private readonly defaultBattalionExpansionState: boolean = true;
   private readonly defaultSkillsExpansionState: boolean = true;
   private readonly defaultAdjutantsExpansionState: boolean = true;
@@ -62,7 +62,7 @@ export class UnitSidenavDisplay implements OnChanges {
     this.isUnitInfoExpanded.set(this.defaultUnitInfoExpansionState);
     this.isStatsInfoExpanded.set(this.defaultStatsExpansionState);
     this.isInventoryExpanded.set(this.defaultInventoryExpansionState);
-    this.isEmblemExpanded.set(this.defaultEmblemExpansionState);
+    this.isEmblemExpanded.set(this.defaultEmblemExpansionState || (this.unit().emblem?.isEngaged ?? false));
     this.isBattalionExpanded.set(this.defaultBattalionExpansionState);
     this.isSkillsInfoExpanded.set(this.defaultSkillsExpansionState);
     this.isAdjutantsExpanded.set(this.defaultAdjutantsExpansionState);

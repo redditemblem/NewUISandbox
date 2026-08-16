@@ -65,7 +65,7 @@ export class UnitInventoryItem implements OnChanges {
     if (weaponRank.length > 0)
       subtitle += `${weaponRank} - ${category}`;
     else
-      subtitle += `${category} `;
+      subtitle += `${category}`;
 
     const utilized: string[] = this.systemData()?.utilizedStats ?? [];
     const targeted: string[] = this.systemData()?.targetedStats ?? [];
@@ -73,8 +73,10 @@ export class UnitInventoryItem implements OnChanges {
     let stats : string = utilized.join("/");
     if(targeted.length > 0)
       stats += ` » ${targeted.join("/")}`;
+    if(stats.length > 0)
+      stats = `(${stats})`;
 
-    return `${subtitle} (${stats})`;
+    return `${subtitle} ${stats}`.trimEnd();
   }
 
   protected hasNonZeroStatValue() : boolean {

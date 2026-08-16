@@ -3,27 +3,31 @@
         <div class="titleColumn">
             <div class="titleRow">
                 @if ((systemData()?.spriteURL ?? "").length > 0) {
-                    <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${item().name} sprite`" />
+                    <div>
+                        <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${item().name} sprite`" />
+                    </div>
                 }
-                <p [class]="{'droppableTextColor' : item().isDroppable}">
-                    {{buildTitle()}}
-                </p>
-                @if ((item().engravings ?? []).length > 0) {
-                    @for (engraving of item().engravings; track engraving) {
-                        @let engravingData = getEngravingByName(engraving);
-                        @if ((engravingData?.spriteURL ?? "").length > 0) {
-                            <img [src]="engravingData?.spriteURL" class="sprite" [title]="engraving" />
+                <div class="title">
+                    <p [class]="{'droppableTextColor' : item().isDroppable}">
+                        {{buildTitle()}}
+                     </p>
+                    @if ((item().engravings ?? []).length > 0) {
+                        @for (engraving of item().engravings; track engraving) {
+                            @let engravingData = getEngravingByName(engraving);
+                            @if ((engravingData?.spriteURL ?? "").length > 0) {
+                                <img [src]="engravingData?.spriteURL" class="sprite" [title]="engraving" />
+                            }
                         }
                     }
-                }
-                @if ((item().tags ?? []).length > 0) {
-                    @for(tag of item().tags; track tag) {
-                        @let tagData = getTagByName(tag);
-                        @if((tagData?.spriteURL ?? "").length > 0) {
-                            <img [src]="tagData?.spriteURL" class="sprite" [title]="tag" />
+                    @if ((item().tags ?? []).length > 0) {
+                        @for(tag of item().tags; track tag) {
+                            @let tagData = getTagByName(tag);
+                            @if((tagData?.spriteURL ?? "").length > 0) {
+                                <img [src]="tagData?.spriteURL" class="sprite" [title]="tag" />
+                            }
                         }
                     }
-                }
+                </div>
             </div>
             @let subtitle = buildSubtitle();
             @if (subtitle.length > 0) {
@@ -60,7 +64,7 @@
                     <div class="stat">
                         <div>Rng</div>
                         <div class="statValue">
-                            <stat-with-buff-icon [base]="item().minRange?.baseValue ?? 0" [final]="item().minRange?.finalValue ?? 0" [height]="12" />
+                            <stat-with-buff-icon [base]="item().minRange?.baseValue ?? 0" [final]="item().minRange?.finalValue ?? 0" [height]="12" [invertColors]="true" />
                             @if ((item().minRange?.finalValue ?? 0) < (item().maxRange?.finalValue ?? 0))
                             {
                                 &nbsp;-&nbsp;<stat-with-buff-icon [base]="item().maxRange?.baseValue ?? 0" [final]="item().maxRange?.finalValue ?? 0" [height]="12" />
@@ -102,22 +106,20 @@
             </div>
             <mat-divider />
         }
-        @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0 || (item().engravings ?? []).length > 0) {
-            @for (text of systemData()?.textFields; track $index) {
-                <p>{{text}}</p>
-            }
-            @if ((systemData()?.graphicURL ?? "").length > 0) {
-                <div class="graphicRow"> 
-                    <img [src]="systemData()?.graphicURL" class="graphic" [aria-label]="`${item().name} graphic`" />
-                </div>
-            }
-            @for (engraving of item().engravings; track engraving) {
-                <engraving [name]="engraving" [dataService]="teamDataService" />
-            }
+        @for (text of systemData()?.textFields; track $index) {
+            <p>{{text}}</p>
+        }
+        @if ((systemData()?.graphicURL ?? "").length > 0) {
+            <div class="graphicRow"> 
+                <img [src]="systemData()?.graphicURL" class="graphic" [aria-label]="`${item().name} graphic`" />
+            </div>
+        }
+        @for (engraving of item().engravings; track engraving) {
+            <engraving [name]="engraving" [dataService]="teamDataService" />
         }
     }
     @for(skill of systemData()?.equippedSkills; track skill) {
-        <unit-skill [skill]="skill" [dataService]="teamDataService" [expanded]="(item().isPrimaryEquipped || item().isSecondaryEquipped) ?? false" [disabled]="(!item().isPrimaryEquipped && !item().isSecondaryEquipped) ?? true" />
+        <unit-skill [skill]="skill" [dataService]="teamDataService" [expanded]="(isExpanded() || item().isPrimaryEquipped || item().isSecondaryEquipped) ?? false" [disabled]="(!item().isPrimaryEquipped && !item().isSecondaryEquipped) ?? true" />
     }
     @if (item().maxRangeExceedsCalculationLimit || item().isNotInInventory) {
         <mat-divider />
