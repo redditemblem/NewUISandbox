@@ -1,14 +1,3 @@
-img.rotate90 {
-    transform: rotate(90deg);
-}
-
-img.flipHorz {
-    -moz-transform: scaleX(-1);
-    -o-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-}
-
 #unitDisplayContainer {
     display: flex;
     flex-flow: column nowrap;
@@ -42,6 +31,7 @@ img.flipHorz {
     background: url('../../../../../public/img/unit_nameplate_border.png') no-repeat 4px 4px, url('../../../../../public/img/unit_nameplate_border_rotated.png') no-repeat calc(100% - 4px) calc(100% - 4px), linear-gradient(to right, var(--primary-theme-color), transparent, var(--primary-theme-color));
     font-family: macExtMinecraft;
 
+    //Required for the background borders to render crisp
     image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-optimize-contrast;
@@ -49,16 +39,16 @@ img.flipHorz {
     image-rendering: pixelated;
     -ms-interpolation-mode: nearest-neighbor;
 
-    #unitNameplateSprite {
+    img.unitNameplateSprite {
         max-height: 48px;
         max-width: 48px;
         object-fit: scale-down;
     }
 
-    #unitNameplateText {
+    hgroup.unitNameplateText {
         display: flex;
         flex-flow: column nowrap;
-        flex-grow: 1;
+        flex: 1;
         row-gap: 4px;
 
         h1 {
@@ -68,12 +58,12 @@ img.flipHorz {
             line-height: 1.5rem;
         }
 
-        #levelClassText {
+        p.unitNameplateSubtext {
             margin-left: 16px;
         }
     }
 
-    #nameplateAffiliationSprite {
+    img.nameplateAffiliationSprite {
         max-height: 48px;
         max-width: 36px;
         object-fit: scale-down;
@@ -83,6 +73,7 @@ img.flipHorz {
 #unitNameplateFooter {
     display: flex;
     flex-flow: row nowrap;
+    align-items: center;
     justify-content: space-between;
     padding-right: 16px;
 
@@ -91,15 +82,17 @@ img.flipHorz {
         flex-flow: column nowrap;
 
         #ribbonBody {
-            max-width: 150px;
-            margin: 0px;
-            padding: 4px 16px 4px 16px;
+            max-width: 175px;
+            padding: 6px 16px 6px 16px;
             background: linear-gradient(to bottom, var(--tertiary-theme-color-dim) 0px, transparent 8px), var(--tertiary-theme-color);
-            font-size: var(--card-subheader-pixel-font-size);
             font-family: macExtMinecraft;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-wrap: nowrap;
+
+            #playerName {
+                font-size: var(--card-subheader-pixel-font-size);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-wrap: nowrap;
+            }
         }
 
         #ribbonTails {
@@ -172,17 +165,12 @@ div.statRow {
     align-items: center;
     column-gap: 8px;
 
-    div.pairUpText {
-        display: flex;
-        flex-flow: row nowrap;
-        column-gap: 3px;
-
-        a {
-            cursor: pointer;
-            text-decoration: underline;
-            color: #5CB4EF;
-        }
+    a {
+        cursor: pointer;
+        text-decoration: underline;
+        color: #5CB4EF;
     }
+    
 }
 
 #tagsContainer {
@@ -194,6 +182,7 @@ div.statRow {
         display: flex;
         flex-flow: row wrap;
         flex: 1;
+        align-items: center;
         row-gap: 8px;
         column-gap: 8px;
     }
@@ -204,11 +193,6 @@ div.statRow {
     flex-flow: row nowrap;
     column-gap: 8px;
     align-items: center;
-
-    p { 
-        display: flex;
-        flex: 1;
-    }
 }
 
 #statusConditionsContainer {
@@ -259,6 +243,7 @@ div.statRow {
         display: flex;
         flex-flow: row wrap;
         flex: 1;
+        align-items: center;
         row-gap: 8px;
         column-gap: 8px;
     }

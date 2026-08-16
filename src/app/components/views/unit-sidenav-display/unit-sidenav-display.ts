@@ -23,6 +23,7 @@ import { MapEventService } from '../../../services/map-event-service';
 import { UnitBattalion } from '../../unit-battalion/unit-battalion';
 import { Adjutant } from '../../adjutant/adjutant';
 import { CombatArt } from "../../combat-art/combat-art";
+import { StringDictionary } from '../../../data/interfaces/common/dictionaries';
 
 @Component({
   selector: 'unit-sidenav-display',
@@ -52,7 +53,7 @@ export class UnitSidenavDisplay implements OnChanges {
   protected isSkillsInfoExpanded = signal<boolean>(this.defaultSkillsExpansionState);
   protected isAdjutantsExpanded = signal<boolean>(this.defaultAdjutantsExpansionState);
 
-  constructor(protected teamDataService: TeamDataService, private eventService: MapEventService) {
+  constructor(protected readonly teamDataService: TeamDataService, private readonly eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
   }
 
@@ -79,15 +80,26 @@ export class UnitSidenavDisplay implements OnChanges {
     this.eventService.switchDisplayedUnit(pairedUnitName);
   }
 
-  protected dictionaryHasKeys(object: any) : boolean {
-    if(object === null || object === undefined)
-      return false;
-    return Object.keys(object).length > 0;
+  protected dictionaryHasKeys(dict: StringDictionary<any> | undefined) : boolean {
+    if(dict === null || dict === undefined) return false;
+    return Object.keys(dict).length > 0;
   }
 
-  protected doNotSortByKey() : number {
-    //Don't actually want a real sort here, so just return 0 for all items.
-    return 0;
+  protected doNotSortByKey() : number { return 0; }
+
+  protected buildUnitNameplateSubtext() : string {
+    const level: number = this.unit().stats.level;
+    const classes: string[] = this.unit().classes ?? [];
+
+    let subtext: string = "";
+
+    if(level > 0)
+      subtext += `Lvl. ${level} `;
+
+    if (classes.length > 0)
+      subtext += classes.at(0);
+
+    return subtext.trimEnd();
   }
 
   protected getUnitAffiliation() : IAffiliation | undefined {

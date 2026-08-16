@@ -87,7 +87,7 @@ app-root {
   font-family: macExtMinecraft;
 }
 
-// Render images as pixelized by default
+// Globally render all images as pixelized by default
 img,
 canvas{
     image-rendering: optimizeSpeed;
@@ -99,9 +99,20 @@ canvas{
 }
 
 img.smooth{
-    image-rendering: optimizeQuality;
-    image-rendering: auto;
-    -ms-interpolation-mode: inherit;
+  image-rendering: optimizeQuality;
+  image-rendering: auto;
+  -ms-interpolation-mode: inherit;
+}
+
+img.rotate90 {
+  transform: rotate(90deg);
+}
+
+img.flipHorz {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
 }
 
 .primaryColorCard {

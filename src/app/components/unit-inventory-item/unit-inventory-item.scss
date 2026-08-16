@@ -4,90 +4,92 @@ div.itemContainer {
     row-gap: 8px;
     cursor: pointer;
 
-    div.itemHeaderRow {
+    p { margin: 0px; }
+}
+
+div.headerRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    justify-content: space-between;
+    column-gap: 16px;
+
+    &.opacity50 { opacity: 0.5; }
+}
+
+div.titleColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    font-family: macExtMinecraft;
+}
+
+div.titleRow {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    column-gap: 8px;
+    font-size: var(--card-header-pixel-font-size);
+
+    img.sprite { 
+        max-height: var(--card-header-sprite-max-dimensions);
+        max-width: var(--card-header-sprite-max-dimensions);
+        object-fit: scale-down;
+    }
+
+    p.droppableTextColor { color: #3CD66F; }
+}
+
+p.subtitleRow {
+    padding-left: 16px;
+    font-size: var(--card-subheader-pixel-font-size);
+}
+
+div.iconsRow {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 4px;
+}
+
+div.statsContainer {
+    display: flex;
+    flex-flow: row wrap;
+    column-gap: 5%;
+    padding: 0px 8px 0px 8px;
+
+    div.stat {
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
-        column-gap: 16px;
+        align-items: center;
+        flex: 0 0 30%;
+        column-gap: 6px;
 
-        #textContainer {
-            display: flex;
-            flex-flow: column nowrap;
-            flex: 1;
-
-            #name {
-                display: flex;
-                display: row nowrap;
-                align-items: center;
-                column-gap: 6px;
-                font-family: macExtMinecraft;
-                font-size: 0.9rem;
-
-                .droppableTextColor { color: #3CD66F; }
-            }
-
-            #rankCategory {
-                padding-left: 16px;
-            }
-
-            //Applies to all sprites in the item header, including engravings and tags
-            img {
-                max-height: var(--card-header-sprite-max-dimensions);
-                max-width: var(--card-header-sprite-max-dimensions);
-                object-fit: scale-down;
-            }
-        }
-
-        #iconsContainer {
+        //Forces values with complex displays (range, uses) to stay on the same line
+        .statValue {
             display: flex;
             flex-flow: row nowrap;
-            column-gap: 4px;
         }
     }
-    .opacity50{ opacity: 0.5; }
+}
 
-    #expansionContainer {
-        display: flex;
-        flex-flow: column nowrap;
-        row-gap: 8px;
+div.graphicRow {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
 
-        #statsContainer {
-            display: flex;
-            flex-flow: row wrap;
-            column-gap: 5%;
-            padding: 0px 8px 0px 8px;
-
-            div.stat {
-                display: flex;
-                flex-flow: row nowrap;
-                justify-content: space-between;
-                align-items: center;
-                flex: 0 0 30%;
-                column-gap: 6px;
-
-                //Forces values with complex displays (range, uses) to stay on the same line
-                div.statValue {
-                    display: flex;
-                    flex-flow: row nowrap;
-                }
-            }
-        }
-
-        p {
-            margin: 0;
-        }
-
-        #graphic {
-            max-height: 100px; 
-            max-width: 250px;
-            object-fit: scale-down;
-        }
+    img.graphic {
+        max-height: 100px; 
+        max-width: 100%;
+        object-fit: scale-down;
     }
+}
 
-    div.messageRow {
-        display: flex;
-        flex-flow: row nowrap;
-        column-gap: 4px;
-        color: #ff6600;
-    }
+    
+div.messageRow {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: 4px;
+    color: #ff6600;
 }

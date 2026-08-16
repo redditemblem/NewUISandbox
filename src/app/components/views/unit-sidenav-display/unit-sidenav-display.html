@@ -1,33 +1,36 @@
 <div id="unitDisplayContainer">
     @if((unit().sprite.portraitURL ?? "").length > 0) {
         <div id="unitPortraitContainer">
-            <img [src]="unit().sprite.portraitURL" class="unitPortraitSprite smooth" />
+            <img [src]="unit().sprite.portraitURL" class="unitPortraitSprite smooth" [aria-label]="`${unit().name} portrait`" />
         </div>
     }
     <div id="unitNameplateContainer">
         <div id="unitNameplate">
-            <img [src]="unit().sprite.spriteURL" id="unitNameplateSprite" [class]="{'flipHorz': shouldFlipUnitSprite()}" />
-            <hgroup id="unitNameplateText">
+            <img [src]="unit().sprite.spriteURL" class="unitNameplateSprite" [class]="{'flipHorz': shouldFlipUnitSprite()}" [aria-label]="`${unit().name} sprite`" />
+            <hgroup class="unitNameplateText">
                 <h1>{{unit().name}}</h1>
-                <p id="levelClassText">
-                    @if (unit().stats.level > 0) { Lvl. {{unit().stats.level}} }
-                    @if ((unit().classes ?? []).length > 0) { {{unit().classes?.at(0)}} }
-                </p>
+                @let subtext = buildUnitNameplateSubtext();
+                @if (subtext.length > 0) {
+                    <p class="unitNameplateSubtext">{{subtext}}</p>
+                }
             </hgroup>
-            @if ((getUnitAffiliation()?.spriteURL ?? "").length > 0) {
-                <img [src]="getUnitAffiliation()?.spriteURL" id="nameplateAffiliationSprite" />
+            @let affiliation = getUnitAffiliation();
+            @if ((affiliation?.spriteURL ?? "").length > 0) {
+                <img [src]="affiliation?.spriteURL" class="nameplateAffiliationSprite" [aria-label]="`${affiliation?.name} sprite`" />
             }
         </div>
         <div id="unitNameplateFooter">
             <button matIconButton 
                     (click)="toggleUnitInfoExpansion()" 
-                    [matTooltip]="`${this.isUnitInfoExpanded() ? 'Collapse' : 'Expand'} additional unit info`"
+                    [matTooltip]="`${isUnitInfoExpanded() ? 'Collapse' : 'Expand'} additional unit info`"
                     matTooltipPosition="right">
-                <img src="img/caret.png" [class]="{'rotate90': this.isUnitInfoExpanded()}" />
+                <img src="img/caret.png" [class]="{'rotate90': isUnitInfoExpanded()}" aria-hidden="true" />
             </button>
             @if ((unit().player ?? "").length > 0) {
                 <div id="playerNameRibbon" [title]="unit().player">
-                    <p id="ribbonBody">{{unit().player}}</p>
+                    <div id="ribbonBody">
+                        <p id="playerName">{{unit().player}}</p>
+                    </div>
                     <div id="ribbonTails">
                         <div id="leftTail"></div>
                         <div id="rightTail"></div>
@@ -36,11 +39,12 @@
             }
         </div>
     </div> 
-    @if(this.isUnitInfoExpanded()){
+    @if(isUnitInfoExpanded()){
         @for (text of (unit().textFields ?? []); track $index) {
             <p>{{text}}</p>
         }
-        <text-fields-with-labeled-header label="Affiliation" [title]="unit().affiliation" [textFields]="getUnitAffiliation()?.textFields" />
+        @let affiliation = getUnitAffiliation();
+        <text-fields-with-labeled-header label="Affiliation" [title]="unit().affiliation" [spriteURL]="affiliation?.spriteURL" [textFields]="affiliation?.textFields" />
         <text-fields-with-labeled-header label="Movement Type" [title]="unit().movementType" />
         @for(className of (unit().classes ?? []); track className) {
             @let class = getUnitClass(className);
@@ -61,8 +65,7 @@
                 <p>HP</p>
                 <div id="hpValues">
                     <p style="font-size: 1.5rem; line-height: 1.5rem;">{{unit().stats.hp.current}}</p>
-                    <p>/</p>
-                    <p>{{unit().stats.hp.maximum}}</p>
+                    <p>/ {{unit().stats.hp.maximum}}</p>
                 </div>
             </div>
             <unit-hp-bar [percentage]="unit().stats.hp.percentage" />
@@ -73,7 +76,7 @@
             }
         </div>
         @if (dictionaryHasKeys(unit().stats.system_Prioritized)) {
-            @for(stat of unit().stats.system_Prioritized | keyvalue : doNotSortByKey; track stat.key) {
+            @for(stat of unit().stats.system_Prioritized | keyvalue: doNotSortByKey; track stat.key) {
                 <div class="looseStatsItem">
                     <p>{{stat.key}}</p>
                     <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" />
@@ -93,16 +96,6 @@
             </div>
         }
     </div>
-    @if ((unit().location.pairedUnit ?? "").length > 0) {
-        <div id="pairUpContainer">
-            <img src="img/star_icon.png" height="32" width="32" matTooltip="Pair-Up" matTooltipPosition="right" />
-            <div class="pairUpText">
-                <p>
-                    Paired with <a (click)="pairedUnitLink_OnClick(unit().location.pairedUnit!)">{{unit().location.pairedUnit}}</a> (in {{unit().location.isBackOfPair ? 'back' : 'front'}})
-                </p>
-            </div>
-        </div>
-    }
     @if((unit().tags ?? []).length > 0){
         <div id="tagsContainer">
             <img src="img/tags_icon.png" height="32" width="32" matTooltip="Tags" matTooltipPosition="right" />
@@ -111,6 +104,14 @@
                     <unit-tag [tag]="tag" />
                 }
             </div>
+        </div>
+    }
+    @if ((unit().location.pairedUnit ?? "").length > 0) {
+        <div id="pairUpContainer">
+            <img src="img/backpack_icon.png" height="32" width="32" matTooltip="Pair Up" matTooltipPosition="right" />
+            <p>
+                Paired with <a (click)="pairedUnitLink_OnClick(unit().location.pairedUnit!)">{{unit().location.pairedUnit}}</a> (in {{unit().location.isBackOfPair ? 'back' : 'front'}})
+            </p>
         </div>
     }
     @if((unit().behavior ?? "").length > 0){
@@ -131,33 +132,33 @@
     }
     <div id="statsSection" class="sectionContainerWithHeader">
         <div class="sectionHeaderRow">
-            <button matIconButton 
+            <button matIconButton
                     (click)="toggleStatExpansion()" 
                     [matTooltip]="`${isStatsInfoExpanded() ? 'Collapse' : 'Expand'} stat info`" 
                     matTooltipPosition="right">
-                <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded()}" />
+                <img src="img/caret.png" [class]="{'rotate90': isStatsInfoExpanded()}" aria-hidden="true" />
             </button>
             <h2>Stats</h2>
         </div>
         <div id="statSectionsContainer">
             @if(dictionaryHasKeys(unit().stats.combat)) {
             <div class="statRow">
-                @for (stat of unit().stats.combat | keyvalue : doNotSortByKey; track stat.key){
-                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                @for (stat of unit().stats.combat | keyvalue: doNotSortByKey; track stat.key){
+                    <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded()" />
                 }
             </div>
             }
             @if(dictionaryHasKeys(unit().stats.system_NonPrioritized)) {
                 <div class="statRow">
-                    @for (stat of unit().stats.system_NonPrioritized | keyvalue : doNotSortByKey; track stat.key){
-                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                    @for (stat of unit().stats.system_NonPrioritized | keyvalue: doNotSortByKey; track stat.key){
+                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded()" />
                     }
                 </div>
             }
             @if(dictionaryHasKeys(unit().stats.general)) {
                 <div class="statRow">
-                    @for (stat of unit().stats.general | keyvalue : doNotSortByKey; track stat.key){
-                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="this.isStatsInfoExpanded()" />
+                    @for (stat of unit().stats.general | keyvalue: doNotSortByKey; track stat.key){
+                        <modified-unit-stat [name]="stat.key" [values]="stat.value" [expanded]="isStatsInfoExpanded()" />
                     }
                 </div>
             }
@@ -165,7 +166,7 @@
     </div>
     @if(dictionaryHasKeys(unit().weaponRanks)) {
         <div id="weaponRanksContainer">
-            <img src="img/star_icon.png" height="32" width="32" [matTooltip]="teamDataService.getWeaponRanksInterfaceLabel()" matTooltipPosition="right" />
+            <img src="img/ranks_icon.png" height="32" width="32" [matTooltip]="teamDataService.getWeaponRanksInterfaceLabel()" matTooltipPosition="right" />
             <div id="weaponRanksRow">
                 @for(rank of unit().weaponRanks | keyvalue : doNotSortByKey; track rank.key){
                     <unit-weapon-rank [category]="rank.key" [rank]="rank.value" />

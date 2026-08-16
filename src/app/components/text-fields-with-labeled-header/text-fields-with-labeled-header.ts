@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'text-fields-with-labeled-header',
-  imports: [],
+  imports: [MatIconModule],
   templateUrl: './text-fields-with-labeled-header.html',
   styleUrl: './text-fields-with-labeled-header.scss',
 })
