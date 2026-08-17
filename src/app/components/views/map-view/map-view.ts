@@ -10,14 +10,14 @@ import { TeamDataService } from '../../../services/team-data-service';
 import { ActivatedRoute } from '@angular/router';
 import { MatFabButton } from '@angular/material/button';
 import { LinksSidenav } from "../links-sidenav/links-sidenav";
-import { MapSegment } from '../map-segment/map-segment';
+import { MapCanvas } from '../map-canvas/map-canvas';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 import { MapEventService } from '../../../services/map-event-service';
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapSegment, MapPaintSidenav],
+  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapCanvas, MapPaintSidenav],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })

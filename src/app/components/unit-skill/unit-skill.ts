@@ -1,13 +1,13 @@
-import { Component, inject, input, OnChanges, signal } from '@angular/core';
+import { Component, input, OnChanges, signal } from '@angular/core';
 import { IUnitSkill } from '../../data/interfaces/unit/unit-skill';
 import { ISkill } from '../../data/interfaces/system/skill';
-import { TeamDataService } from '../../services/team-data-service';
 import { MatDivider } from "@angular/material/divider";
 import { ISkillLookupService } from '../../services/interfaces/skill-lookup-service';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'unit-skill',
-  imports: [MatDivider],
+  imports: [MatDivider, MatTooltip],
   templateUrl: './unit-skill.html',
   styleUrl: './unit-skill.scss',
 })

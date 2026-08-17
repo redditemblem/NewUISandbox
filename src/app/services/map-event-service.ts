@@ -1,5 +1,7 @@
 import { EventEmitter, Injectable, Output, Signal, signal } from '@angular/core';
 import { StringDictionary } from '../data/interfaces/common/dictionaries';
+import { IUnit } from '../data/interfaces/unit/unit';
+import { ICoordinate } from '../data/interfaces/map/coordinate';
 
 @Injectable({
   providedIn: 'root',
@@ -8,40 +10,81 @@ export class MapEventService {
 
   // #region Units Tab
 
-  /** Internal dictionary for tracking the pinned state of units */
-  private unitPinnedStates: StringDictionary<boolean> = {};
+  @Output() switchDisplayToUnit = new EventEmitter<IUnit>();
 
-  @Output() switchDisplayToUnit = new EventEmitter<string>();
-  @Output() pinUnit = new EventEmitter<string>();
-  @Output() unpinUnit = new EventEmitter<string>();
-
-  public switchDisplayedUnit(unitName: string) {
-    this.switchDisplayToUnit.emit(unitName);
+  public switchDisplayedUnit(unit: IUnit) {
+    this.switchDisplayToUnit.emit(unit);
   }
 
+  private pinStates = signal<StringDictionary<boolean>>({});
+  public readonly unitPinStates = this.pinStates.asReadonly();
+
+  private tileStates = signal<StringDictionary<ITileState>>({});
+  public readonly tileDisplayStates = this.tileStates.asReadonly();
+
   /**
-   *  Inverts the pinned state of `unitName` and emits a matching pin/unpin event.
-   * 
-   * @returns The updated pinned state of `unitName`
+   *  
    */
-  public toggleUnitPinnedState(unitName: string) : boolean {
+  public toggleUnitPinnedState(unit: IUnit) {
+    const name: string = unit.name;
+    const isPinned: boolean = this.getPinnedStateForUnit(unit.name);
 
-    //Determine the current status, invert it, and update
-    let isPinned = this.unitPinnedStates[unitName] ?? false;
-    isPinned = !isPinned;
+    this.pinStates.update(dict => {
+      dict[name] = !isPinned;
+      return {...dict};
+    });
 
-    this.unitPinnedStates[unitName] = isPinned;
+    //Update tile states based on unit's ranges
+    const movRange: ICoordinate[] = unit.ranges.movement ?? [];
+    const atkRange: ICoordinate[] = unit.ranges.attack ?? [];
+    const utilRange: ICoordinate[] = unit.ranges.utility ?? [];
 
-    //Emit the correct event for subscribers
-    if(isPinned) this.pinUnit.emit(unitName);
-    else this.unpinUnit.emit(unitName);
+    const modifier: number = (isPinned ? -1 : 1);
+    this.tileStates.update(dict => {
+      
+      movRange.forEach(coord => {
+        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
+        state.movement = Math.max(0, state.movement + modifier);
 
-    return isPinned;
+        dict[coord.asText] = state;
+      });
+
+      atkRange.forEach(coord => {
+        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
+        state.attack = Math.max(0, state.attack + modifier);
+
+        dict[coord.asText] = state;
+      });
+
+      utilRange.forEach(coord => {
+        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
+        state.utility = Math.max(0, state.movement + modifier);
+
+        dict[coord.asText] = state;
+      });
+
+      return {...dict};
+    });
+
+    const i: number = 1;
   }
 
   /** @returns The current pinned state of `unitName` */
   public getPinnedStateForUnit(unitName: string) : boolean {
-    return this.unitPinnedStates[unitName] ?? false;
+    return this.pinStates()[unitName] ?? false;
+  }
+
+  public getStateForTile(coordinate: ICoordinate) : ITileState {
+    return this.tileStates()[coordinate.asText] ?? this.getBlankTileState();
+  }
+
+  //** Returns a new `ITileState` with all values set to 0. */
+  private getBlankTileState(): ITileState {
+    return {
+      movement: 0,
+      attack: 0,
+      utility : 0
+    }
   }
 
   // #endregion Units Tab
@@ -94,4 +137,10 @@ export class MapEventService {
   }
 
   // #endregion Paint Tab
+}
+
+export interface ITileState {
+  movement: number,
+  attack: number,
+  utility: number
 }

@@ -55,6 +55,7 @@ export class UnitSidenavDisplay implements OnChanges {
 
   constructor(protected readonly teamDataService: TeamDataService, private readonly eventService: MapEventService) {
     this.teamDataService = inject(TeamDataService);
+    this.eventService = inject(MapEventService);
   }
 
   ngOnChanges() {
@@ -77,7 +78,13 @@ export class UnitSidenavDisplay implements OnChanges {
   protected toggleAdjutantExpansion() { this.isAdjutantsExpanded.set(!this.isAdjutantsExpanded()); }
   
   protected pairedUnitLink_OnClick(pairedUnitName: string) {
-    this.eventService.switchDisplayedUnit(pairedUnitName);
+    const pairedUnit: IUnit | undefined = this.teamDataService.getUnitByName(pairedUnitName);
+    if (pairedUnit === undefined) {
+      console.error(`Failed to find unit with name \"${pairedUnitName}\".`);
+      return;
+    }
+
+    this.eventService.switchDisplayedUnit(pairedUnit);
   }
 
   protected dictionaryHasKeys(dict: StringDictionary<any> | undefined) : boolean {

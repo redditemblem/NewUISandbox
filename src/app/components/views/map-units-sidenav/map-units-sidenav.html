@@ -10,7 +10,7 @@
             (focus)="filterUnits()"
             (input)="filterUnits()"
             >
-      <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue" (optionSelected)="syncPinnedStatus($event)">
+      <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
         @for (unit of filteredUnits; track unit.name) {
           <mat-option [value]="unit">
             <span class="unitName">
@@ -18,7 +18,7 @@
               <p>{{unit.name}}</p>
             </span>
             @if(eventService.getPinnedStateForUnit(unit.name)) {
-              <img src="img/pin_icon.png" />
+              <img src="img/pin_icon.png" aria-hidden="true" />
             }
           </mat-option>
         }
@@ -30,8 +30,8 @@
       }
     </mat-form-field>
   </form>
-  <button matIconButton [disabled]="selectedUnit.value === null" (click)="toggleUnitPinnedStatus()" [title]="(this.selectedUnitIsPinned() ? 'Unpin' : 'Pin') + ' this unit'">
-      <img src="img/pin_icon.png" [class]="{'grayscale': selectedUnit.value === null || !this.selectedUnitIsPinned()}" alt="Pin Icon" />
+  <button matIconButton [disabled]="selectedUnit.value === null" (click)="pinButton_OnClick()" [title]="(isSelectedUnitPinned() ? 'Unpin' : 'Pin') + ' this unit'">
+      <img src="img/pin_icon.png" [class]="{'grayscale': selectedUnit.value === null || !isSelectedUnitPinned()}" alt="Pin Icon" />
   </button>
 </div>
 <div id="unitSidenavContainer">

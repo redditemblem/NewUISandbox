@@ -3,6 +3,8 @@ div.modifiedStatContainer {
     flex-flow: column nowrap;
     flex: 1;
     row-gap: 4px;
+
+    p { margin: 0px; }
 }
 
 div.statHeaderRow {
@@ -26,7 +28,6 @@ div.labelContainer {
     text-wrap: nowrap;
 
     p {
-        margin: 0px;
         overflow: hidden;
         text-overflow: ellipsis;
         text-wrap: nowrap;
@@ -71,10 +72,6 @@ div.modifierRows {
         column-gap: 16px;
         padding: 0px 4px 0px 4px;
         font-size: 0.8rem;
-
-        p {
-            margin: 0px;
-        }
     }
 
     div.shaded { 

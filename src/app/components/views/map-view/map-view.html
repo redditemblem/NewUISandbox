@@ -45,7 +45,7 @@
             }
         </mat-tab-group>
         @if(this.currentSegment() !== undefined) {
-            <map-segment [currentSegmentTitle]="this.currentSegment()?.title ?? ''" />
+            <map-canvas [currentSegmentTitle]="this.currentSegment()?.title ?? ''" />
         }
     </mat-sidenav-content>
 </mat-sidenav-container>

@@ -6,45 +6,42 @@
                     <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${status().name} sprite`" />
                 }
                 <p>
-                    {{status().name}}
-                    @if ((status().remainingTurns ?? 0) > 0) {
-                        @if((systemData()?.turns ?? 0) > 0) {
-                            ({{status().remainingTurns}}/{{systemData()?.turns}} turns)
-                        }
-                        @else {
-                            ({{status().remainingTurns}} turns)
-                        }
-                    }
+                    {{buildTitle()}}
                 </p>
             </div>
-            <p class="additionalStats">
-                @for (stat of status().additionalStats | keyvalue; track stat.key) {
-                    {{stat.value}} {{stat.key}}@if(!$last){, }
-                }
-            </p>
-        </div>
-        <div class="iconsRow">
-            @if (systemData()?.isEffectConfigured) {
-                <img src="img/gear_icon.png" width="20" height="20" matTooltip="Effect Configured" matTooltipPosition="left" />
-            }
-            @switch (systemData()?.type ?? 0) 
-            {
-                @case(1) {
-                    <img src="img/positive_icon.png" width="20" height="20" matTooltip="Positive Status" matTooltipPosition="left" />
-                }
-                @case (2) {
-                    <img src="img/negative_icon.png" width="20" height="20" matTooltip="Negative Status" matTooltipPosition="left" />
-                }
-                @case (3) {
-                    <img src="img/neutral_icon.png" width="20" height="20" matTooltip="Neutral Status" matTooltipPosition="left" />
-                }
+            @let subtitle = buildSubtitle();
+            @if (subtitle.length > 0) {
+                <p class="subtitle">
+                    {{subtitle}}
+                </p>
             }
         </div>
+        @if (systemData()?.isEffectConfigured || (systemData()?.type ?? 0) > 0) {
+            <div class="iconsRow">
+                @if (systemData()?.isEffectConfigured) {
+                    <img src="img/gear_icon.png" width="20" height="20" matTooltip="Effect Configured" matTooltipPosition="left" />
+                }
+                @switch (systemData()?.type ?? 0) 
+                {
+                    @case (1) {
+                        <img src="img/positive_icon.png" width="20" height="20" matTooltip="Positive Status" matTooltipPosition="left" />
+                    }
+                    @case (2) {
+                        <img src="img/negative_icon.png" width="20" height="20" matTooltip="Negative Status" matTooltipPosition="left" />
+                    }
+                    @case (3) {
+                        <img src="img/neutral_icon.png" width="20" height="20" matTooltip="Neutral Status" matTooltipPosition="left" />
+                    }
+                }
+            </div>
+        }
     </div>
     @if((systemData()?.textFields ?? []).length > 0) {
         <mat-divider />
-        @for(text of systemData()?.textFields; track $index) {
-            <p>{{text}}</p>
-        }
+        <div class="textFieldsContainer">
+            @for(text of systemData()?.textFields; track $index) {
+                <p>{{text}}</p>
+            }
+        </div>
     }
 </div>
