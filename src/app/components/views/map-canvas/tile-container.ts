@@ -56,7 +56,7 @@ export class TileContainer extends Container {
     //Add a rectangle graphic for showing ranges
     const tileDimensions = this.constants?.tileSize ?? 16;
     const tint = new Graphics()
-      .rect(0, 0, tileDimensions-1, tileDimensions-1)
+      .rect(1, 1, tileDimensions-1, tileDimensions-1)
       .fill({
         color: '#ffffff',
         alpha: 0.5
@@ -114,7 +114,6 @@ export class TileContainer extends Container {
       this.backgroundTint.visible = true;
     }
     else {
-      this.backgroundTint.tint = '#ffffff';
       this.backgroundTint.visible = false;
     }
   }

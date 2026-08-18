@@ -1,16 +1,15 @@
 import { Container, FederatedPointerEvent } from "pixi.js";
-import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
 import { IMapSegment } from "../../../data/interfaces/map/map-segment";
 import { MapEventService } from "../../../services/map-event-service";
 import { TeamDataService } from "../../../services/team-data-service";
 import { TileContainer } from "./tile-container";
-import { UnitContainer } from "./unit-container";
 import { SpriteLoader } from "./sprite-loader";
 import { ICoordinate } from "../../../data/interfaces/map/coordinate";
 import { PaintContainer } from "./paint-container";
 import { TileCursorSprite } from "./tile-cursor-sprite";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { IMapConstants } from "../../../data/interfaces/map/map-constants";
+import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
 
 export class SegmentContainer extends Container {
   private readonly injector: Injector;
@@ -25,9 +24,6 @@ export class SegmentContainer extends Container {
   private paintContainer: PaintContainer;
   private tileCursor: TileCursorSprite;
   private tileContainers: StringDictionary<TileContainer> = {};
-  private unitContainers: StringDictionary<UnitContainer> = {};
-
-  private currTileXY: [number, number] = [0, 0];
 
   constructor(injector: Injector, segment: IMapSegment) {
     super(); //call the parent Container() constructor
@@ -83,42 +79,17 @@ export class SegmentContainer extends Container {
         const tileContainer : TileContainer = new TileContainer(this.injector, tile);
         await tileContainer.init()
         
-        //Add container as child and position it
-        this.addChild(tileContainer);
-
+        //Position the tile
         const coordinate: ICoordinate = tile.coordinate;
         tileContainer.position = {
           x: this.tileDimensions * (coordinate.x - this.segment.horizontalTileRangeWithinMap.start.value + (this.hasTopLeftHeaders ? 1 : 0)),
           y: this.tileDimensions * ((coordinate.y - 1) + (this.hasTopLeftHeaders ? 1 : 0))
         };
 
-        this.addTileItemsToDictionaries(tileContainer);
+        this.tileContainers[coordinate.asText] = tileContainer;
+        this.addChild(tileContainer);
       }))
     }));
-  }
-
-  private addTileItemsToDictionaries(container: TileContainer) {
-    this.tileContainers[container.tile.coordinate.asText] = container;
-
-    const unitContainer: UnitContainer | undefined = container.unitContainer;
-    const pairedUnitContainer: UnitContainer | undefined = container.pairupUnitContainer;
-    
-    if(unitContainer !== undefined)
-      this.unitContainers[unitContainer.unitName] = unitContainer;
-    if(pairedUnitContainer !== undefined)
-      this.unitContainers[pairedUnitContainer.unitName] = pairedUnitContainer;
-  }
-
-  private updateCurrentTile(x: number, y: number) {
-    //Offset x by the segment's horizontal displacement
-    x += this.segment.horizontalTileRangeWithinMap.start.value - 1;
-
-    //If this is already the current tile, don't send another event
-    if(x === this.currTileXY[0] && y === this.currTileXY[1])
-      return;
-
-    this.currTileXY = [x, y];
-    this.eventService?.updateCurrentTileCoordinates(x, y);
   }
 
   /** Enables interaction. Does not affect visibility. */
@@ -152,6 +123,18 @@ export class SegmentContainer extends Container {
     this.tileCursor.x = xNumTiles * this.tileDimensions + this.tileDimensionCenter;
     this.tileCursor.y = yNumTiles * this.tileDimensions + this.tileDimensionCenter;
     this.updateCurrentTile(xNumTiles, yNumTiles);
+  }
+
+  private updateCurrentTile(x: number, y: number) {
+    //Offset x by the segment's horizontal displacement
+    x += this.segment.horizontalTileRangeWithinMap.start.value - 1;
+
+    const container: TileContainer | undefined = 
+      Object.values(this.tileContainers)
+            .find(c => c.tile.coordinate.x === x && c.tile.coordinate.y === y);
+
+    if (container === undefined) return;
+    this.eventService?.updateHighlightedTile(container.tile);
   }
 
   // #endregion Event Handling

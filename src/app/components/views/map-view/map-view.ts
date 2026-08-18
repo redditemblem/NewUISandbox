@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MapDiceRollerSidenav } from '../map-dice-roller-sidenav/map-dice-roller-sidenav';
@@ -23,9 +23,6 @@ import { MapEventService } from '../../../services/map-event-service';
 })
 export class MapView implements OnInit {
   
-  protected currentSegment = signal<IMapSegment | undefined>(undefined);
-  private isPaintTabSelected: boolean = false;
-
   constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, private themeService: ThemeService, protected teamDataService: TeamDataService, private eventService: MapEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
@@ -40,30 +37,20 @@ export class MapView implements OnInit {
 
     const firstSegment = this.teamDataService.mapData().map?.segments[0];
     if(firstSegment !== undefined)
-      this.setCurrentSegment(firstSegment);
+      this.eventService.updateSelectedSegment(firstSegment);
   }
 
   protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {
     const tabLabel = event.tab.ariaLabel;
-    const nonPaintTabSelected: boolean = (tabLabel !== "Paint Tools");
+    const isPaintTabSelected: boolean = (tabLabel === "Paint Tools");
 
-    //If we switched between two non-paint tabs, we do not need to emit an event
-    if(nonPaintTabSelected && !this.isPaintTabSelected)
-      return;
-
-    this.isPaintTabSelected = !nonPaintTabSelected;
-    this.eventService.setPaintMode(this.isPaintTabSelected);
+    this.eventService.setPaintMode(isPaintTabSelected);
   }
 
   protected SegmentTabs_selectedTabChange(event: MatTabChangeEvent) {
     const segment: IMapSegment | undefined = this.teamDataService.mapData().map?.segments[event.index];
-    if(segment === undefined)
-      return;
+    if(segment === undefined) return;
 
-    this.setCurrentSegment(segment);
-  }
-  
-  protected setCurrentSegment(segment: IMapSegment) { 
-    this.currentSegment.set(segment);
+    this.eventService.updateSelectedSegment(segment);
   }
 }

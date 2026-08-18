@@ -22,6 +22,7 @@ import { IBattalion } from '../data/interfaces/system/battalion';
 import { IGambit } from '../data/interfaces/system/gambit';
 import { IAdjutant } from '../data/interfaces/system/adjutant';
 import { ICombatArt } from '../data/interfaces/system/combat-art';
+import { ITerrainType } from '../data/interfaces/system/terrain-type';
 
 @Injectable({
   providedIn: 'root',
@@ -219,6 +220,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public getTagByName(name: string) : ITag | undefined {
 	const dict = this.mapData().system?.tags;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getTerrainTypeByName(name: string) : ITerrainType | undefined {
+	const dict = this.mapData().system?.terrainTypes;
 	if(!dict || !name) return undefined;
 	else return dict[name];
   }

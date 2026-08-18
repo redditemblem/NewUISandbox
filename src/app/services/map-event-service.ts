@@ -2,13 +2,15 @@ import { EventEmitter, Injectable, Output, Signal, signal } from '@angular/core'
 import { StringDictionary } from '../data/interfaces/common/dictionaries';
 import { IUnit } from '../data/interfaces/unit/unit';
 import { ICoordinate } from '../data/interfaces/map/coordinate';
+import { ITile } from '../data/interfaces/map/tile';
+import { IMapSegment } from '../data/interfaces/map/map-segment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MapEventService {
 
-  // #region Units Tab
+  // #region Pinning Units
 
   @Output() switchDisplayToUnit = new EventEmitter<IUnit>();
 
@@ -43,30 +45,28 @@ export class MapEventService {
     this.tileStates.update(dict => {
       
       movRange.forEach(coord => {
-        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
+        const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
         state.movement = Math.max(0, state.movement + modifier);
 
         dict[coord.asText] = state;
       });
 
       atkRange.forEach(coord => {
-        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
+        const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
         state.attack = Math.max(0, state.attack + modifier);
 
         dict[coord.asText] = state;
       });
 
       utilRange.forEach(coord => {
-        const state: ITileState = dict[coord.asText] ?? this.getBlankTileState();
-        state.utility = Math.max(0, state.movement + modifier);
+        const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
+        state.utility = Math.max(0, state.utility + modifier);
 
         dict[coord.asText] = state;
       });
 
       return {...dict};
     });
-
-    const i: number = 1;
   }
 
   /** @returns The current pinned state of `unitName` */
@@ -75,31 +75,44 @@ export class MapEventService {
   }
 
   public getStateForTile(coordinate: ICoordinate) : ITileState {
-    return this.tileStates()[coordinate.asText] ?? this.getBlankTileState();
+    return this.tileStates()[coordinate.asText] ?? this.getEmptyTileState();
   }
 
   //** Returns a new `ITileState` with all values set to 0. */
-  private getBlankTileState(): ITileState {
+  private getEmptyTileState(): ITileState {
     return {
       movement: 0,
       attack: 0,
-      utility : 0
+      utility: 0
     }
   }
 
-  // #endregion Units Tab
+  // #endregion Pinning Units
 
-  // #region Tiles Tab  
+  // #region Highlighted Tile  
 
-  @Output() updateCurrentTile = new EventEmitter<[number, number]>();
+  private segment = signal<IMapSegment | undefined>(undefined);
+  public readonly selectedSegment = this.segment.asReadonly();
 
-  public updateCurrentTileCoordinates(x: number, y: number) {
-    this.updateCurrentTile.emit([x, y]);
+  private tile = signal<ITile | undefined>(undefined);
+  public readonly highlightedTile = this.tile.asReadonly();
+
+  public updateSelectedSegment(segment: IMapSegment) {
+    this.segment.set(segment);
   }
 
-  // #endregion Tiles Tab
+  public updateHighlightedTile(tile: ITile) {
+    //Don't update if this is already the current tile
+    if (this.tile()?.coordinate.x == tile.coordinate.x
+     && this.tile()?.coordinate.y == tile.coordinate.y)
+     return;
 
-  // #region Paint Tab
+    this.tile.set(tile);
+  }
+
+  // #endregion Highlighted Tile
+
+  // #region Paint Mode
 
   @Output() downloadMapAsImage = new EventEmitter<void>();
   @Output() updatePaintMode = new EventEmitter<boolean>();
@@ -136,7 +149,7 @@ export class MapEventService {
     this.undoLastPaintContainerLine.emit();
   }
 
-  // #endregion Paint Tab
+  // #endregion Paint Mode
 }
 
 export interface ITileState {

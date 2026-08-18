@@ -44,8 +44,6 @@
                 <mat-tab label="{{segment.title}}"></mat-tab>
             }
         </mat-tab-group>
-        @if(this.currentSegment() !== undefined) {
-            <map-canvas [currentSegmentTitle]="this.currentSegment()?.title ?? ''" />
-        }
+        <map-canvas />
     </mat-sidenav-content>
 </mat-sidenav-container>

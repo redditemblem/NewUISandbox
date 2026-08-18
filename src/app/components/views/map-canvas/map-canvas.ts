@@ -1,5 +1,5 @@
 import { initDevtools } from '@pixi/devtools';
-import { Component, inject, Injector, input, signal } from '@angular/core';
+import { Component, effect, inject, Injector } from '@angular/core';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { Application, Assets, ImageLike, TextureSource } from 'pixi.js';
 import { TeamDataService } from '../../../services/team-data-service';
@@ -20,8 +20,6 @@ import { SegmentContainer } from './segment-container';
   `,
 })
 export class MapCanvas {
-  //External inputs
-  currentSegmentTitle = input.required<string>();
 
   //Internal attributes
   private readonly injector: Injector;
@@ -40,12 +38,10 @@ export class MapCanvas {
     //Subscribe to external events
     this.eventService.downloadMapAsImage
       .subscribe(() => this.downloadMapAsImage());
-    /*this.eventService.updatePaintMode
-      .subscribe((inPaintMode: boolean) => this.updatePaintMode(inPaintMode));
-    this.eventService.clearPaintContainer
-      .subscribe(() => this.clearPaintContainer());
-    this.eventService.undoLastPaintContainerLine
-      .subscribe(() => this.undoLastPaintContainerLine());*/
+
+    effect(() => {
+      this.updateActiveSegment(this.eventService.selectedSegment());
+    });
   }
 
   async ngOnInit() {
@@ -65,11 +61,7 @@ export class MapCanvas {
     await this.initializePixiApp(pixiContainer);
     await this.createSegmentContainers();
 
-    this.updateActiveSegment();
-  }
-
-  async ngOnChanges() {
-    this.updateActiveSegment();
+    this.updateActiveSegment(this.eventService.selectedSegment());
   }
 
   /** Loads common sprites from the `img` folder. */
@@ -134,8 +126,10 @@ export class MapCanvas {
     }));
   }
 
-  private updateActiveSegment() {
-    const container: SegmentContainer = this.segmentContainers[this.currentSegmentTitle()];
+  private updateActiveSegment(segment: IMapSegment | undefined) {
+    if(segment === undefined) return;
+
+    const container: SegmentContainer = this.segmentContainers[segment.title];
     if(container === undefined) return;
 
     //If there is a current active segment, inactivate it first
@@ -165,7 +159,7 @@ export class MapCanvas {
 
     const downloadLink = document.createElement("a");
     downloadLink.href = blob.src;
-    downloadLink.download = `${this.currentSegmentTitle()}.png`;
+    downloadLink.download = `${this.activeSegment?.label ?? 'Map'}.png`;
     downloadLink.click();
     downloadLink.remove();
   }
