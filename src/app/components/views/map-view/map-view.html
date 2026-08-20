@@ -44,6 +44,9 @@
                 <mat-tab label="{{segment.title}}"></mat-tab>
             }
         </mat-tab-group>
-        <map-canvas />
+        @if (eventService.selectedSegment() !== undefined) {
+            <!-- Delay rendering the map until after segment data has been fully loaded -->
+            <map-canvas />
+        }
     </mat-sidenav-content>
 </mat-sidenav-container>

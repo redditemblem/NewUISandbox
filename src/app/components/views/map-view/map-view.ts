@@ -23,7 +23,7 @@ import { MapEventService } from '../../../services/map-event-service';
 })
 export class MapView implements OnInit {
   
-  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, private themeService: ThemeService, protected teamDataService: TeamDataService, private eventService: MapEventService) {
+  constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, private readonly themeService: ThemeService, protected readonly teamDataService: TeamDataService, protected readonly eventService: MapEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
     this.themeService = inject(ThemeService);
