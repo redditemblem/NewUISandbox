@@ -7,11 +7,12 @@ import { ITeamData } from '../../../data/interfaces/team-data';
 import { ThemeService } from '../../../services/theme-service';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
   selector: 'home',
-  imports: [TeamListing, LoadingIcon, MatListModule, MatIconModule],
+  imports: [TeamListing, LoadingIcon, MatListModule, MatIconModule, MatButtonModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -30,5 +31,14 @@ export class Home{
       'showConvoyLink': true,
       'showShopLink': true
     };
+  }
+
+  protected getViewWidth() : string {
+    if (this.breakpointService.isSmallWidth())
+      return "100%";
+    if (this.breakpointService.isMediumWidth())
+      return "80%";
+
+    return "60%";
   }
 }
