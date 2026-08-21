@@ -15,21 +15,27 @@
         </div>
         <div id="teamListingColumn">
             @if (teamListService.isLoading()){
-                <loading-icon />
+                <div class="teamListingRow">
+                    <loading-icon />
+                </div>
             }
             @else if (teamListService.errorMessage().length > 0){
-                <p class="pixelFont">
-                    {{teamListService.errorMessage()}}
-                </p>
+                <div class="teamListingRow">
+                    <p class="pixelFont">
+                        {{teamListService.errorMessage()}}
+                    </p>
+                </div>
             }
             @else {
                 @for (team of teamListService.teamsList(); track team.teamName){
                     <team-listing [team]="team" />
                 }
                 @empty{
-                    <p class="pixelFont">
-                        There are no teams configured.
-                    </p>
+                    <div class="teamListingRow">
+                        <p class="pixelFont">
+                            There are no teams configured.
+                        </p>
+                    </div>
                 }
             }
         </div>

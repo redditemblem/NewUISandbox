@@ -62,10 +62,17 @@
 #teamListingColumn {
     display: flex;
     flex-flow: column nowrap;
-    align-items: center;
     justify-content: center;
     row-gap: 8px;
     min-height: 250px;
+
+    div.teamListingRow {
+        display: flex;
+        flex-flow: row nowrap;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 div.noResultsRow {

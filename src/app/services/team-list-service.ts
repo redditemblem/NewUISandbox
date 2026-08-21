@@ -22,15 +22,17 @@ export class TeamListService {
     this.loading.set(true);
     this.teams.set([]);
     
-    http.get<ITeamData[]>(this.apiUrl, {responseType: 'json'}).subscribe({
-      next: (response) => {
-        this.teams.set(response);
-        this.loading.set(false);
-      },
-      error: (response: HttpErrorResponse) => {
-        this.error.set("An API error occurred.\nFailed to load the list of teams.");
-        this.loading.set(false);
-      }
-    });
+    http.get<ITeamData[]>(this.apiUrl, {responseType: 'json'})
+      .subscribe({
+        next: (response) => {
+          this.teams.set(response);
+          this.loading.set(false);
+        },
+        error: (response: HttpErrorResponse) => {
+          console.error(response);
+          this.error.set("An API error occurred.\nFailed to load the list of teams.");
+          this.loading.set(false);
+        }
+      });
   }
 }
