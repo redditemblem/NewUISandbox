@@ -23,6 +23,10 @@ import { IGambit } from '../data/interfaces/system/gambit';
 import { IAdjutant } from '../data/interfaces/system/adjutant';
 import { ICombatArt } from '../data/interfaces/system/combat-art';
 import { ITerrainType } from '../data/interfaces/system/terrain-type';
+import { ICoordinate } from '../data/interfaces/map/coordinate';
+import { IMapSegment } from '../data/interfaces/map/map-segment';
+import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance';
+import { ITileObject } from '../data/interfaces/system/tile-object';
 
 @Injectable({
   providedIn: 'root',
@@ -76,6 +80,12 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public getCurrencyConstants() : ICurrencyConstants | undefined {
 	return this.mapData().system?.constants.currency;
+  }
+
+  public getSegmentByCoordinate(coordinate: ICoordinate) : IMapSegment | undefined {
+	return this.mapData().map?.segments.find(s => 
+		s.horizontalTileRangeWithinMap.start.value <= coordinate.x && s.horizontalTileRangeWithinMap.end.value >= coordinate.x
+	);
   }
 
   // #region Interface Labels
@@ -228,6 +238,19 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 	const dict = this.mapData().system?.terrainTypes;
 	if(!dict || !name) return undefined;
 	else return dict[name];
+  }
+
+  public getTileObjectByName(name: string) : ITileObject | undefined {
+	const dict = this.mapData().system?.tileObjects;
+	if(!dict || !name) return undefined;
+	else return dict[name];
+  }
+
+  public getTileObjectInstanceByID(id: number, coordinate: ICoordinate) : ITileObjectInstance | undefined {
+	const segment: IMapSegment | undefined = this.getSegmentByCoordinate(coordinate);
+	if (segment === undefined) return undefined;
+	
+	return segment.tileObjectInstances[id];
   }
 
   public getUnitByName(name: string) : IUnit | undefined {

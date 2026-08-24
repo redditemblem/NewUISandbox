@@ -5,6 +5,9 @@ import { ITile } from "../../../data/interfaces/map/tile";
 import { effect, inject, Injector, runInInjectionContext } from "@angular/core";
 import { TeamDataService } from "../../../services/team-data-service";
 import { IUnit } from "../../../data/interfaces/unit/unit";
+import { TileObjectContainer } from "./tile-object-container";
+import { TileObjectLayer } from "../../../data/interfaces/system/tile-object";
+import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
 
 export class TileContainer extends Container {
 
@@ -13,41 +16,46 @@ export class TileContainer extends Container {
   private readonly RANGE_ATK_COLOR: string = "#d81b62";
   private readonly RANGE_UTIL_COLOR: string = "#9dff00";
 
+  private readonly TILE_OBJECT_LOWER_Z_INDEX: number = 1;
+  private readonly PAIRUP_UNIT_Z_INDEX: number = 2;
+  private readonly UNIT_Z_INDEX: number = 3;
+  private readonly TILE_OBJECT_UPPER_Z_INDEX = 4;
+
   //Internal attributes
   private injector: Injector;
+  private teamDataService: TeamDataService | undefined;
   private eventService: MapEventService | undefined;
 
   public readonly tile: ITile;
   private tileDimensions: number = 16;
-  private readonly defaultZIndex: number;
+  private hitAreaDimensions: number = 0;
 
   private backgroundTint: Graphics | undefined;
   public unitContainer: UnitContainer | undefined;
   public pairupUnitContainer: UnitContainer | undefined;
+  public interactiveTileObjects: TileObjectContainer[] = [];
 
   constructor(injector: Injector, tile: ITile, segmentWidth: number, segmentXOffset: number) {
     super({
       label: tile.coordinate.asText,
       interactive: false,
-      interactiveChildren: false
+      interactiveChildren: false,
+      //zIndex: ((tile.coordinate.y - 1) * segmentWidth) + tile.coordinate.x - segmentXOffset
     });
 
     this.injector = injector;
     this.tile = tile;
 
-    this.defaultZIndex = ((this.tile.coordinate.y - 1) * segmentWidth) + this.tile.coordinate.x - segmentXOffset;
-
     runInInjectionContext(injector, () => {
-      const teamDataService = inject(TeamDataService);
-      const constants = teamDataService.getMapConstants();
-      this.tileDimensions = constants?.tileSize ?? 16;
+      this.teamDataService = inject(TeamDataService);
+      this.eventService = inject(MapEventService);
 
-      const eventService = inject(MapEventService);
-      this.eventService = eventService;
+      const constants = this.teamDataService.getMapConstants();
+      this.tileDimensions = constants?.tileSize ?? 16;
 
       //Monitor for tile state changes
       effect(() => {
-        const state: ITileState = eventService.getStateForTile(this.tile.coordinate);
+        const state: ITileState = this.eventService!.getStateForTile(this.tile.coordinate);
         this.updateBackgroundTint(state);
       });
     });
@@ -56,7 +64,8 @@ export class TileContainer extends Container {
   public async init() {
     await Promise.all([
       this.createBackgroundTint(),
-      this.createUnitContainers()
+      this.createTileObjectContainers(),
+      this.createUnitContainers(),
     ]);
   }
 
@@ -71,6 +80,45 @@ export class TileContainer extends Container {
 
     this.backgroundTint = tint;
     this.addChild(this.backgroundTint);
+  }
+
+  private async createTileObjectContainers() {
+    const tileObjectIDs: number[] = this.tile.tileObjectInstanceIDs ?? [];
+    if (tileObjectIDs.length < 1) return;
+
+    const containers: (TileObjectContainer | undefined)[] = await Promise.all(tileObjectIDs.map(async id => 
+    {
+      //Attempt to load the tile object by its id
+      const tileObjectInst: ITileObjectInstance | undefined = this.teamDataService?.getTileObjectInstanceByID(id, this.tile.coordinate);
+      if(tileObjectInst === undefined) {
+          console.error(`Failed to locate tile object instance id ${id}.`);
+          return undefined;
+      }
+
+      //Only render from the anchor coordinate
+      if (tileObjectInst.anchorCoordinate.x !== this.tile.coordinate.x || tileObjectInst.anchorCoordinate.y !== this.tile.coordinate.y)
+        return undefined;
+
+      const container = new TileObjectContainer(this.injector, tileObjectInst);
+      await container.init();
+
+      let zIndex: number;
+      switch (container.tileObject?.layer ?? TileObjectLayer.Below) {
+        case TileObjectLayer.Below: zIndex = this.TILE_OBJECT_LOWER_Z_INDEX; break;
+        case TileObjectLayer.Above: zIndex = this.TILE_OBJECT_UPPER_Z_INDEX; break;
+      }
+      container.zIndex = zIndex;
+
+      this.addChild(container);
+      return container;
+    }));
+
+    //Add hit box for tile objects with an attack range
+    this.interactiveTileObjects = containers.filter(c => c !== undefined).filter(c => (c.tileObjectInstance?.attackRange ?? []).length > 0);
+    if (this.interactiveTileObjects.length > 0) {
+      const maxDimensions: number = Math.max(...this.interactiveTileObjects.map(to => to.objectDimensions));
+      this.createHitArea(maxDimensions);
+    }
   }
 
   /** Creates unit containers for all units on this tile. */
@@ -91,29 +139,30 @@ export class TileContainer extends Container {
     this.unitContainer = units[0];
     this.pairupUnitContainer = units[1];
 
-    //If there is a pair up unit, we need to reposition both units
-    if (this.pairupUnitContainer !== undefined) {
-      const offset: number = Math.floor(this.tileDimensions / 4); //25%
+    if (this.unitContainer !== undefined) {
+      this.unitContainer.zIndex = this.UNIT_Z_INDEX;
+      this.createHitArea(this.unitContainer.unitDimensions);
+    }
 
+    if (this.pairupUnitContainer !== undefined) {
+      this.pairupUnitContainer.zIndex = this.PAIRUP_UNIT_Z_INDEX;
+
+      //Offset both units' positions by 25%
+      const offset: number = Math.floor(this.tileDimensions / 4);
       this.unitContainer?.position.set(offset, offset);
       this.pairupUnitContainer?.position.set(offset * -1, offset * -1);
     }
 
-    //Set up hitbox for interacting with units
-    this.interactive = true;
-    this.eventMode = 'static';
-    this.cursor = 'pointer';
-    this.hitArea = new Rectangle(0, 0, this.unitContainer?.unitDimensions, this.unitContainer?.unitDimensions);
-    
-    this.on('pointerdown', this.TileContainer_PointerDown);
-    this.on('pointerenter', this.TileContainer_OnPointerEnter);
-    this.on('pointerleave', this.TileContainer_OnPointerLeave);
-
     runInInjectionContext(this.injector, () => {
       //Monitor for unit state changes
       effect(() => {
-        const isPinned: boolean = this.eventService?.getPinnedStateForUnit(occupyingUnitName) ?? false;
-        this.toggleUnitContainerPinnedStatus(isPinned);
+        let isPinned: boolean = this.eventService?.getPinnedStateForUnit(occupyingUnitName) ?? false;
+        this.toggleUnitContainerPinnedStatus(this.unitContainer, isPinned);
+
+        if (pairUpUnitName.length > 0) {
+          isPinned = this.eventService?.getPinnedStateForUnit(pairUpUnitName) ?? false;
+          this.toggleUnitContainerPinnedStatus(this.pairupUnitContainer, isPinned);
+        }
       });
     });
   }
@@ -127,6 +176,21 @@ export class TileContainer extends Container {
     
     this.addChild(unit);
     return unit;
+  }
+
+  private createHitArea(dimensions: number) {
+    //If we've already established a hit area for this tile, only replace it if this would be a larger hit area
+    if (this.hitAreaDimensions >= dimensions) return;
+    this.hitAreaDimensions = dimensions;
+
+    this.interactive = true;
+    this.eventMode = 'static';
+    this.cursor = 'pointer';
+    this.hitArea = new Rectangle(0, 0, dimensions, dimensions);
+    
+    this.on('pointerdown', this.TileContainer_PointerDown);
+    this.on('pointerenter', this.TileContainer_OnPointerEnter);
+    this.on('pointerleave', this.TileContainer_OnPointerLeave);
   }
 
   /** Sets the background tint color according to `state`. */
@@ -152,26 +216,30 @@ export class TileContainer extends Container {
 
   private TileContainer_PointerDown(event: FederatedPointerEvent) {
     const unit: IUnit | undefined = this.unitContainer?.unit;
-    if (unit === undefined) return;
-
-    const isPinned: boolean = this.eventService?.toggleUnitPinnedState(unit) ?? false;
-    if(isPinned)
-      this.eventService?.switchDisplayedUnit(unit);
-  }
-
-  private toggleUnitContainerPinnedStatus(isPinned: boolean) {
-    if (isPinned) this.unitContainer?.pinUnit();
-    else this.unitContainer?.unpinUnit();
+    if (unit !== undefined) {
+      const isPinned: boolean = this.eventService?.toggleUnitPinnedState(unit) ?? false;
+      if(isPinned)
+        this.eventService?.switchDisplayedUnit(unit);
+    }
+    
+    this.interactiveTileObjects.forEach(to => to.togglePinnedState());
   }
 
   private TileContainer_OnPointerEnter(event: FederatedPointerEvent) {
     this.unitContainer?.onPointerEnter();
     this.pairupUnitContainer?.onPointerEnter();
+    this.interactiveTileObjects.forEach(to => to.onPointerEnter());
   }
 
   private TileContainer_OnPointerLeave(event: FederatedPointerEvent) {
     this.unitContainer?.onPointerLeave();
     this.pairupUnitContainer?.onPointerLeave();
+    this.interactiveTileObjects.forEach(to => to.onPointerLeave());
+  }
+
+  private toggleUnitContainerPinnedStatus(container: UnitContainer | undefined, isPinned: boolean) {
+    if (isPinned) container?.pinUnit();
+    else container?.unpinUnit();
   }
 
   // #endregion Event Handlers
