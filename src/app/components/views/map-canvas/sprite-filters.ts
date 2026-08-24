@@ -8,6 +8,7 @@ export abstract class SpriteFilters {
   //Use a singleton model so we don't keep redefining filters
   private static grayscaleFilter : ColorMatrixFilter;
   private static brightFilter : ColorMatrixFilter;
+  private static darkFilter: ColorMatrixFilter;
   private static glowFilters : StringDictionary<GlowFilter> = {};
   private static unitPinnedFilter : GlowFilter;
 
@@ -22,7 +23,7 @@ export abstract class SpriteFilters {
     return this.grayscaleFilter;
   }
 
-  //** Filter that increases a sprite's brightness. */
+  /** Filter that increases a sprite's brightness. */
   public static getBrightFilter() : ColorMatrixFilter {
     if(this.brightFilter !== undefined)
       return this.brightFilter;
@@ -33,7 +34,18 @@ export abstract class SpriteFilters {
     return this.brightFilter;
   }
 
-  //** Filter that add a white glow effect around a sprite. */
+  /** Filter that decreases a sprite's brightness. */
+  public static getDarkFilter() : ColorMatrixFilter {
+    if(this.darkFilter !== undefined)
+      return this.darkFilter;
+
+    this.darkFilter = new ColorMatrixFilter();
+    this.darkFilter.brightness(0.5, true);
+
+    return this.darkFilter;
+  }
+
+  /** Filter that add a white glow effect around a sprite. */
   public static getUnitPinnedFilter() : GlowFilter {
     if(this.unitPinnedFilter !== undefined)
       return this.unitPinnedFilter;

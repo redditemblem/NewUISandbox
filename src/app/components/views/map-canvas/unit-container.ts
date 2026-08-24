@@ -23,26 +23,24 @@ export class UnitContainer extends Container {
   private readonly BRIGHT_FILTER: string = "bright";
   private readonly GLOW_FILTER: string = "glow";
   private readonly PINNED_FILTER: string = "pinned";
+  private readonly PAIRUP_FILTER: string = "pairup";
 
   //Internal attributes
   private teamDataService: TeamDataService | undefined;
 
-  public readonly unitName: string;
   public unit: IUnit | undefined;
   public unitDimensions: number = 0;
 
   private sprite: Sprite | undefined;
   private activeSpriteFilters: StringDictionary<Filter> = {};
 
-  constructor(injector: Injector, unitName: string) {
+  constructor(private readonly injector: Injector, public readonly unitName: string, private readonly isBackOfPair: boolean) {
     super({
       label: unitName,
       interactive: false,
       interactiveChildren: false
     });
     
-    this.unitName = unitName;
-
     runInInjectionContext(injector, () => {
       this.teamDataService = inject(TeamDataService);
     });
@@ -101,6 +99,10 @@ export class UnitContainer extends Container {
     //Add grayscale filter
     if(this.unit.sprite.hasMoved ?? false)
       this.activeSpriteFilters[this.GRAYSCALE_FILTER] = SpriteFilters.getGrayscaleFilter();
+
+    //Add pairup filter
+    if(this.isBackOfPair)
+      this.activeSpriteFilters[this.PAIRUP_FILTER] = SpriteFilters.getDarkFilter();
 
     //Add aura glow filter
     const auraColor: string = (this.unit.sprite.aura ?? "");

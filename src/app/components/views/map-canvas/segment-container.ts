@@ -4,19 +4,19 @@ import { MapEventService } from "../../../services/map-event-service";
 import { TeamDataService } from "../../../services/team-data-service";
 import { TileContainer } from "./tile-container";
 import { SpriteLoader } from "./sprite-loader";
-import { ICoordinate } from "../../../data/interfaces/map/coordinate";
 import { PaintContainer } from "./paint-container";
 import { TileCursorSprite } from "./tile-cursor-sprite";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { IMapConstants } from "../../../data/interfaces/map/map-constants";
 import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
+import { TileBackgroundTint } from "./tile-background-tint";
+import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
 
 export class SegmentContainer extends Container {
   
   //Internal attributes
-  private readonly injector: Injector;
+  private teamDataService: TeamDataService | undefined;
   private eventService: MapEventService | undefined;
-  public readonly segment: IMapSegment;
 
   private readonly tileDimensions: number;
   private readonly tileDimensionCenter: number;
@@ -27,22 +27,19 @@ export class SegmentContainer extends Container {
   private tileCursor: TileCursorSprite;
   private tileContainers: StringDictionary<TileContainer> = {};
 
-  constructor(injector: Injector, segment: IMapSegment) {
+  constructor(private readonly injector: Injector, public readonly segment: IMapSegment) {
     super({
       label: segment.title,
       height: segment.heightInPixels,
       width: segment.widthInPixels
     });
 
-    this.injector = injector;
-    this.segment = segment;
-
     let constants: IMapConstants | undefined;
     runInInjectionContext(injector, () => {
-      const teamDataService = inject(TeamDataService);
-      constants = teamDataService.getMapConstants();
-
+      this.teamDataService = inject(TeamDataService);
       this.eventService = inject(MapEventService);
+
+      constants = this.teamDataService.getMapConstants();
     });
 
     this.tileDimensions = (constants?.tileSize ?? 16);
@@ -86,18 +83,30 @@ export class SegmentContainer extends Container {
     await Promise.all(this.segment.tiles.map(async row => {
       await Promise.all(row.map(async tile =>
       {
-        const tileContainer : TileContainer = new TileContainer(this.injector, tile, this.segment.widthInTiles, segmentXOffset);
-        await tileContainer.init();
-        
-        //Position the tile
-        const coordinate: ICoordinate = tile.coordinate;
-        tileContainer.position = {
-          x: this.tileDimensions * (coordinate.x - this.segment.horizontalTileRangeWithinMap.start.value + (this.hasTopLeftHeaders ? 1 : 0)),
-          y: this.tileDimensions * ((coordinate.y - 1) + (this.hasTopLeftHeaders ? 1 : 0))
-        };
+        const tileXPos = this.tileDimensions * (tile.coordinate.x - this.segment.horizontalTileRangeWithinMap.start.value + (this.hasTopLeftHeaders ? 1 : 0));
+        const tileYPos = this.tileDimensions * ((tile.coordinate.y - 1) + (this.hasTopLeftHeaders ? 1 : 0));
 
-        this.tileContainers[coordinate.asText] = tileContainer;
-        this.addChild(tileContainer);
+        //Always create a background tint for the tile
+        const backgroundTint: TileBackgroundTint = new TileBackgroundTint(this.injector, tile.coordinate, this.tileDimensions);
+        backgroundTint.position.set(tileXPos, tileYPos);
+        this.addChild(backgroundTint);
+
+        //Conditionally create a tile container only if there is some child to put in it
+        const hasTileObject: boolean = (tile.tileObjectInstanceIDs ?? []).some(id => {
+          const objInst: ITileObjectInstance | undefined = this.teamDataService?.getTileObjectInstanceByID(id, tile.coordinate);
+          return objInst !== undefined && objInst.anchorCoordinate.x === tile.coordinate.x && objInst.anchorCoordinate.y === tile.coordinate.y;
+        });
+        const hasUnit: boolean = (tile.unitData.occupyingUnitName ?? "").length > 0 && tile.unitData.isUnitAnchor;
+
+        if (hasTileObject || hasUnit) {
+          const tileContainer : TileContainer = new TileContainer(this.injector, tile, this.segment.widthInTiles, segmentXOffset);
+          await tileContainer.init();
+          
+          tileContainer.position.set(tileXPos, tileYPos);
+
+          this.tileContainers[tile.coordinate.asText] = tileContainer;
+          this.addChild(tileContainer);
+        }
       }))
     }));
   }
