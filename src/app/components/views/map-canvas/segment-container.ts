@@ -1,4 +1,4 @@
-import { Container, FederatedPointerEvent } from "pixi.js";
+import { Container, FederatedPointerEvent, Graphics } from "pixi.js";
 import { IMapSegment } from "../../../data/interfaces/map/map-segment";
 import { MapEventService } from "../../../services/map-event-service";
 import { TeamDataService } from "../../../services/team-data-service";
@@ -12,6 +12,8 @@ import { IMapConstants } from "../../../data/interfaces/map/map-constants";
 import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
 
 export class SegmentContainer extends Container {
+  
+  //Internal attributes
   private readonly injector: Injector;
   private eventService: MapEventService | undefined;
   public readonly segment: IMapSegment;
@@ -26,7 +28,11 @@ export class SegmentContainer extends Container {
   private tileContainers: StringDictionary<TileContainer> = {};
 
   constructor(injector: Injector, segment: IMapSegment) {
-    super(); //call the parent Container() constructor
+    super({
+      label: segment.title,
+      height: segment.heightInPixels,
+      width: segment.widthInPixels
+    });
 
     this.injector = injector;
     this.segment = segment;
@@ -43,11 +49,6 @@ export class SegmentContainer extends Container {
     this.tileDimensionCenter = Math.floor(this.tileDimensions / 2);
     this.hasTopLeftHeaders = (constants?.hasHeaderTopLeft ?? false);
     this.hasBottomRightHeaders = (constants?.hasHeaderBottomRight ?? false);
-
-    //Set this container's base attributes
-    this.label = this.segment.title;
-    this.height = this.segment.heightInPixels;
-    this.width = this.segment.widthInPixels;
 
     //Create tile cursor
     this.tileCursor = new TileCursorSprite(this.tileDimensions);
@@ -68,16 +69,25 @@ export class SegmentContainer extends Container {
   public async init() {
     //Load the segment's background. Don't use an alias here, as segments with the same name (i.e. "Segment 1")
     //will load a cached image when swapping between teams w/o reloading the app
-    const segmentBackground = await SpriteLoader.getExternalSprite("", this.segment.imageURL);
-    if(segmentBackground !== undefined)
+    const segmentBackground = await SpriteLoader.getExternalSpriteByExtension("", this.segment.imageURL);
+    if(segmentBackground !== undefined) {
       this.addChild(segmentBackground);
+    }
+    else {
+      //If we fail to load the background image, fill with gray.
+      const background: Graphics = new Graphics()
+        .rect(0, 0, this.segment.widthInPixels, this.segment.heightInPixels)
+        .fill("gray");
+      this.addChild(background);
+    }
 
     //Load all tiles in parallel
+    const segmentXOffset: number = this.segment.horizontalTileRangeWithinMap.start.value - 1;
     await Promise.all(this.segment.tiles.map(async row => {
       await Promise.all(row.map(async tile =>
       {
-        const tileContainer : TileContainer = new TileContainer(this.injector, tile);
-        await tileContainer.init()
+        const tileContainer : TileContainer = new TileContainer(this.injector, tile, this.segment.widthInTiles, segmentXOffset);
+        await tileContainer.init();
         
         //Position the tile
         const coordinate: ICoordinate = tile.coordinate;
@@ -92,13 +102,13 @@ export class SegmentContainer extends Container {
     }));
   }
 
-  /** Enables interaction. Does not affect visibility. */
+  /** Enables interaction. Does not affect segment visibility. */
   public enableInteraction() {
     this.interactive = true;
     this.interactiveChildren = true;
   }
 
-  /** Disables interaction. Does not affect visibility. */
+  /** Disables interaction. Does not affect segment visibility. */
   public disableInteraction() {
     this.interactive = false;
     this.interactiveChildren = false;
@@ -120,8 +130,10 @@ export class SegmentContainer extends Container {
     }
 
     this.tileCursor.visible = true;
-    this.tileCursor.x = xNumTiles * this.tileDimensions + this.tileDimensionCenter;
-    this.tileCursor.y = yNumTiles * this.tileDimensions + this.tileDimensionCenter;
+    this.tileCursor.position.set(
+      xNumTiles * this.tileDimensions + this.tileDimensionCenter,
+      yNumTiles * this.tileDimensions + this.tileDimensionCenter
+    );
     this.updateCurrentTile(xNumTiles, yNumTiles);
   }
 

@@ -46,6 +46,7 @@
             outlined-container-shape: 8px,
             outlined-outline-color: var(--primary-theme-color),
             outlined-ripple-color: color-mix(in srgb, var(--primary-theme-color) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent),
+            outlined-label-text-color: var(--primary-theme-color-inverted),
             outlined-label-text-font: macExtMinecraft
         ));
 

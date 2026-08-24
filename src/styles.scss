@@ -25,6 +25,7 @@ html {
 
   //Create global theme color variables
   --primary-theme-color: #{light-dark($primary-theme-color-light, $primary-theme-color-dark)};
+  --primary-theme-color-inverted: #{light-dark($primary-theme-color-dark, $primary-theme-color-light)};
   --secondary-theme-color: #{light-dark($secondary-theme-color-light, $secondary-theme-color-dark)};
   --secondary-theme-color-dim: #{light-dark($secondary-theme-color-dim-light, $secondary-theme-color-dim-dark)};
   --tertiary-theme-color: #{light-dark($tertiary-theme-color-light, $tertiary-theme-color-dark)};

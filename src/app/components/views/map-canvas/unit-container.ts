@@ -1,13 +1,11 @@
-import { Container, FederatedPointerEvent, FillGradient, Filter, Graphics, Rectangle, Sprite } from "pixi.js";
+import { Container, FillGradient, Filter, Graphics, Sprite } from "pixi.js";
 import { SpriteFilters } from "./sprite-filters";
 import { TeamDataService } from "../../../services/team-data-service";
-import { MapEventService } from "../../../services/map-event-service";
 import { IUnit } from "../../../data/interfaces/unit/unit";
 import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
 import { IMapConstants } from "../../../data/interfaces/map/map-constants";
 import { SpriteLoader } from "./sprite-loader";
 import { IAffiliation } from "../../../data/interfaces/system/affiliation";
-import { IUnitStatus } from "../../../data/interfaces/unit/unit-status";
 import { IStatusCondition } from "../../../data/interfaces/system/status-condition";
 import { ITag } from "../../../data/interfaces/system/tag";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
@@ -17,6 +15,8 @@ export class UnitContainer extends Container {
   //Constants
   /** Number of milliseconds. Used to establish rotation intervals for status condition and tag sprites. */
   private readonly SPRITE_ROTATION_INTERVAL: number = 2000;
+  /** Maximum height/width in pixels for status condition and tag sprites. */
+  private readonly SPRITE_MAX_DIMENSIONS: number = 12;
 
   private readonly GRAYSCALE_FILTER: string = "grayscale";
   private readonly BRIGHT_FILTER: string = "bright";
@@ -25,36 +25,33 @@ export class UnitContainer extends Container {
 
   //Internal attributes
   private teamDataService: TeamDataService | undefined;
-  private eventService: MapEventService | undefined;
-  public readonly unitName: string;
 
+  public readonly unitName: string;
   public unit: IUnit | undefined;
+  public unitDimensions: number = 0;
+
   private sprite: Sprite | undefined;
-  private unitDimensions: number = 0;
   private activeSpriteFilters: StringDictionary<Filter> = {};
 
-  constructor(injector: Injector, unitName: string, enableInteraction: boolean) {
-    super(); //call the parent Container() constructor
+  constructor(injector: Injector, unitName: string) {
+    super({
+      label: unitName,
+      interactive: false,
+      interactiveChildren: false
+    });
+    
+    this.unitName = unitName;
 
     runInInjectionContext(injector, () => {
       this.teamDataService = inject(TeamDataService);
-      this.eventService = inject(MapEventService);
     });
-
-    this.unitName = unitName;
-
-    //Set this container's base attributes
-    this.label = this.unitName;
-    this.interactive = enableInteraction;
-    this.interactiveChildren = false;
   }
 
   public async init() {
-
     //Attempt to load the unit by its name
     this.unit = this.teamDataService?.getUnitByName(this.unitName);
     if(this.unit === undefined) {
-      console.log(`Failed to locate unit name ${this.unitName}.`);
+      console.error(`Failed to locate unit name ${this.unitName}.`);
       return;
     }
 
@@ -62,86 +59,64 @@ export class UnitContainer extends Container {
     const tileDimensions: number = (constants?.tileSize ?? 16);
     this.unitDimensions = tileDimensions * this.unit.location.unitSize;
 
-    //Load the unit's sprite
-    const url = this.unit.sprite.spriteURL;
-    const assetAlias = `unit ${this.unit.normalizedName}`;
-    if(url.includes('.gif')) this.sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
-    else this.sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
-
-    if(this.sprite !== undefined)
-    {
-      this.addChild(this.sprite);
-
-      this.sprite.label = 'unit_sprite';
-      this.sprite.anchor.set(0.5); //manipulate sprite relative to its center
-      this.sprite.x = (this.unitDimensions / 2);
-      this.sprite.y = this.unitDimensions - (this.sprite.height / 2) - 2;
-
-      //Horizontally flip sprite
-      const affiliation: IAffiliation | undefined = this.teamDataService?.getAffiliationByName(this.unit.affiliation);
-      if(affiliation?.flipUnitSprites) {
-        this.sprite.scale.x *= -1;
-      }
-
-      //Add grayscale filter
-      if(this.unit.sprite.hasMoved ?? false)
-        this.activeSpriteFilters[this.GRAYSCALE_FILTER] = SpriteFilters.getGrayscaleFilter();
-
-      //Add aura glow filter
-      const auraColor: string = (this.unit.sprite.aura ?? "");
-      if(auraColor.length > 0)
-        this.activeSpriteFilters[this.GLOW_FILTER] = SpriteFilters.getGlowFilter(auraColor);
-    }
-
-    //Render health bar
-    const healthBarGradient = this.GetUnitHpBarGradient(this.unit.stats.hp.percentage);
-    const healthBar = new Graphics()
-      .rect(2, this.unitDimensions - 4, this.unitDimensions - 3, 3)
-      .fill(healthBarGradient)
-      .stroke({ width: 1, color: 0x000000, pixelLine: true });
-    this.addChild(healthBar);
- 
-    //Render unit number
-    const unitNumber = this.unit.unitNumber ?? "";
-    if(unitNumber.length > 0) {
-      const numbers = this.GetUnitNumberContainer(unitNumber);
-
-      this.addChild(numbers);
-      numbers.x = this.unitDimensions - numbers.width - 7;
-      numbers.y = this.unitDimensions - numbers.height - 5;
-    }
-
-    //Render status conditions
-    const unitStatuses = this.unit.statusConditions ?? [];
-    if(unitStatuses.length > 0) {
-      const conditions = await this.GetUnitStatusConditionContainer(unitStatuses);
-      this.addChild(conditions);
-    }
-
-    //Render tag sprites
-    const tagNames = this.unit.tags ?? [];
-    if(tagNames.length > 0) {
-      let tags = await this.GetUnitTagsContainer(tagNames);
-      this.addChild(tags);
-      tags.x = this.width - 12;
-    }
+    await Promise.all([
+      this.loadUnitSprite(),
+      this.renderHealthBar(),
+      this.renderUnitNumber(),
+      this.renderStatusConditions(),
+      this.renderTags()
+    ]);
 
     //Set initial filter list
     const filters = Object.values(this.activeSpriteFilters);
     if(this.sprite !== undefined && filters.length > 0) {
       this.sprite.filters = filters;
     }
+  }
 
-    //Setup interaction events
-    if(this.isInteractive()) {
-      this.eventMode = 'static';
-      this.cursor = 'pointer';
-      this.hitArea = new Rectangle(0, 0, this.unitDimensions, this.unitDimensions);
+  private async loadUnitSprite() {
+    if (this.unit === undefined) return;
 
-      this.on('pointerdown', this.UnitContainer_PointerDown);
-      this.on('pointerenter', this.UnitContainer_OnPointerEnter);
-      this.on('pointerleave', this.UnitContainer_OnPointerLeave);
-    }
+    const url = this.unit.sprite.spriteURL ?? "";
+    if (url.length < 1) return;
+
+    const assetAlias = `unit ${this.unit.normalizedName}`;
+    this.sprite = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
+    if (this.sprite === undefined) return;
+
+    this.addChild(this.sprite);
+    this.sprite.label = 'unit_sprite';
+    this.sprite.anchor.set(0.5); //manipulate sprite relative to its center
+    this.sprite.position.set(
+      this.unitDimensions / 2, //horizonal center
+      this.unitDimensions - (this.sprite.height / 2) - 2 //2px from bottom
+    );
+
+    //Horizontally flip sprite
+    const affiliation: IAffiliation | undefined = this.teamDataService?.getAffiliationByName(this.unit.affiliation);
+    if (affiliation?.flipUnitSprites ?? false)
+      this.sprite.scale.x *= -1;
+
+    //Add grayscale filter
+    if(this.unit.sprite.hasMoved ?? false)
+      this.activeSpriteFilters[this.GRAYSCALE_FILTER] = SpriteFilters.getGrayscaleFilter();
+
+    //Add aura glow filter
+    const auraColor: string = (this.unit.sprite.aura ?? "");
+    if(auraColor.length > 0)
+      this.activeSpriteFilters[this.GLOW_FILTER] = SpriteFilters.getGlowFilter(auraColor);
+  }
+
+  private async renderHealthBar() {
+    if (this.unit === undefined) return;
+
+    const healthBarGradient = this.getUnitHpBarGradient(this.unit.stats.hp.percentage);
+    const healthBar = new Graphics()
+      .rect(2, this.unitDimensions - 4, this.unitDimensions - 3, 3)
+      .fill(healthBarGradient)
+      .stroke({ width: 1, color: 0x000000, pixelLine: true });
+
+    this.addChild(healthBar);
   }
 
   /**
@@ -149,7 +124,7 @@ export class UnitContainer extends Container {
    * 
    * @returns A new FillGradient with a linear left-right gradient utilizes the color codes
    */
-  private GetUnitHpBarGradient(hpPercentage: number) : FillGradient 
+  private getUnitHpBarGradient(hpPercentage: number) : FillGradient 
   { 
     //Primary and secondary color hexes should match the ones from unit-hp-bar.ts
     let primaryColor: string, secondaryColor: string;
@@ -187,140 +162,141 @@ export class UnitContainer extends Container {
     });
   }
 
-  /**
-   * Loads the sprite for each digit in unitNumber and inserts all sprites into a new Container.
-   * 
-   * @returns The new Container with all sprites added
-   */
-  private GetUnitNumberContainer(unitNumber: string) : Container {
-    let container = new Container();
-    container.interactive = false;
-    container.interactiveChildren = false;
+  private async renderUnitNumber() {
+    if (this.unit === undefined) return;
+
+    const unitNumber = this.unit.unitNumber ?? "";
+    if(unitNumber.length < 1) return;
+
+    const numbersContainer: Container = new Container({
+      interactive: false,
+      interactiveChildren: false
+    });
 
     unitNumber.split('').forEach((digit) => 
     {
-      let sprite = Sprite.from(digit);
-
-      container.addChild(sprite);
-      sprite.x = container.width; //move sprite to end of the container
+      const sprite: Sprite = Sprite.from(digit);
+      numbersContainer.addChild(sprite);
+      sprite.x = numbersContainer.width; //move sprite to end of the container
     });
 
-    return container;
+    this.addChild(numbersContainer);
+    numbersContainer.position.set(
+      this.unitDimensions - numbersContainer.width - 7,
+      this.unitDimensions - numbersContainer.height - 5
+    );
   }
 
-  /**
-   * Loads the sprite for each status in unitStatuses and inserts all sprites into a new Container.
-   * If there is more than one sprite, sets up a rotation interval.
-   * 
-   * @returns The new Container with all sprites added
-   */
-  private async GetUnitStatusConditionContainer(unitStatuses: IUnitStatus[]) : Promise<Container> {
+  private async renderStatusConditions() {
+    if (this.unit === undefined) return;
+
+    const unitStatuses = this.unit.statusConditions ?? [];
+    if(unitStatuses.length < 1) return;
+
     let conditionSprites: Sprite[] = [];
     let useDefaultSprite: boolean = false;
 
     //Load sprites in parallel
-    await Promise.all(unitStatuses.map(async(status) =>
+    await Promise.all(unitStatuses.map(async status =>
     {
-      let condition: IStatusCondition | undefined = this.teamDataService?.getStatusConditionByName(status.name);
-      if(condition === undefined) return;
+      const statusData: IStatusCondition | undefined = this.teamDataService?.getStatusConditionByName(status.name);
+      if(statusData === undefined) return;
 
-      let url: string = condition?.spriteURL ?? "";
-      if(url.length < 1) {
+      const url: string = statusData.spriteURL ?? "";
+      if (url.length < 1) {
         useDefaultSprite = true;
         return;
       }
 
-      let sprite: Sprite | undefined;
-      let assetAlias = `status ${condition.name}`;
-      if(url.includes('.gif')) sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
-      else sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
+      const assetAlias = `status ${statusData.name}`;      
+      const sprite: Sprite | undefined = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
+      if (sprite === undefined) {
+        useDefaultSprite = true;
+        return;
+      }
 
-      if(sprite === undefined) return;
-
-      //Scale sprite down if it exceeds max dimensions of 12px
-      sprite.height = Math.min(sprite.height, 12);
-      sprite.width = Math.min(sprite.width, 12);
+      //Scale sprite down if it exceeds max dimensions
+      sprite.height = Math.min(sprite.height, this.SPRITE_MAX_DIMENSIONS);
+      sprite.width = Math.min(sprite.width, this.SPRITE_MAX_DIMENSIONS);
 
       conditionSprites.push(sprite);
     }));
 
     //If we flagged a condition without a sprite, push the default sprite to the front of the list
-    if(useDefaultSprite) {
-      let heart: Sprite = Sprite.from('status_heart');
+    if (useDefaultSprite) {
+      const heart: Sprite = Sprite.from('status_heart');
       conditionSprites.unshift(heart);
     }
 
-    let container = new Container();
-    container.interactive = false;
-    container.interactiveChildren = false;
+    const statusContainer: Container = new Container({
+      interactive: false,
+      interactiveChildren: false
+    });
     
-    let shouldRotateSprites: boolean = (conditionSprites.length > 1);
+    const shouldRotateSprites: boolean = (conditionSprites.length > 1);
     conditionSprites.forEach((sprite) => {
-      container.addChild(sprite);
+      statusContainer.addChild(sprite);
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
     }); 
 
     //If we have multiple sprites, make only the first sprite visible and 
     //establish an interval to rotate the visible sprite.
-    if(shouldRotateSprites) {
-      container.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, container);
+    if (shouldRotateSprites) {
+      statusContainer.getChildAt(0).visible = true;
+      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, statusContainer);
     }
 
-    return container;
+    this.addChild(statusContainer);
   }
 
-  /**
-   * Loads the sprite for each name in tagNames and inserts all sprites into a new Container.
-   * If there is more than one sprite, sets up a rotation interval.
-   * 
-   * @returns The new Container with all sprites added
-   */
-  private async GetUnitTagsContainer(tagNames: string[]) : Promise<Container> {
+  private async renderTags() {
+    if (this.unit === undefined) return;
+
+    const tagNames: string[] = this.unit.tags ?? [];
+    if (tagNames.length < 1) return;
+
     let tagSprites: Sprite[] = [];
 
     //Load sprites in parallel
-    await Promise.all(tagNames.map(async(name) =>
+    await Promise.all(tagNames.map(async name =>
     {
-      let tag: ITag | undefined = this.teamDataService?.getTagByName(name);
-      if(tag === undefined) return;
+      const tagData: ITag | undefined = this.teamDataService?.getTagByName(name);
+      const url: string = tagData?.spriteURL ?? "";
+      const showOnUnit: boolean = tagData?.showOnUnit ?? false;
 
-      let url: string = tag?.spriteURL ?? "";
-      let showOnUnit: boolean = tag?.showOnUnit ?? false;
       if(url.length < 1 || !showOnUnit) return;
 
-      let sprite;
-      let assetAlias = `tag ${name}`;
-      if(url.includes('.gif')) sprite = await SpriteLoader.getExternalGifSprite(assetAlias, url);
-      else sprite = await SpriteLoader.getExternalSprite(assetAlias, url);
-
+      const assetAlias: string = `tag ${name}`;
+      const sprite: Sprite | undefined = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
       if(sprite === undefined) return;
 
-      //Scale sprite down if it exceeds max dimensions of 12px
-      sprite.height = Math.min(sprite.height, 12);
-      sprite.width = Math.min(sprite.width, 12);
+      //Scale sprite down if it exceeds max dimensions
+      sprite.height = Math.min(sprite.height, this.SPRITE_MAX_DIMENSIONS);
+      sprite.width = Math.min(sprite.width, this.SPRITE_MAX_DIMENSIONS);
 
       tagSprites.push(sprite);
     }));
 
-    let container = new Container();
-    container.interactive = false;
-    container.interactiveChildren = false;
+    const tagsContainer: Container = new Container({
+      interactive: false,
+      interactiveChildren: false
+    });
     
-    let shouldRotateSprites: boolean = (tagSprites.length > 1);
+    const shouldRotateSprites: boolean = (tagSprites.length > 1);
     tagSprites.forEach((sprite) => {
-      container.addChild(sprite);
+      tagsContainer.addChild(sprite);
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
     }); 
 
     //If we have multiple sprites, make only the first sprite visible and 
     //establish an interval to rotate the visible sprite.
-    if(shouldRotateSprites) {
-      container.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, container);
+    if (shouldRotateSprites) {
+      tagsContainer.getChildAt(0).visible = true;
+      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, tagsContainer);
     }
 
-    return container;
+    this.addChild(tagsContainer);
+    tagsContainer.x = this.width - 12;
   }
 
   /**
@@ -357,24 +333,14 @@ export class UnitContainer extends Container {
     this.sprite.filters = Object.values(this.activeSpriteFilters);
   }
 
-  public UnitContainer_PointerDown(event: FederatedPointerEvent) {
-    if(this.unit === undefined) return;
-
-    this.eventService?.toggleUnitPinnedState(this.unit);
-
-    const isPinned: boolean = this.eventService?.getPinnedStateForUnit(this.unit.name) ?? false;
-    if(isPinned)
-      this.eventService?.switchDisplayedUnit(this.unit);
-  }
-
-  public UnitContainer_OnPointerEnter(event: FederatedPointerEvent) {
+  public onPointerEnter() {
     if(this.sprite === undefined) return;
 
     this.activeSpriteFilters[this.BRIGHT_FILTER] = SpriteFilters.getBrightFilter();
     this.sprite.filters = Object.values(this.activeSpriteFilters);
   }
 
-  public UnitContainer_OnPointerLeave(event: FederatedPointerEvent) {
+  public onPointerLeave() {
     if(this.sprite === undefined) return;
 
     delete this.activeSpriteFilters[this.BRIGHT_FILTER];

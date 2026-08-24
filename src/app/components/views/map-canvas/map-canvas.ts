@@ -39,6 +39,7 @@ export class MapCanvas {
     this.eventService.downloadMapAsImage
       .subscribe(() => this.downloadMapAsImage());
 
+    //Watch for changes in the selected segment
     effect(() => {
       this.updateActiveSegment(this.eventService.selectedSegment());
     });
@@ -57,10 +58,12 @@ export class MapCanvas {
       crossOrigin: '*'
     });
 
-    await this.loadCommonAssets();
-    await this.initializePixiApp(pixiContainer);
-    await this.createSegmentContainers();
+    await Promise.all([
+      this.loadCommonAssets(),
+      this.initializePixiApp(pixiContainer)
+    ]);
 
+    await this.createSegmentContainers();
     this.updateActiveSegment(this.eventService.selectedSegment());
   }
 

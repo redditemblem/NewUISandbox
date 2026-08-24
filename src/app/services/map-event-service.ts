@@ -27,7 +27,7 @@ export class MapEventService {
   /**
    *  
    */
-  public toggleUnitPinnedState(unit: IUnit) {
+  public toggleUnitPinnedState(unit: IUnit) : boolean {
     const name: string = unit.name;
     const isPinned: boolean = this.getPinnedStateForUnit(unit.name);
 
@@ -67,6 +67,8 @@ export class MapEventService {
 
       return {...dict};
     });
+
+    return !isPinned;
   }
 
   /** @returns The current pinned state of `unitName` */
