@@ -4,7 +4,6 @@ import { MapEventService } from "../../../services/map-event-service";
 import { TeamDataService } from "../../../services/team-data-service";
 import { TileContainer } from "./tile-container";
 import { SpriteLoader } from "./sprite-loader";
-import { PaintContainer } from "./paint-container";
 import { TileCursorSprite } from "./tile-cursor-sprite";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { IMapConstants } from "../../../data/interfaces/map/map-constants";
@@ -14,6 +13,9 @@ import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-in
 
 export class SegmentContainer extends Container {
   
+  //Constants
+  private readonly OVERLAY_Z_INDEX: number = 10000;
+
   //Internal attributes
   private teamDataService: TeamDataService | undefined;
   private eventService: MapEventService | undefined;
@@ -23,7 +25,6 @@ export class SegmentContainer extends Container {
   private readonly hasTopLeftHeaders: boolean;
   private readonly hasBottomRightHeaders: boolean;
 
-  private paintContainer: PaintContainer;
   private tileCursor: TileCursorSprite;
   private tileContainers: StringDictionary<TileContainer> = {};
 
@@ -49,18 +50,12 @@ export class SegmentContainer extends Container {
 
     //Create tile cursor
     this.tileCursor = new TileCursorSprite(this.tileDimensions);
+    this.tileCursor.zIndex = this.OVERLAY_Z_INDEX;
     this.addChild(this.tileCursor);
-
-    //Create paint container
-    this.paintContainer = new PaintContainer(this.injector, this.height, this.width);
-    this.addChild(this.paintContainer);
 
     //Subscribe to events
     this.on('pointermove', this.SegmentContainer_PointerMove_PointerTap);
     this.on('pointertap', this.SegmentContainer_PointerMove_PointerTap);
-
-    //Needs to be last, as it also hides the tile cursor
-    this.disableInteraction();
   }
 
   public async init() {
@@ -111,16 +106,21 @@ export class SegmentContainer extends Container {
     }));
   }
 
-  /** Enables interaction. Does not affect segment visibility. */
-  public enableInteraction() {
-    this.interactive = true;
-    this.interactiveChildren = true;
+  /** Enables interaction and makes the segment visible. */
+  public show() {
+    this.visible = true;
+    this.allowInteraction(true);
   }
 
-  /** Disables interaction. Does not affect segment visibility. */
-  public disableInteraction() {
-    this.interactive = false;
-    this.interactiveChildren = false;
+  /** Completely disables interaction and hides the segment. */
+  public hide() {
+    this.visible = false;
+    this.allowInteraction(false);
+  }
+
+  public allowInteraction(canInteract: boolean) {
+    this.interactive = canInteract;
+    this.interactiveChildren = canInteract;
     this.tileCursor.visible = false;
   }
 

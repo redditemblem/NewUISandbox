@@ -41,10 +41,7 @@ export class MapView implements OnInit {
   }
 
   protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {
-    const tabLabel = event.tab.ariaLabel;
-    const isPaintTabSelected: boolean = (tabLabel === "Paint Tools");
-
-    this.eventService.setPaintMode(isPaintTabSelected);
+    this.eventService.updatePaintMode(event.tab.ariaLabel === "Paintbrush");
   }
 
   protected SegmentTabs_selectedTabChange(event: MatTabChangeEvent) {

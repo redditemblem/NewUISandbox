@@ -16,6 +16,7 @@ export class TileBackgroundContainer extends Container {
 
     constructor(private readonly injector: Injector, private readonly coordinate: ICoordinate, private readonly dimensions: number) {
         super({ 
+            label: `${coordinate.asText} background`,
             visible: false,
             interactive: false,
             interactiveChildren: false

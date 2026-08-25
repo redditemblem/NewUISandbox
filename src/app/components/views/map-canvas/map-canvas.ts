@@ -6,6 +6,7 @@ import { TeamDataService } from '../../../services/team-data-service';
 import { StringDictionary } from '../../../data/interfaces/common/dictionaries';
 import { MapEventService } from '../../../services/map-event-service';
 import { SegmentContainer } from './segment-container';
+import { PaintContainer } from './paint-container';
 
 @Component({
   selector: 'map-canvas',
@@ -21,12 +22,17 @@ import { SegmentContainer } from './segment-container';
 })
 export class MapCanvas {
 
+  //Constants
+  private readonly PAINT_CONTAINER_Z_INDEX: number = 1;
+
   //Internal attributes
   private readonly injector: Injector;
   private readonly pixiApp : Application;
 
   private segmentContainers : StringDictionary<SegmentContainer> = {};
+  private paintContainers: StringDictionary<PaintContainer> = {};
   private activeSegment: SegmentContainer | undefined;
+  private activePaintContainer: PaintContainer | undefined;
 
   constructor(private readonly teamDataService: TeamDataService, private readonly eventService: MapEventService) {
     this.injector = inject(Injector);
@@ -38,10 +44,20 @@ export class MapCanvas {
     //Subscribe to external events
     this.eventService.downloadMapAsImage
       .subscribe(() => this.downloadMapAsImage());
+    this.eventService.clearPaintContainer
+      .subscribe(() => this.activePaintContainer?.clearGraphicsBuffer());
+    this.eventService.undoLastPaintContainerLine
+      .subscribe(() => this.activePaintContainer?.destroyLatestGraphic());
 
     //Watch for changes in the selected segment
     effect(() => {
       this.updateActiveSegment(this.eventService.selectedSegment());
+    });
+
+    //Watch for changes in the paint mode
+    effect(() => {
+      const paintMode: boolean = this.eventService.inPaintMode();
+      this.updatePaintState(paintMode);
     });
   }
 
@@ -63,7 +79,11 @@ export class MapCanvas {
       this.initializePixiApp(pixiContainer)
     ]);
 
-    await this.createSegmentContainers();
+    await Promise.all([
+      this.createSegmentContainers(),
+      this.createPaintContainers()
+    ]);
+    
     this.updateActiveSegment(this.eventService.selectedSegment());
   }
 
@@ -119,7 +139,27 @@ export class MapCanvas {
         this.segmentContainers[segment.title] = container;
 
         //Add segment to stage and make it invisible by default
-        container.visible = false;
+        container.hide();
+        this.pixiApp.stage.addChild(container);
+      }
+      catch (error) {
+        //Prevent an error in one container from crashing the display
+        console.error(error);
+      }
+    }));
+  }
+
+  private async createPaintContainers() {
+    const segments: IMapSegment[] = this.teamDataService.mapData().map?.segments ?? [];
+
+    //Create segments in parallel
+    await Promise.all(segments.map(async segment => {
+      try {
+        const container: PaintContainer = new PaintContainer(this.injector, segment.heightInPixels, segment.widthInPixels);
+        container.zIndex = this.PAINT_CONTAINER_Z_INDEX;
+        container.hide();
+
+        this.paintContainers[segment.title] = container;
         this.pixiApp.stage.addChild(container);
       }
       catch (error) {
@@ -136,21 +176,35 @@ export class MapCanvas {
     if(container === undefined) return;
 
     //If there is a current active segment, inactivate it first
-    if(this.activeSegment !== undefined) {
-      this.activeSegment.visible = false;
-      this.activeSegment.disableInteraction();
-    }
+    this.activeSegment?.hide();
+    this.activePaintContainer?.hide();
 
     //Update the active segment
     this.activeSegment = container;
-    this.activeSegment.visible = true;
-    this.activeSegment.enableInteraction();
+    this.activeSegment.show();
+    this.updatePaintState(this.eventService?.inPaintMode() ?? false);
 
     //Resize canvas to this new segment
     this.pixiApp.renderer.resize(
       container.segment.widthInPixels,
       container.segment.heightInPixels
     );
+  }
+
+  private updatePaintState(inPaintMode: boolean) {
+    if (inPaintMode) {
+      const segmentName: string = this.activeSegment?.segment.title ?? "";
+      if (segmentName.length < 1) return;
+
+      this.activePaintContainer = this.paintContainers[segmentName];
+      this.activePaintContainer?.show();
+      this.activeSegment?.allowInteraction(false);
+    }
+    else {
+      this.activePaintContainer?.hide();
+      this.activePaintContainer = undefined;
+      this.activeSegment?.allowInteraction(true);
+    }
   }
 
   /** Triggers the browser to download the current canvas stage as a PNG */

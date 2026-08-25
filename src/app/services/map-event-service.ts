@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output, Signal, signal } from '@angular/core';
+import { EventEmitter, Injectable, Output, signal } from '@angular/core';
 import { NumberDictionary, StringDictionary } from '../data/interfaces/common/dictionaries';
 import { IUnit } from '../data/interfaces/unit/unit';
 import { ICoordinate } from '../data/interfaces/map/coordinate';
@@ -11,7 +11,7 @@ import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance
 })
 export class MapEventService {
 
-  // #region Pinning Units
+  // #region Pin Actions
 
   @Output() switchDisplayToUnit = new EventEmitter<IUnit>();
 
@@ -29,7 +29,9 @@ export class MapEventService {
   public readonly tileDisplayStates = this.tileStates.asReadonly();
 
   /**
-   *  
+   * Flips `unit`'s pinned state and updates tile states for its movement, attack, and utility ranges.
+   * 
+   * @returns Unit's updated pinned state
    */
   public toggleUnitPinnedState(unit: IUnit) : boolean {
     const name: string = unit.name;
@@ -80,6 +82,11 @@ export class MapEventService {
     return this.uPinStates()[unitName] ?? false;
   }
 
+  /**
+   * Flips `tileObject`'s pinned state and updates tile states for its attack range, if it has one.
+   * 
+   * @returns Tile object's updated pinned state 
+   */
   public toggleTileObjectPinnedState(tileObject: ITileObjectInstance) : boolean {
     const isPinned: boolean = this.getPinnedStateForTileObject(tileObject.id);
 
@@ -91,31 +98,35 @@ export class MapEventService {
     //Update tile states based on tile object's ranges
     const atkRange: ICoordinate[] = tileObject.attackRange ?? [];
 
-    const modifier: number = (isPinned ? -1 : 1);
-    this.tileStates.update(dict => {
-      
-      atkRange.forEach(coord => {
-        const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
-        state.tileObjectAtk = Math.max(0, state.tileObjectAtk + modifier);
+    if (atkRange.length > 0) {
+      const modifier: number = (isPinned ? -1 : 1);
+      this.tileStates.update(dict => {
+        
+        atkRange.forEach(coord => {
+          const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
+          state.tileObjectAtk = Math.max(0, state.tileObjectAtk + modifier);
 
-        dict[coord.asText] = state;
+          dict[coord.asText] = state;
+        });
+
+        return {...dict};
       });
-
-      return {...dict};
-    });
+    }
 
     return !isPinned;
   }
 
+  /** @returns The current pinned state for the tile object with `id`. */
   public getPinnedStateForTileObject(id: number) : boolean {
     return this.toPinStates()[id] ?? false;
   }
 
+  /** @returns The current tile state for the tile at `coordinate`. */
   public getStateForTile(coordinate: ICoordinate) : ITileState {
     return this.tileStates()[coordinate.asText] ?? this.getEmptyTileState();
   }
 
-  //** Returns a new `ITileState` with all values set to 0. */
+  /** Returns a new `ITileState` with all values set to 0. */
   private getEmptyTileState(): ITileState {
     return {
       movement: 0,
@@ -125,9 +136,9 @@ export class MapEventService {
     }
   }
 
-  // #endregion Pinning Units
+  // #endregion Pin Actions
 
-  // #region Highlighted Tile  
+  // #region Selected Segment and Tile  
 
   private segment = signal<IMapSegment | undefined>(undefined);
   public readonly selectedSegment = this.segment.asReadonly();
@@ -148,27 +159,32 @@ export class MapEventService {
     this.tile.set(tile);
   }
 
-  // #endregion Highlighted Tile
+  // #endregion Selected Segment and Tile
 
   // #region Paint Mode
 
   @Output() downloadMapAsImage = new EventEmitter<void>();
-  @Output() updatePaintMode = new EventEmitter<boolean>();
   @Output() clearPaintContainer = new EventEmitter();
   @Output() undoLastPaintContainerLine = new EventEmitter();
 
+  private paintMode = signal<boolean>(false);
+  public inPaintMode = this.paintMode.asReadonly();
+
   private penColor = signal<string>('#000000');
-  public drawingPenColor: Signal<string> = this.penColor.asReadonly();
+  public drawingPenColor = this.penColor.asReadonly();
 
   private penWidth = signal<number>(2);
-  public drawingPenWidth: Signal<number> = this.penWidth.asReadonly();
+  public drawingPenWidth = this.penWidth.asReadonly();
 
   public triggerMapImageDownload() {
     this.downloadMapAsImage.emit();
   }
 
-  public setPaintMode(inPaintMode: boolean) {
-    this.updatePaintMode.emit(inPaintMode);
+  public updatePaintMode(inPaintMode: boolean) {
+    //Don't trigger an update if the mode is not changing
+    if (this.paintMode() === inPaintMode) return;
+
+    this.paintMode.set(inPaintMode);
   }
 
   public setPenColor(colorCode: string) {

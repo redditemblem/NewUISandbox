@@ -10,20 +10,20 @@ export class PaintContainer extends Container {
   private currentLine: Graphics | undefined;
   private graphicsBuffer: Graphics[] = [];
 
-  constructor(injector: Injector, height: number, width: number) {
-    super(); //call the parent Container() constructor
+  constructor(private readonly injector: Injector, private readonly segmentHeight: number, private readonly segmentWidth: number) {
+    super({
+      label: "Paint Canvas",
+      height: segmentHeight,
+      width: segmentWidth
+    });
 
     runInInjectionContext(injector, () => {
       this.eventService = inject(MapEventService);
     });
 
-    this.label = "Paint Canvas";
-    this.zIndex = 10000;
-    this.disableInteraction();
-
     //Without a child, the container collapses to 0 height and width
     const rect = new Graphics()
-      .rect(0, 0, width, height)
+      .rect(0, 0, segmentWidth, segmentHeight)
       .fill({
         color: '#ffffff',
         alpha: 0
@@ -37,14 +37,14 @@ export class PaintContainer extends Container {
   }
 
   /** Makes the container visible and enables interaction. */
-  public enableInteraction() {
+  public show() {
     this.visible = true;
     this.interactive = true;
-    this.interactiveChildren = false;
+    this.interactiveChildren = true;
   }
 
   /** Makes the container invisible and disables interaction. */
-  public disableInteraction() {
+  public hide() {
     this.visible = false;
     this.interactive = false;
     this.interactiveChildren = false;
