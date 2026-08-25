@@ -1,9 +1,10 @@
 import { EventEmitter, Injectable, Output, Signal, signal } from '@angular/core';
-import { StringDictionary } from '../data/interfaces/common/dictionaries';
+import { NumberDictionary, StringDictionary } from '../data/interfaces/common/dictionaries';
 import { IUnit } from '../data/interfaces/unit/unit';
 import { ICoordinate } from '../data/interfaces/map/coordinate';
 import { ITile } from '../data/interfaces/map/tile';
 import { IMapSegment } from '../data/interfaces/map/map-segment';
+import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance';
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +19,11 @@ export class MapEventService {
     this.switchDisplayToUnit.emit(unit);
   }
 
-  private pinStates = signal<StringDictionary<boolean>>({});
-  public readonly unitPinStates = this.pinStates.asReadonly();
+  private uPinStates = signal<StringDictionary<boolean>>({});
+  public readonly unitPinStates = this.uPinStates.asReadonly();
+
+  private toPinStates = signal<NumberDictionary<boolean>>({});
+  public readonly tileObjectPinStates = this.toPinStates.asReadonly();
 
   private tileStates = signal<StringDictionary<ITileState>>({});
   public readonly tileDisplayStates = this.tileStates.asReadonly();
@@ -31,7 +35,7 @@ export class MapEventService {
     const name: string = unit.name;
     const isPinned: boolean = this.getPinnedStateForUnit(unit.name);
 
-    this.pinStates.update(dict => {
+    this.uPinStates.update(dict => {
       dict[name] = !isPinned;
       return {...dict};
     });
@@ -73,7 +77,38 @@ export class MapEventService {
 
   /** @returns The current pinned state of `unitName` */
   public getPinnedStateForUnit(unitName: string) : boolean {
-    return this.pinStates()[unitName] ?? false;
+    return this.uPinStates()[unitName] ?? false;
+  }
+
+  public toggleTileObjectPinnedState(tileObject: ITileObjectInstance) : boolean {
+    const isPinned: boolean = this.getPinnedStateForTileObject(tileObject.id);
+
+    this.toPinStates.update(dict => {
+      dict[tileObject.id] = !isPinned;
+      return {...dict};
+    });
+
+    //Update tile states based on tile object's ranges
+    const atkRange: ICoordinate[] = tileObject.attackRange ?? [];
+
+    const modifier: number = (isPinned ? -1 : 1);
+    this.tileStates.update(dict => {
+      
+      atkRange.forEach(coord => {
+        const state: ITileState = dict[coord.asText] ?? this.getEmptyTileState();
+        state.tileObjectAtk = Math.max(0, state.tileObjectAtk + modifier);
+
+        dict[coord.asText] = state;
+      });
+
+      return {...dict};
+    });
+
+    return !isPinned;
+  }
+
+  public getPinnedStateForTileObject(id: number) : boolean {
+    return this.toPinStates()[id] ?? false;
   }
 
   public getStateForTile(coordinate: ICoordinate) : ITileState {
@@ -85,7 +120,8 @@ export class MapEventService {
     return {
       movement: 0,
       attack: 0,
-      utility: 0
+      utility: 0,
+      tileObjectAtk: 0
     }
   }
 
@@ -157,5 +193,6 @@ export class MapEventService {
 export interface ITileState {
   movement: number,
   attack: number,
-  utility: number
+  utility: number,
+  tileObjectAtk: number
 }

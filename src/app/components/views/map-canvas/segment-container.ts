@@ -9,7 +9,7 @@ import { TileCursorSprite } from "./tile-cursor-sprite";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { IMapConstants } from "../../../data/interfaces/map/map-constants";
 import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
-import { TileBackgroundTint } from "./tile-background-tint";
+import { TileBackgroundContainer } from "./tile-background-container";
 import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
 
 export class SegmentContainer extends Container {
@@ -86,10 +86,10 @@ export class SegmentContainer extends Container {
         const tileXPos = this.tileDimensions * (tile.coordinate.x - this.segment.horizontalTileRangeWithinMap.start.value + (this.hasTopLeftHeaders ? 1 : 0));
         const tileYPos = this.tileDimensions * ((tile.coordinate.y - 1) + (this.hasTopLeftHeaders ? 1 : 0));
 
-        //Always create a background tint for the tile
-        const backgroundTint: TileBackgroundTint = new TileBackgroundTint(this.injector, tile.coordinate, this.tileDimensions);
-        backgroundTint.position.set(tileXPos, tileYPos);
-        this.addChild(backgroundTint);
+        //Always create a background for the tile
+        const background: TileBackgroundContainer = new TileBackgroundContainer(this.injector, tile.coordinate, this.tileDimensions);
+        background.position.set(tileXPos, tileYPos);
+        this.addChild(background);
 
         //Conditionally create a tile container only if there is some child to put in it
         const hasTileObject: boolean = (tile.tileObjectInstanceIDs ?? []).some(id => {

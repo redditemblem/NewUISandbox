@@ -11,6 +11,8 @@ import { SpriteFilters } from "./sprite-filters";
 export class TileObjectContainer extends Container {
 
     //Constants
+    private readonly OVERLAY_Z_INDEX: number = 1;
+
     private readonly PINNED_FILTER: string = "pinned";
     private readonly BRIGHT_FILTER: string = "bright";
 
@@ -21,7 +23,6 @@ export class TileObjectContainer extends Container {
     public tileObject: ITileObject | undefined;
     public objectDimensions: number = 0;
 
-    private isPinned: boolean = false;
     public sprite: Sprite | undefined;
     private activeSpriteFilters: StringDictionary<Filter> = {};
 
@@ -40,7 +41,6 @@ export class TileObjectContainer extends Container {
     }
 
     public async init() {
-        
         this.tileObject = this.teamDataService?.getTileObjectByName(this.tileObjectInstance.name);
         if (this.tileObject === undefined) {
             console.error(`Failed to locate tile object name ${this.tileObjectInstance.name}.`);
@@ -58,7 +58,7 @@ export class TileObjectContainer extends Container {
     }
 
     private async loadTileObjectSprite() {
-        if (this.tileObjectInstance === undefined || this.tileObject === undefined) return;
+        if (this.tileObject === undefined) return;
     
         const url: string = this.tileObject.spriteURL ?? "";
         if (url.length < 1) return;
@@ -84,7 +84,7 @@ export class TileObjectContainer extends Container {
         if (percentage === undefined) return;
 
         const healthBarGradient = this.getUnitHpBarGradient(percentage);
-        const healthBar = new Graphics()
+        const healthBar = new Graphics({ zIndex: this.OVERLAY_Z_INDEX })
             .rect(2, this.objectDimensions - 4, this.objectDimensions - 3, 3)
             .fill(healthBarGradient)
             .stroke({ width: 1, color: 0x000000, pixelLine: true });
@@ -122,23 +122,14 @@ export class TileObjectContainer extends Container {
 
     // #region Event Handling
 
-    //Because tile objects can't be pinned / unpinned from elsewhere in the UI, we can get away
-    //with managing their pinned stated locally.
-    public togglePinnedState() {
-        this.isPinned = !this.isPinned;
-
-        if (this.isPinned) this.pinTileObject();
-        else this.unpinTileObject();
-    }
-
-    private pinTileObject() {
+    public pinTileObject() {
         if(this.sprite === undefined) return;
 
         this.activeSpriteFilters[this.PINNED_FILTER] = SpriteFilters.getUnitPinnedFilter();
         this.sprite.filters = Object.values(this.activeSpriteFilters);
     }
 
-    private unpinTileObject() {
+    public unpinTileObject() {
         if(this.sprite === undefined) return;
 
         delete this.activeSpriteFilters[this.PINNED_FILTER];

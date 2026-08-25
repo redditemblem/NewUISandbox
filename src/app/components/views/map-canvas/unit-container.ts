@@ -17,7 +17,7 @@ export class UnitContainer extends Container {
   private readonly SPRITE_ROTATION_INTERVAL: number = 2000;
   /** Maximum height/width in pixels for status condition and tag sprites. */
   private readonly SPRITE_MAX_DIMENSIONS: number = 12;
-  private readonly SPRITE_Z_INDEX: number = 1;
+  private readonly OVERLAY_Z_INDEX: number = 1;
 
   private readonly GRAYSCALE_FILTER: string = "grayscale";
   private readonly BRIGHT_FILTER: string = "bright";
@@ -119,7 +119,7 @@ export class UnitContainer extends Container {
       .fill(healthBarGradient)
       .stroke({ width: 1, color: 0x000000, pixelLine: true });
 
-    healthBar.zIndex = this.SPRITE_Z_INDEX;
+    healthBar.zIndex = this.OVERLAY_Z_INDEX;
 
     this.addChild(healthBar);
   }
@@ -176,7 +176,7 @@ export class UnitContainer extends Container {
     const numbersContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
-      zIndex: this.SPRITE_Z_INDEX
+      zIndex: this.OVERLAY_Z_INDEX
     });
 
     unitNumber.split('').forEach((digit) => 
@@ -237,7 +237,7 @@ export class UnitContainer extends Container {
     const statusContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
-      zIndex: this.SPRITE_Z_INDEX
+      zIndex: this.OVERLAY_Z_INDEX
     });
     
     const shouldRotateSprites: boolean = (conditionSprites.length > 1);
@@ -287,7 +287,7 @@ export class UnitContainer extends Container {
     const tagsContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
-      zIndex: this.SPRITE_Z_INDEX
+      zIndex: this.OVERLAY_Z_INDEX
     });
     
     const shouldRotateSprites: boolean = (tagSprites.length > 1);

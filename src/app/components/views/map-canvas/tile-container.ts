@@ -88,6 +88,16 @@ export class TileContainer extends Container {
     if (this.interactiveTileObjects.length > 0) {
       const maxDimensions: number = Math.max(...this.interactiveTileObjects.map(to => to.objectDimensions));
       this.createHitArea(maxDimensions);
+
+      //Monitor for pinned status changes
+      runInInjectionContext(this.injector, () => {
+        effect(() => {
+          this.interactiveTileObjects.forEach(to => {
+            const isPinned: boolean = this.eventService?.getPinnedStateForTileObject(to.tileObjectInstance.id) ?? false;
+            this.toggleTileObjectContainerPinnedStatus(to, isPinned);
+          });
+        });
+      });
     }
   }
 
@@ -163,8 +173,6 @@ export class TileContainer extends Container {
     this.on('pointerleave', this.TileContainer_OnPointerLeave);
   }
 
-  
-
   // #region Event Handlers
 
   private TileContainer_PointerDown(event: FederatedPointerEvent) {
@@ -175,7 +183,9 @@ export class TileContainer extends Container {
         this.eventService?.switchDisplayedUnit(unit);
     }
     
-    this.interactiveTileObjects.forEach(to => to.togglePinnedState());
+    this.interactiveTileObjects.forEach(to => {
+      this.eventService?.toggleTileObjectPinnedState(to.tileObjectInstance);
+    });
   }
 
   private TileContainer_OnPointerEnter(event: FederatedPointerEvent) {
@@ -193,6 +203,11 @@ export class TileContainer extends Container {
   private toggleUnitContainerPinnedStatus(container: UnitContainer | undefined, isPinned: boolean) {
     if (isPinned) container?.pinUnit();
     else container?.unpinUnit();
+  }
+
+  private toggleTileObjectContainerPinnedStatus(container: TileObjectContainer, isPinned: boolean) {
+    if (isPinned) container?.pinTileObject();
+    else container?.unpinTileObject();
   }
 
   // #endregion Event Handlers
