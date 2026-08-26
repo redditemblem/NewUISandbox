@@ -14,10 +14,11 @@ import { MapCanvas } from '../map-canvas/map-canvas';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 import { MapEventService } from '../../../services/map-event-service';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapCanvas, MapPaintSidenav],
+  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapCanvas, MapPaintSidenav, MatIcon],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })

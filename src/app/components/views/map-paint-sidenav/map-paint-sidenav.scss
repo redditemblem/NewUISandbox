@@ -3,18 +3,21 @@
 #paintSidenavContainer {
     display: flex;
     flex-flow: column nowrap;
-    padding: 8px;
+    padding: 16px 16px 24px 16px;
     row-gap: 16px;
 }
 
-h2 {
+h1 {
     margin: 0px;
     font-family: macExtMinecraft;
     font-weight: normal;
+    font-size: 1.5rem;
+    line-height: 1.65rem;
 }
 
 .penWidthToggles {
     @include mat.button-toggle-overrides((
+        shape: 8px,
         label-text-font: macExtMinecraft
     ));
 

@@ -196,7 +196,8 @@ export class MapEventService {
   }
 
   public eraseAllPaint() {
-    this.clearPaintContainer.emit();
+    if (confirm("Are you sure you want to clear all paint on the screen?"))
+      this.clearPaintContainer.emit();
   }
 
   public undoLastLine() {

@@ -24,7 +24,7 @@
         }
       </mat-autocomplete>
       @if(selectedUnit.value !== null) {
-        <button matIconButton matSuffix aria-label="Clear selected unit" (click)="this.selectedUnit.setValue(null)">
+        <button matIconButton matSuffix (click)="this.selectedUnit.setValue(null)" title="Clear selected unit">
           <mat-icon>close</mat-icon>
         </button>
       }

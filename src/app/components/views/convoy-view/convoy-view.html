@@ -1,4 +1,6 @@
-<button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">></button>
+<button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">
+    <mat-icon>menu</mat-icon>
+</button>
 <mat-sidenav-container>
     <mat-sidenav #sidenav opened [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
         <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
@@ -13,6 +15,7 @@
                     <img src="img/links_icon.png" height="30" width="30" />
                 </ng-template>
                 <links-sidenav [googleWorksheetID]="this.convoyDataService.getWorksheetID()"
+                               [showMapLink]="true"
                                [showShopLink]="this.convoyDataService.isShopConfigured()"
                                [showMapAnalyzerLink]="true" />
             </mat-tab>

@@ -35,9 +35,9 @@ export class MapDiceRollerSidenav {
     min(schemaPath.maximum, 2, { message: 'Must be > 1' });
     min(schemaPath.count, 1, { message: 'Must be > 0' });
 
-    max(schemaPath.minimum, 999, { message: 'Must be <= 999' });
-    max(schemaPath.maximum, 1000, { message: 'Must be <= 1000' });
-    max(schemaPath.count, 20, { message: 'Must be <= 20' });
+    max(schemaPath.minimum, 999, { message: 'Must be ≤ 999' });
+    max(schemaPath.maximum, 1000, { message: 'Must be ≤ 1000' });
+    max(schemaPath.count, 20, { message: 'Must be ≤ 20' });
 
     //Enforce maximum > minimum
     validateTree(schemaPath.maximum, (ctx) => {

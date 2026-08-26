@@ -11,10 +11,11 @@ import { IShopItem } from '../../../data/interfaces/storage/shop/shop-item';
 import { IItem } from '../../../data/interfaces/system/item';
 import { ShopFiltersSidenav } from '../shop-filters-sidenav/shop-filters-sidenav';
 import { ShopItem } from '../../shop-item/shop-item';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'shop-view',
-  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, MatButtonModule, ShopFiltersSidenav, ShopItem],
+  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, MatButtonModule, ShopFiltersSidenav, ShopItem, MatIconModule],
   templateUrl: './shop-view.html',
   styleUrl: './shop-view.scss',
 })

@@ -1,5 +1,5 @@
 <div id="diceRollerContainer">
-    <div id="inputsContainer">
+    <div id="diceInputsContainer">
         <h1>Dice Roller</h1>
         <div id="formInputsRow">
             <mat-form-field [style.width]="'30%'">
@@ -27,9 +27,10 @@
         <mat-checkbox [formField]="customDiceRollForm.useAverages">Use averaged rolls (True Hit)</mat-checkbox>
         <button matButton="filled" (click)="customRollDice()" [style.width]="'100%'">Roll Dice</button>
         <div id="quickRollButtonRow">
-            <button matButton="outlined" (click)="quickRollDice(1,2,1,false)" [style.width]="'30%'">1 d2</button>
-            <button matButton="outlined" (click)="quickRollDice(1,100,1,false)" [style.width]="'30%'">1 d100</button>
-            <button matButton="outlined" (click)="quickRollDice(1,100,1,true)" [style.width]="'30%'">1 d100 Avg.</button>
+            <button matButton="outlined" (click)="quickRollDice(1,2,1,false)" [style.width]="'23%'">d2</button>
+            <button matButton="outlined" (click)="quickRollDice(1,10,1,false)" [style.width]="'23%'">d10</button>
+            <button matButton="outlined" (click)="quickRollDice(1,100,1,false)" [style.width]="'23%'">d100</button>
+            <button matButton="outlined" (click)="quickRollDice(1,100,1,true)" [style.width]="'23%'">d100 Avg.</button>
         </div>
         <mat-divider />
         <div id="historyHeaderRow">

@@ -11,10 +11,11 @@ import { ConvoyFiltersSidenav } from "../convoy-filters-sidenav/convoy-filters-s
 import { MatButtonModule } from '@angular/material/button';
 import { ConvoyEventService } from '../../../services/convoy-event-service';
 import { IItem } from '../../../data/interfaces/system/item';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'convoy-view',
-  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, ConvoyItem, ConvoyFiltersSidenav, MatButtonModule],
+  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, ConvoyItem, ConvoyFiltersSidenav, MatButtonModule, MatIconModule],
   templateUrl: './convoy-view.html',
   styleUrl: './convoy-view.scss',
 })
