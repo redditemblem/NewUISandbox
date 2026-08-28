@@ -6,6 +6,9 @@ export abstract class SpriteLoader {
 
   /** If `assetUrl` has a `.gif` extension, loads and returns a GifSprite. Otherwise, loads and returns a regular Sprite. */
   public static async getExternalSpriteByExtension(alias: string, assetUrl: string) : Promise<Sprite | undefined> {
+    if (assetUrl.length < 1)
+      return undefined;
+    
     if (assetUrl.includes(".gif"))
       return this.getExternalGifSprite(alias, assetUrl);
 

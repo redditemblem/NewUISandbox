@@ -1,13 +1,13 @@
 import { Container, FillGradient, Filter, Graphics, Sprite } from "pixi.js";
 import { SpriteFilters } from "./sprite-filters";
-import { TeamDataService } from "../../../services/team-data-service";
-import { IUnit } from "../../../data/interfaces/unit/unit";
-import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
-import { IMapConstants } from "../../../data/interfaces/map/map-constants";
+import { TeamDataService } from "../../services/team-data-service";
+import { IUnit } from "../../data/interfaces/unit/unit";
+import { StringDictionary } from "../../data/interfaces/common/dictionaries";
+import { IMapConstants } from "../../data/interfaces/map/map-constants";
 import { SpriteLoader } from "./sprite-loader";
-import { IAffiliation } from "../../../data/interfaces/system/affiliation";
-import { IStatusCondition } from "../../../data/interfaces/system/status-condition";
-import { ITag } from "../../../data/interfaces/system/tag";
+import { IAffiliation } from "../../data/interfaces/system/affiliation";
+import { IStatusCondition } from "../../data/interfaces/system/status-condition";
+import { ITag } from "../../data/interfaces/system/tag";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 
 export class UnitContainer extends Container {
@@ -77,11 +77,18 @@ export class UnitContainer extends Container {
     if (this.unit === undefined) return;
 
     const url = this.unit.sprite.spriteURL ?? "";
-    if (url.length < 1) return;
-
     const assetAlias = `unit ${this.unit.normalizedName}`;
     this.sprite = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
-    if (this.sprite === undefined) return;
+
+    //If we failed to load the unit's sprite, use a placeholder instead
+    if (this.sprite === undefined) {
+      const rect = new Graphics({ label: "unit_sprite" })
+        .rect(0, 0, this.unitDimensions, this.unitDimensions)
+        .fill("fuchsia");
+      this.addChild(rect);
+      
+      return;
+    }
 
     this.addChild(this.sprite);
     this.sprite.label = 'unit_sprite';
@@ -201,6 +208,7 @@ export class UnitContainer extends Container {
 
     let conditionSprites: Sprite[] = [];
     let useDefaultSprite: boolean = false;
+    let useLoadFailedGraphic: boolean = false;
 
     //Load sprites in parallel
     await Promise.all(unitStatuses.map(async status =>
@@ -216,8 +224,9 @@ export class UnitContainer extends Container {
 
       const assetAlias = `status ${statusData.name}`;      
       const sprite: Sprite | undefined = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
+
       if (sprite === undefined) {
-        useDefaultSprite = true;
+        useLoadFailedGraphic = true;
         return;
       }
 
@@ -240,17 +249,25 @@ export class UnitContainer extends Container {
       zIndex: this.OVERLAY_Z_INDEX
     });
     
-    const shouldRotateSprites: boolean = (conditionSprites.length > 1);
+    const shouldRotateSprites: boolean = (conditionSprites.length > 1) || (conditionSprites.length > 0 && useLoadFailedGraphic);
     conditionSprites.forEach((sprite) => {
       statusContainer.addChild(sprite);
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
     }); 
 
+    //If we failed to load any sprite, add a placeholder graphic as the last child
+    if (useLoadFailedGraphic) {
+      const rect = new Graphics({ visible: !shouldRotateSprites })
+        .rect(0, 0, this.SPRITE_MAX_DIMENSIONS, this.SPRITE_MAX_DIMENSIONS)
+        .fill("fuchsia");
+      statusContainer.addChild(rect);
+    }
+
     //If we have multiple sprites, make only the first sprite visible and 
     //establish an interval to rotate the visible sprite.
     if (shouldRotateSprites) {
       statusContainer.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, statusContainer);
+      setInterval(this.rotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, statusContainer);
     }
 
     this.addChild(statusContainer);
@@ -263,6 +280,7 @@ export class UnitContainer extends Container {
     if (tagNames.length < 1) return;
 
     let tagSprites: Sprite[] = [];
+    let useLoadFailedGraphic: boolean = false;
 
     //Load sprites in parallel
     await Promise.all(tagNames.map(async name =>
@@ -275,7 +293,11 @@ export class UnitContainer extends Container {
 
       const assetAlias: string = `tag ${name}`;
       const sprite: Sprite | undefined = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
-      if(sprite === undefined) return;
+
+      if(sprite === undefined) {
+        useLoadFailedGraphic = true;
+        return;
+      }
 
       //Scale sprite down if it exceeds max dimensions
       sprite.height = Math.min(sprite.height, this.SPRITE_MAX_DIMENSIONS);
@@ -290,21 +312,31 @@ export class UnitContainer extends Container {
       zIndex: this.OVERLAY_Z_INDEX
     });
     
-    const shouldRotateSprites: boolean = (tagSprites.length > 1);
+    const shouldRotateSprites: boolean = (tagSprites.length > 1) || (tagSprites.length > 0 && useLoadFailedGraphic);
     tagSprites.forEach((sprite) => {
       tagsContainer.addChild(sprite);
       sprite.visible = !shouldRotateSprites; //make invisible if we're going to rotate
-    }); 
+      sprite.position.x = tagsContainer.width - sprite.width; //right align
+    });
+ 
+    //If we failed to load any sprite, add a placeholder graphic as the last child
+    if (useLoadFailedGraphic) {
+      const rect = new Graphics({ visible: !shouldRotateSprites })
+        .rect(0, 0, this.SPRITE_MAX_DIMENSIONS, this.SPRITE_MAX_DIMENSIONS)
+        .fill("fuchsia");
+      tagsContainer.addChild(rect);
+      rect.position.x = tagsContainer.width - rect.width;
+    }
 
     //If we have multiple sprites, make only the first sprite visible and 
     //establish an interval to rotate the visible sprite.
     if (shouldRotateSprites) {
       tagsContainer.getChildAt(0).visible = true;
-      setInterval(this.RotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, tagsContainer);
+      setInterval(this.rotateVisibilityOfContainerChildren, this.SPRITE_ROTATION_INTERVAL, tagsContainer);
     }
 
     this.addChild(tagsContainer);
-    tagsContainer.x = this.width - 12;
+    tagsContainer.x = this.width - Math.min(this.SPRITE_MAX_DIMENSIONS, tagsContainer.width); //right align
   }
 
   /**
@@ -312,7 +344,7 @@ export class UnitContainer extends Container {
    * makes it invisible, then sets the next child to visible. Loops when it reaches the end of the
    * child list.
    */
-  private RotateVisibilityOfContainerChildren(container: Container) {
+  private rotateVisibilityOfContainerChildren(container: Container) {
     if(container.children.length === 0) return;
 
     let visibleChildIndex: number = container.children.findIndex(s => s.visible);

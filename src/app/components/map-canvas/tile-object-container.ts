@@ -1,10 +1,10 @@
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { Container, FillGradient, Filter, Graphics, Sprite } from "pixi.js";
-import { TeamDataService } from "../../../services/team-data-service";
-import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
-import { IMapConstants } from "../../../data/interfaces/map/map-constants";
-import { ITileObject } from "../../../data/interfaces/system/tile-object";
-import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
+import { TeamDataService } from "../../services/team-data-service";
+import { ITileObjectInstance } from "../../data/interfaces/map/tile-object-instance";
+import { IMapConstants } from "../../data/interfaces/map/map-constants";
+import { ITileObject } from "../../data/interfaces/system/tile-object";
+import { StringDictionary } from "../../data/interfaces/common/dictionaries";
 import { SpriteLoader } from "./sprite-loader";
 import { SpriteFilters } from "./sprite-filters";
 
@@ -61,11 +61,18 @@ export class TileObjectContainer extends Container {
         if (this.tileObject === undefined) return;
     
         const url: string = this.tileObject.spriteURL ?? "";
-        if (url.length < 1) return;
-    
         const assetAlias: string = `tile object ${this.tileObject.name}`;
         this.sprite = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
-        if (this.sprite === undefined) return;
+
+        //If we failed to load the object's sprite, use a placeholder instead
+        if (this.sprite === undefined) {
+            const rect = new Graphics()
+                .rect(0, 0, this.objectDimensions, this.objectDimensions)
+                .fill("fuchsia");
+            this.addChild(rect);
+
+            return;
+        }
     
         this.addChild(this.sprite);
         this.sprite.label = 'tile_object_sprite';

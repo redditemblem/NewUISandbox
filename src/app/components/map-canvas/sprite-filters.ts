@@ -1,6 +1,6 @@
 import { GlowFilter } from "pixi-filters";
 import { ColorMatrixFilter } from "pixi.js";
-import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
+import { StringDictionary } from "../../data/interfaces/common/dictionaries";
 
 /** Static functions for retrieving common sprite filters */
 export abstract class SpriteFilters {

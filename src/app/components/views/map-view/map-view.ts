@@ -10,7 +10,7 @@ import { TeamDataService } from '../../../services/team-data-service';
 import { ActivatedRoute } from '@angular/router';
 import { MatFabButton } from '@angular/material/button';
 import { LinksSidenav } from "../links-sidenav/links-sidenav";
-import { MapCanvas } from '../map-canvas/map-canvas';
+import { MapCanvas } from '../../map-canvas/map-canvas';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 import { MapEventService } from '../../../services/map-event-service';

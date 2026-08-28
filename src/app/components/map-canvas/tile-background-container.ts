@@ -1,7 +1,7 @@
 import { Container, Graphics } from "pixi.js";
-import { ITileState, MapEventService } from "../../../services/map-event-service";
+import { ITileState, MapEventService } from "../../services/map-event-service";
 import { effect, inject, Injector, runInInjectionContext } from "@angular/core";
-import { ICoordinate } from "../../../data/interfaces/map/coordinate";
+import { ICoordinate } from "../../data/interfaces/map/coordinate";
 
 export class TileBackgroundContainer extends Container {
     

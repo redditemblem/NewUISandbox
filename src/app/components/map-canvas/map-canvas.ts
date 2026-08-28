@@ -1,10 +1,10 @@
 import { initDevtools } from '@pixi/devtools';
 import { Component, effect, inject, Injector } from '@angular/core';
-import { IMapSegment } from '../../../data/interfaces/map/map-segment';
+import { IMapSegment } from '../../data/interfaces/map/map-segment';
 import { Application, Assets, ImageLike, TextureSource } from 'pixi.js';
-import { TeamDataService } from '../../../services/team-data-service';
-import { StringDictionary } from '../../../data/interfaces/common/dictionaries';
-import { MapEventService } from '../../../services/map-event-service';
+import { TeamDataService } from '../../services/team-data-service';
+import { StringDictionary } from '../../data/interfaces/common/dictionaries';
+import { MapEventService } from '../../services/map-event-service';
 import { SegmentContainer } from './segment-container';
 import { PaintContainer } from './paint-container';
 

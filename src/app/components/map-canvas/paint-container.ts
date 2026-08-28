@@ -1,5 +1,5 @@
 import { Container, FederatedPointerEvent, Graphics } from "pixi.js";
-import { MapEventService } from "../../../services/map-event-service";
+import { MapEventService } from "../../services/map-event-service";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 
 export class PaintContainer extends Container {

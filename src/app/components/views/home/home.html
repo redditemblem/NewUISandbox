@@ -45,35 +45,35 @@
         </div>
         <div>
             <h2 class="pixelFont">Resources</h2>
-            <mat-action-list id="resourcesList">
+            <mat-action-list class="itemsList">
                 <a mat-list-item href="https://docs.google.com/document/d/150h2pxQbrd3uZOKM_r3iniCRBPtnfIJbSTnWlm-pRUM/edit?usp=sharing" target="_blank">
-                    <img matListItemIcon src="img/books_icon.png" />
+                    <img matListItemIcon src="img/books_icon.png" aria-hidden="true" />
                     <p matListItemTitle>User Documentation</p>
-                    <p matListItemLine [style.padding-left]="'16px'">Read about Maps' functionality</p>
+                    <p matListItemLine>Read about Maps' functionality</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
                 <a mat-list-item href="https://discord.gg/d3N7TXZMq9" target="_blank">
-                    <img matListItemIcon src="img/chat_icon.png" />
+                    <img matListItemIcon src="img/chat_icon.png" aria-hidden="true" />
                     <p matListItemTitle>Maps Discord Server</p>
-                    <p matListItemLine [style.padding-left]="'16px'">Ask questions, request features, and report bugs</p>
+                    <p matListItemLine>Ask questions, request features, and report bugs</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
                 <a mat-list-item href="https://github.com/redditemblem/RedditEmblemAPI" target="_blank">
-                    <img matListItemIcon src="img/code_icon.png" />
+                    <img matListItemIcon src="img/code_icon.png" aria-hidden="true" />
                     <p matListItemTitle>API Github Repository</p>
-                    <p matListItemLine [style.padding-left]="'16px'">C# code for Maps' backing API</p>
+                    <p matListItemLine>C# code for Maps' backing API</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
                 </a>
                 <a mat-list-item href="https://github.com/redditemblem/redditemblem.github.io" target="_blank">
-                    <img matListItemIcon src="img/code_icon.png" />
+                    <img matListItemIcon src="img/code_icon.png" aria-hidden="true" />
                     <p matListItemTitle>UI Github Repository</p>
-                    <p matListItemLine [style.padding-left]="'16px'">HTML + Typescript code for Maps' web display</p>
+                    <p matListItemLine>HTML + Typescript code for Maps' web display</p>
                     <div matListItemMeta>
                         <mat-icon>open_in_new</mat-icon>
                     </div>
@@ -84,6 +84,21 @@
             <h2 class="pixelFont">Dev Sandbox</h2>
             <p>Maps has a developer sandbox called "Team Example", which showcases a wide range of its available functionality.</p>
             <team-listing [team]="teamExample" />
+        </div>
+        <div>
+            <h2 class="pixelFont">Credits</h2>
+            <mat-list class="itemsList">
+                <mat-list-item>
+                    <img matListItemAvatar src="img/star_icon.png" alt="Avatar" />
+                    <p matListItemTitle>IronPegasus</p>
+                    <p matListItemLine>Developer</p>
+                </mat-list-item>
+            </mat-list>
+            <ul>
+                <li><a href="https://www.transparenttextures.com/">Website background texture "Az Subtle" by Anli</a></li>
+                <li><a href="https://www.dafont.com/mac-s-minecraft.font">"Mac's Minecraft" font by macimas bahnsisk</a></li>
+                <li><a href="https://www.dafont.com/blocked.font">"Blocked" font by Protractor Ninja</a></li>
+            </ul>
         </div>
     </div>
 </div> 

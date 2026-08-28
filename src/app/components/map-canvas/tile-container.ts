@@ -1,13 +1,13 @@
 import { Container, FederatedPointerEvent, Rectangle } from "pixi.js";
 import { UnitContainer } from "./unit-container";
-import { MapEventService } from "../../../services/map-event-service";
-import { ITile } from "../../../data/interfaces/map/tile";
+import { MapEventService } from "../../services/map-event-service";
+import { ITile } from "../../data/interfaces/map/tile";
 import { effect, inject, Injector, runInInjectionContext } from "@angular/core";
-import { TeamDataService } from "../../../services/team-data-service";
-import { IUnit } from "../../../data/interfaces/unit/unit";
+import { TeamDataService } from "../../services/team-data-service";
+import { IUnit } from "../../data/interfaces/unit/unit";
 import { TileObjectContainer } from "./tile-object-container";
-import { TileObjectLayer } from "../../../data/interfaces/system/tile-object";
-import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
+import { TileObjectLayer } from "../../data/interfaces/system/tile-object";
+import { ITileObjectInstance } from "../../data/interfaces/map/tile-object-instance";
 
 export class TileContainer extends Container {
 

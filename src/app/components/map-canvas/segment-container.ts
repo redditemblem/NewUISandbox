@@ -1,15 +1,15 @@
 import { Container, FederatedPointerEvent, Graphics } from "pixi.js";
-import { IMapSegment } from "../../../data/interfaces/map/map-segment";
-import { MapEventService } from "../../../services/map-event-service";
-import { TeamDataService } from "../../../services/team-data-service";
+import { IMapSegment } from "../../data/interfaces/map/map-segment";
+import { MapEventService } from "../../services/map-event-service";
+import { TeamDataService } from "../../services/team-data-service";
 import { TileContainer } from "./tile-container";
 import { SpriteLoader } from "./sprite-loader";
 import { TileCursorSprite } from "./tile-cursor-sprite";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
-import { IMapConstants } from "../../../data/interfaces/map/map-constants";
-import { StringDictionary } from "../../../data/interfaces/common/dictionaries";
+import { IMapConstants } from "../../data/interfaces/map/map-constants";
+import { StringDictionary } from "../../data/interfaces/common/dictionaries";
 import { TileBackgroundContainer } from "./tile-background-container";
-import { ITileObjectInstance } from "../../../data/interfaces/map/tile-object-instance";
+import { ITileObjectInstance } from "../../data/interfaces/map/tile-object-instance";
 
 export class SegmentContainer extends Container {
   
@@ -69,7 +69,7 @@ export class SegmentContainer extends Container {
       //If we fail to load the background image, fill with gray.
       const background: Graphics = new Graphics()
         .rect(0, 0, this.segment.widthInPixels, this.segment.heightInPixels)
-        .fill("gray");
+        .fill("fuchsia");
       this.addChild(background);
     }
 
