@@ -11,10 +11,19 @@
             (input)="filterUnits()"
             >
       <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
+        @if (eventService.someUnitPinned()) {
+          <mat-option [value]="null" (click)="eventService.unpinAllUnits()">
+            <span class="unitName">
+              <img src="img/pin_icon.png" class="autocompleteUnitSprite" aria-hidden="true" />
+              <p>Clear pinned units</p>
+            </span>
+          </mat-option>
+          <mat-divider />
+        }
         @for (unit of filteredUnits; track unit.name) {
           <mat-option [value]="unit">
             <span class="unitName">
-              <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" [class]="{'flipHorz': shouldFlipUnitSprite(unit)}" />
+              <img [src]="unit.sprite.spriteURL" class="autocompleteUnitSprite" [class]="{'flipHorz': shouldFlipUnitSprite(unit)}" aria-hidden="true" />
               <p>{{unit.name}}</p>
             </span>
             @if(eventService.getPinnedStateForUnit(unit.name)) {

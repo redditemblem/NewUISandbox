@@ -9,10 +9,11 @@ import { UnitSidenavDisplay } from "../unit-sidenav-display/unit-sidenav-display
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from '@angular/material/button';
 import { MapEventService } from '../../../services/map-event-service';
+import { MatDivider } from "@angular/material/divider";
 
 @Component({
   selector: 'map-units-sidenav',
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, UnitSidenavDisplay, MatButtonModule, MatIconModule],
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, UnitSidenavDisplay, MatButtonModule, MatIconModule, MatDivider],
   templateUrl: './map-units-sidenav.html',
   styleUrl: './map-units-sidenav.scss',
 })

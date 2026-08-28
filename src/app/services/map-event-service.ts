@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output, signal } from '@angular/core';
+import { computed, EventEmitter, Injectable, Output, signal } from '@angular/core';
 import { NumberDictionary, StringDictionary } from '../data/interfaces/common/dictionaries';
 import { IUnit } from '../data/interfaces/unit/unit';
 import { ICoordinate } from '../data/interfaces/map/coordinate';
@@ -21,6 +21,10 @@ export class MapEventService {
 
   private uPinStates = signal<StringDictionary<boolean>>({});
   public readonly unitPinStates = this.uPinStates.asReadonly();
+
+  public readonly someUnitPinned = computed(() => {
+    return Object.values(this.uPinStates()).some(flag => flag === true);
+  });
 
   private toPinStates = signal<NumberDictionary<boolean>>({});
   public readonly tileObjectPinStates = this.toPinStates.asReadonly();
@@ -80,6 +84,25 @@ export class MapEventService {
   /** @returns The current pinned state of `unitName` */
   public getPinnedStateForUnit(unitName: string) : boolean {
     return this.uPinStates()[unitName] ?? false;
+  }
+
+  /** Unpins all units and resets the unit range values for tile states. */
+  public unpinAllUnits() {
+    this.uPinStates.set({});
+
+    //Reset the state of all tiles
+    this.tileStates.update(dict => {
+      Object.keys(dict).forEach(coord => {
+        const state: ITileState = dict[coord] ?? this.getEmptyTileState();
+        state.movement = 0;
+        state.attack = 0;
+        state.utility = 0;
+
+        dict[coord] = state;
+      });
+
+      return {...dict};
+    });
   }
 
   /**

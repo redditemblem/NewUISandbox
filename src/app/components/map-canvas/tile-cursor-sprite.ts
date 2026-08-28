@@ -29,8 +29,7 @@ export class TileCursorSprite extends NineSliceSprite {
 
         //Set up animation interval
         setInterval(() => {
-            this.height += this.cursorIncrementBy;
-            this.width += this.cursorIncrementBy;
+            this.setSize(this.height + this.cursorIncrementBy);
 
             //Invert increment at bounds
             if(this.height >= this.tileDimensions+6) this.cursorIncrementBy = -2;
