@@ -27,6 +27,7 @@ import { ICoordinate } from '../data/interfaces/map/coordinate';
 import { IMapSegment } from '../data/interfaces/map/map-segment';
 import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance';
 import { ITileObject } from '../data/interfaces/system/tile-object';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Injectable({
   providedIn: 'root',
@@ -35,34 +36,42 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/';
 
-  private loading = signal<boolean>(true);
-  public readonly isLoading = this.loading.asReadonly();
-
-  private error = signal<string>("");
-  public readonly errorMessage = this.error.asReadonly();
+  private errors = signal<string[]>([]);
+  public readonly errorMessages = this.errors.asReadonly();
 
   private map = signal<IMapData>({});
   public readonly mapData = this.map.asReadonly();
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
 	this.http = inject(HttpClient);
   }
 
-  async loadDataForTeam(teamName: string) {
-	this.loading.set(true);
+  public async loadDataForTeam(teamName: string) {
+	this.errors.set([]);
 	this.map.set({});
 
-    this.http.get<IMapData>(`${this.apiUrl}${teamName}`, {responseType: 'json'})
-		.subscribe({
-			next: (response) => {
-				this.map.set(response);
-				this.loading.set(false);
-			},
-			error: (response: HttpErrorResponse) => {
-				this.error.set("An API error occurred.\nFailed to load the list of teams.");
-				this.loading.set(false);
-			}
+    await firstValueFrom(this.http.get<IMapData>(`${this.apiUrl}${teamName}`, {responseType: 'json'}))
+		.then((response: IMapData) => {
+			this.map.set(response);
+		})
+		.catch((response: HttpErrorResponse) => {
+			console.error(response);
+
+			const nestedErrors: string[] = this.flattenNestedErrorMessages(response.error, []);
+			this.errors.set(nestedErrors);
 		});
+  }
+
+  /** Recursively loops through nested exceptions and flattens their messages into a string array. */
+  private flattenNestedErrorMessages(error: any, messages: string[]) : string[] {
+	if (error === null || error === undefined)
+		return messages;
+
+	const message: string = error.Message as string ?? error.message as string ?? "";
+	if (message.length > 0)
+		messages.push(message);
+
+	return this.flattenNestedErrorMessages(error.InnerException ?? error.innerException, messages);
   }
   
   public getWorksheetID() : string | undefined { return this.mapData().workbookID; }

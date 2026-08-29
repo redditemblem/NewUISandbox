@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MapDiceRollerSidenav } from '../map-dice-roller-sidenav/map-dice-roller-sidenav';
@@ -15,15 +15,19 @@ import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MapPaintSidenav } from "../map-paint-sidenav/map-paint-sidenav";
 import { MapEventService } from '../../../services/map-event-service';
 import { MatIcon } from "@angular/material/icon";
+import { LoadingIcon } from "../../loading-icon/loading-icon";
 
 @Component({
   selector: 'map-view',
-  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapCanvas, MapPaintSidenav, MatIcon],
+  imports: [MatSidenavModule, MatTabsModule, MatFabButton, MapUnitsSidenav, MapTilesSidenav, MapDiceRollerSidenav, LinksSidenav, MapCanvas, MapPaintSidenav, MatIcon, LoadingIcon],
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })
 export class MapView implements OnInit {
   
+  //Internal attributes
+  protected isLoading = signal<boolean>(true);
+
   constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, private readonly themeService: ThemeService, protected readonly teamDataService: TeamDataService, protected readonly eventService: MapEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
@@ -32,13 +36,17 @@ export class MapView implements OnInit {
     this.eventService = inject(MapEventService);
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
-    await this.teamDataService.loadDataForTeam(teamName);
-
-    const firstSegment = this.teamDataService.mapData().map?.segments[0];
-    if(firstSegment !== undefined)
-      this.eventService.updateSelectedSegment(firstSegment);
+    this.teamDataService.loadDataForTeam(teamName)
+      .then(() => {
+        const segment: IMapSegment | undefined = this.teamDataService.mapData().map?.segments.at(0);
+        if(segment !== undefined)
+          this.eventService.updateSelectedSegment(segment);
+      })
+      .finally(() => {
+        this.isLoading.set(false);
+      });
   }
 
   protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {
