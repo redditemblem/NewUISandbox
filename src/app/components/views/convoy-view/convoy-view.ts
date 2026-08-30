@@ -13,6 +13,7 @@ import { ConvoyEventService } from '../../../services/convoy-event-service';
 import { IItem } from '../../../data/interfaces/system/item';
 import { MatIconModule } from "@angular/material/icon";
 import { LoadingIcon } from "../../loading-icon/loading-icon";
+import { ThemeService } from '../../../services/theme-service';
 
 @Component({
   selector: 'convoy-view',
@@ -25,9 +26,10 @@ export class ConvoyView implements OnInit {
   //Internal attributes
   protected isLoading = signal<boolean>(true);
 
-  constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, protected readonly convoyDataService: ConvoyDataService, protected readonly convoyEventService: ConvoyEventService) {
+  constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, private readonly themeService: ThemeService, protected readonly convoyDataService: ConvoyDataService, protected readonly convoyEventService: ConvoyEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
+    this.themeService = inject(ThemeService);
     this.convoyDataService = inject(ConvoyDataService);
     this.convoyEventService = inject(ConvoyEventService);
   }
