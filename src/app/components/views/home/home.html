@@ -14,16 +14,16 @@
             </button>
         </div>
         <div id="teamListingColumn">
-            @if (teamListService.isLoading()) {
+            @if (isLoading()) {
                 <div class="teamListingRow">
                     <loading-icon />
                 </div>
             }
-            @else if (teamListService.errorMessage().length > 0) {
+            @else if (teamListService.errorMessages().length > 0) {
                 <div class="teamListingRow">
-                    <p class="pixelFont">
-                        {{teamListService.errorMessage()}}
-                    </p>
+                  @for (error of teamListService.errorMessages(); track $index) {
+                    <p class="pixelFont">{{error}}</p>
+                  }
                 </div>
             }
             @else {

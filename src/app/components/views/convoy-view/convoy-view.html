@@ -1,46 +1,65 @@
-<button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">
-    <mat-icon>menu</mat-icon>
-</button>
-<mat-sidenav-container>
-    <mat-sidenav #sidenav opened [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
-        <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
-            <mat-tab aria-label="Filters">
-                <ng-template mat-tab-label>
-                    <img src="img/filter_icon.png" height="30" width="30" />
-                </ng-template>
-                <convoy-filters-sidenav />
-            </mat-tab>
-            <mat-tab aria-label="Links">
-                <ng-template mat-tab-label>
-                    <img src="img/links_icon.png" height="30" width="30" />
-                </ng-template>
-                <links-sidenav [googleWorksheetID]="this.convoyDataService.getWorksheetID()"
-                               [showMapLink]="true"
-                               [showShopLink]="this.convoyDataService.isShopConfigured()"
-                               [showMapAnalyzerLink]="true" />
-            </mat-tab>
-        </mat-tab-group>
-    </mat-sidenav>
-    <mat-sidenav-content>
-        <div id="convoyBanner">
-            @for(item of [].constructor(calculateNumberOfStripes()); track $index) {
-                <div class="bannerStripe" [style]="`flex: 1 0 ${100 / calculateNumberOfStripes()}%`">
-                    @let colorClass = $even ? 'secondaryColor' : 'tertiaryColor';
-                    <div class="flat" [class]="colorClass"></div>
-                    <div class="round" [class]="colorClass"></div>
-                </div>
-            }
+@if (isLoading()) {
+    <div class="loadingErrorBackground">
+        <loading-icon />
+    </div>
+}
+@else if (convoyDataService.errorMessages().length > 0) {
+    <div class="loadingErrorBackground">
+        <div class="errorRow">
+            <div class="errorColumn">
+                <h1 class="error">Whoops, something went wrong.</h1>
+                @for (error of convoyDataService.errorMessages(); track $index) {
+                    <p>{{error}}</p>
+                }
+            </div>
         </div>
-        <img id="convoyLabel" src="img/convoy_logo.png" />
-        <div id="convoyItemsContainer">
-            @for(item of getFilteredConvoyItemsList(); track $index) {
-                <convoy-item [item]="item" [expand]="convoyEventService.showExpandedItemData()" />
-            }
-            @empty {
-                <div id="emptyConvoyItemsContainer">
-                    <p>There are no convoy items to display.</p>
-                </div>
-            }
-        </div>
-    </mat-sidenav-content>
-</mat-sidenav-container>
+    </div>
+}
+@else {
+  <button matFab (click)="sidenav.toggle()" class="sidenavExpandButton">
+      <mat-icon>menu</mat-icon>
+  </button>
+  <mat-sidenav-container>
+      <mat-sidenav #sidenav opened [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
+          <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
+              <mat-tab aria-label="Filters">
+                  <ng-template mat-tab-label>
+                      <img src="img/filter_icon.png" height="30" width="30" />
+                  </ng-template>
+                  <convoy-filters-sidenav />
+              </mat-tab>
+              <mat-tab aria-label="Links">
+                  <ng-template mat-tab-label>
+                      <img src="img/links_icon.png" height="30" width="30" />
+                  </ng-template>
+                  <links-sidenav [googleWorksheetID]="this.convoyDataService.getWorksheetID()"
+                                [showMapLink]="true"
+                                [showShopLink]="this.convoyDataService.isShopConfigured()"
+                                [showMapAnalyzerLink]="true" />
+              </mat-tab>
+          </mat-tab-group>
+      </mat-sidenav>
+      <mat-sidenav-content>
+          <div id="convoyBanner">
+              @for(item of [].constructor(calculateNumberOfStripes()); track $index) {
+                  <div class="bannerStripe" [style]="`flex: 1 0 ${100 / calculateNumberOfStripes()}%`">
+                      @let colorClass = $even ? 'secondaryColor' : 'tertiaryColor';
+                      <div class="flat" [class]="colorClass"></div>
+                      <div class="round" [class]="colorClass"></div>
+                  </div>
+              }
+          </div>
+          <img id="convoyLabel" src="img/convoy_logo.png" />
+          <div id="convoyItemsContainer">
+              @for(item of getFilteredConvoyItemsList(); track $index) {
+                  <convoy-item [item]="item" [expand]="convoyEventService.showExpandedItemData()" />
+              }
+              @empty {
+                  <div id="emptyConvoyItemsContainer">
+                      <p>There are no convoy items to display.</p>
+                  </div>
+              }
+          </div>
+      </mat-sidenav-content>
+  </mat-sidenav-container>
+}

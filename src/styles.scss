@@ -135,6 +135,50 @@ img.flipHorz {
   border-radius: 0px 8px 0px 8px;
 }
 
+//Common values for showing loading icons and errors
+.loadingErrorBackground {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../public/img/background.png');
+    background-repeat: repeat;
+}
+
+.errorRow {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 70%;
+}
+
+.errorColumn {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 8px;
+
+    h1 {
+        margin: 0px 0px 8px 0px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 2.5rem;
+        font-family: macExtMinecraft;
+
+        &.error {
+          color: crimson;
+        }
+        &.warning {
+          color: orange;
+        }
+    }
+
+    p { 
+      font-size: 1rem;
+      margin: 0px 0px 0px 24px;
+    }
+}
+
 // Common values for sidebar layouts
 mat-sidenav-container {
   height: 100vh;

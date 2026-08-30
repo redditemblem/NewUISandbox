@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ShopDataService } from '../../../services/shop-data-service';
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -12,25 +12,32 @@ import { IItem } from '../../../data/interfaces/system/item';
 import { ShopFiltersSidenav } from '../shop-filters-sidenav/shop-filters-sidenav';
 import { ShopItem } from '../../shop-item/shop-item';
 import { MatIconModule } from "@angular/material/icon";
+import { LoadingIcon } from "../../loading-icon/loading-icon";
 
 @Component({
   selector: 'shop-view',
-  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, MatButtonModule, ShopFiltersSidenav, ShopItem, MatIconModule],
+  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, MatButtonModule, ShopFiltersSidenav, ShopItem, MatIconModule, LoadingIcon],
   templateUrl: './shop-view.html',
   styleUrl: './shop-view.scss',
 })
-export class ShopView {
+export class ShopView implements OnInit {
 
-  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, protected shopDataService: ShopDataService, protected shopEventService: ShopEventService) {
+  //Internal attributes
+  protected isLoading = signal<boolean>(true);
+
+  constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, protected readonly shopDataService: ShopDataService, protected readonly shopEventService: ShopEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
     this.shopDataService = inject(ShopDataService);
     this.shopEventService = inject(ShopEventService);
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
-    await this.shopDataService.loadDataForTeam(teamName);
+    this.shopDataService.loadDataForTeam(teamName)
+      .finally(() => {
+        this.isLoading.set(false);
+      });
   }
 
   protected calculateNumberOfStripes() : number {

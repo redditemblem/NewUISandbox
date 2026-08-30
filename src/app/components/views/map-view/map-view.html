@@ -1,13 +1,25 @@
 @if (isLoading()) {
-    <div class="centeredBackground">
+    <div class="loadingErrorBackground">
         <loading-icon />
     </div>
 }
+@else if (teamDataService.isMapLocked()) {
+  <div class="loadingErrorBackground">
+      <div class="errorRow">
+          <div class="errorColumn">
+              <h1 class="warning">Whoops, you don't have access.</h1>
+              @for (error of teamDataService.errorMessages(); track $index) {
+                <p>{{error}}</p>
+              }
+          </div>
+      </div>
+  </div>
+}
 @else if (teamDataService.errorMessages().length > 0) {
-    <div class="centeredBackground">
+    <div class="loadingErrorBackground">
         <div class="errorRow">
             <div class="errorColumn">
-                <h1>Whoops, something went wrong.</h1>
+                <h1 class="error">Whoops, something went wrong.</h1>
                 @for (error of teamDataService.errorMessages(); track $index) {
                     <p>{{error}}</p>
                 }

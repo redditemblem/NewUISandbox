@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatTabsModule } from "@angular/material/tabs";
@@ -12,25 +12,32 @@ import { MatButtonModule } from '@angular/material/button';
 import { ConvoyEventService } from '../../../services/convoy-event-service';
 import { IItem } from '../../../data/interfaces/system/item';
 import { MatIconModule } from "@angular/material/icon";
+import { LoadingIcon } from "../../loading-icon/loading-icon";
 
 @Component({
   selector: 'convoy-view',
-  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, ConvoyItem, ConvoyFiltersSidenav, MatButtonModule, MatIconModule],
+  imports: [MatSidenavModule, MatTabsModule, LinksSidenav, ConvoyItem, ConvoyFiltersSidenav, MatButtonModule, MatIconModule, LoadingIcon],
   templateUrl: './convoy-view.html',
   styleUrl: './convoy-view.scss',
 })
 export class ConvoyView implements OnInit {
 
-  constructor(private route: ActivatedRoute, protected breakpointService: BreakpointService, protected convoyDataService: ConvoyDataService, protected convoyEventService: ConvoyEventService) {
+  //Internal attributes
+  protected isLoading = signal<boolean>(true);
+
+  constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, protected readonly convoyDataService: ConvoyDataService, protected readonly convoyEventService: ConvoyEventService) {
     this.route = inject(ActivatedRoute);
     this.breakpointService = inject(BreakpointService);
     this.convoyDataService = inject(ConvoyDataService);
     this.convoyEventService = inject(ConvoyEventService);
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
-    await this.convoyDataService.loadDataForTeam(teamName);
+    this.convoyDataService.loadDataForTeam(teamName)
+      .finally(() => {
+        this.isLoading.set(false);
+      });
   }
 
   protected calculateNumberOfStripes() : number {

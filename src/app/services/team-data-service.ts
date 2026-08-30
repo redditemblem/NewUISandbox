@@ -39,39 +39,48 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
   private errors = signal<string[]>([]);
   public readonly errorMessages = this.errors.asReadonly();
 
+  private mapLocked = signal<boolean>(false);
+  public readonly isMapLocked = this.mapLocked.asReadonly();
+
   private map = signal<IMapData>({});
   public readonly mapData = this.map.asReadonly();
 
   constructor(private readonly http: HttpClient) {
-	this.http = inject(HttpClient);
+    this.http = inject(HttpClient);
   }
 
   public async loadDataForTeam(teamName: string) {
-	this.errors.set([]);
-	this.map.set({});
+    this.errors.set([]);
+    this.mapLocked.set(false);
+    this.map.set({});
 
     await firstValueFrom(this.http.get<IMapData>(`${this.apiUrl}${teamName}`, {responseType: 'json'}))
-		.then((response: IMapData) => {
-			this.map.set(response);
-		})
-		.catch((response: HttpErrorResponse) => {
-			console.error(response);
+      .then((response: IMapData) => {
+        this.map.set(response);
+      })
+      .catch((response: HttpErrorResponse) => {
+        if (response.status === 0) {
+          this.errors.set(["HTTP request failed. Unable to contact the API endpoint."]);
+        }
+        else {
+          this.mapLocked.set(response.status === 403);
 
-			const nestedErrors: string[] = this.flattenNestedErrorMessages(response.error, []);
-			this.errors.set(nestedErrors);
-		});
+          const nestedErrors: string[] = this.flattenNestedErrorMessages(response.error, []);
+          this.errors.set(nestedErrors);
+        }
+      });
   }
 
   /** Recursively loops through nested exceptions and flattens their messages into a string array. */
   private flattenNestedErrorMessages(error: any, messages: string[]) : string[] {
-	if (error === null || error === undefined)
-		return messages;
+    if (error === null || error === undefined)
+      return messages;
 
-	const message: string = error.Message as string ?? error.message as string ?? "";
-	if (message.length > 0)
-		messages.push(message);
+    const message: string = error.Message as string ?? error.message as string ?? "";
+    if (message.length > 0)
+      messages.push(message);
 
-	return this.flattenNestedErrorMessages(error.InnerException ?? error.innerException, messages);
+    return this.flattenNestedErrorMessages(error.InnerException ?? error.innerException, messages);
   }
   
   public getWorksheetID() : string | undefined { return this.mapData().workbookID; }
