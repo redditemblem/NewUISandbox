@@ -28,6 +28,7 @@ import { IMapSegment } from '../data/interfaces/map/map-segment';
 import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance';
 import { ITileObject } from '../data/interfaces/system/tile-object';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { ITile } from '../data/interfaces/map/tile';
 
 @Injectable({
   providedIn: 'root',
@@ -93,18 +94,27 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
   }
 
   public getMapConstants() : IMapConstants | undefined {
-	return this.mapData().map?.constants;
+	  return this.mapData().map?.constants;
   }
 
   public getCurrencyConstants() : ICurrencyConstants | undefined {
-	return this.mapData().system?.constants.currency;
+	  return this.mapData().system?.constants.currency;
   }
 
   public getSegmentByCoordinate(coordinate: ICoordinate) : IMapSegment | undefined {
-	return this.mapData().map?.segments.find(s => 
-		s.horizontalTileRangeWithinMap.start.value <= coordinate.x && s.horizontalTileRangeWithinMap.end.value >= coordinate.x
-	);
+    return this.mapData().map?.segments.find(s => 
+      s.horizontalTileRangeWithinMap.start.value <= coordinate.x && s.horizontalTileRangeWithinMap.end.value >= coordinate.x
+    );
   }
+
+  public getTileByCoordinate(coordinate: ICoordinate) : ITile | undefined {
+    const segment: IMapSegment | undefined = this.getSegmentByCoordinate(coordinate);
+    if (segment === undefined)
+      return undefined;
+
+    const x: number = coordinate.x - segment.horizontalTileRangeWithinMap.start.value;
+    return segment.tiles[coordinate.y - 1][x];
+  };
 
   // #region Interface Labels
 
@@ -169,110 +179,110 @@ export class TeamDataService implements ICurrencyConstantsLookupService, IEngrav
   // #endregion Interface Labels
 
   public getAffiliationByName(name: string) : IAffiliation | undefined {
-	const dict = this.mapData().system?.affiliations;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.affiliations;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getAdjutantByName(name: string) : IAdjutant | undefined {
-	const dict = this.mapData().system?.adjutants;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.adjutants;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getBattalionByName(name: string) : IBattalion | undefined {
-	const dict = this.mapData().system?.battalions;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.battalions;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getBattleStyleByName(name: string) : IBattleStyle | undefined {
-	const dict = this.mapData().system?.battleStyles;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.battleStyles;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getClassByName(name: string) : IClass | undefined {
-	const dict = this.mapData().system?.classes;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.classes;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getCombatArtByName(name: string) : ICombatArt | undefined {
-	const dict = this.mapData().system?.combatArts;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.combatArts;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getEmblemByName(name: string) : IEmblem | undefined { 
-	const dict = this.mapData().system?.emblems;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.emblems;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getEngageAttackByName(name: string) : IEngageAttack | undefined {
-	const dict = this.mapData().system?.engageAttacks;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.engageAttacks;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getEngravingByName(name: string) : IEngraving | undefined { 
-	const dict = this.mapData().system?.engravings;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.engravings;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getGambitByName(name: string) : IGambit | undefined {
-	const dict = this.mapData().system?.gambits;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.gambits;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getItemByName(name: string) : IItem | undefined {
-	const dict = this.mapData().system?.items;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.items;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getSkillByName(name: string) : ISkill | undefined {
-	const dict = this.mapData().system?.skills;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.skills;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getStatusConditionByName(name: string) : IStatusCondition | undefined {
-	const dict = this.mapData().system?.statusConditions;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.statusConditions;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getTagByName(name: string) : ITag | undefined {
-	const dict = this.mapData().system?.tags;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.tags;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getTerrainTypeByName(name: string) : ITerrainType | undefined {
-	const dict = this.mapData().system?.terrainTypes;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.terrainTypes;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getTileObjectByName(name: string) : ITileObject | undefined {
-	const dict = this.mapData().system?.tileObjects;
-	if(!dict || !name) return undefined;
-	else return dict[name];
+    const dict = this.mapData().system?.tileObjects;
+    if(!dict || !name) return undefined;
+    else return dict[name];
   }
 
   public getTileObjectInstanceByID(id: number, coordinate: ICoordinate) : ITileObjectInstance | undefined {
-	const segment: IMapSegment | undefined = this.getSegmentByCoordinate(coordinate);
-	if (segment === undefined) return undefined;
-	
-	return segment.tileObjectInstances[id];
+    const segment: IMapSegment | undefined = this.getSegmentByCoordinate(coordinate);
+    if (segment === undefined) return undefined;
+    
+    return segment.tileObjectInstances[id];
   }
 
   public getUnitByName(name: string) : IUnit | undefined {
-	let array = this.mapData().units ?? [];
-	return array.find(unit => unit.name == name);
+    let array = this.mapData().units ?? [];
+    return array.find(unit => unit.name == name);
   }
 }

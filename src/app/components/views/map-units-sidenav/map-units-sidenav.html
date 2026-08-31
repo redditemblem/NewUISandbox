@@ -12,7 +12,7 @@
             >
       <mat-autocomplete requireSelection #auto="matAutocomplete" [displayWith]="formatAutocompleteDisplayValue">
         @if (eventService.someUnitPinned()) {
-          <mat-option [value]="null" (click)="eventService.unpinAllUnits()">
+          <mat-option [value]="selectedUnit.value" (click)="eventService.unpinAllUnits()">
             <span class="unitName">
               <img src="img/pin_icon.png" class="autocompleteUnitSprite" aria-hidden="true" />
               <p>Clear pinned units</p>

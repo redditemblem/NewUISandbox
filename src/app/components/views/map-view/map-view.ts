@@ -37,6 +37,8 @@ export class MapView implements OnInit {
   }
 
   ngOnInit() {
+    this.eventService.reset();
+
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     this.teamDataService.loadDataForTeam(teamName)
       .then(() => {

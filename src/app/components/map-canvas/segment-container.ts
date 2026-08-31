@@ -10,6 +10,8 @@ import { IMapConstants } from "../../data/interfaces/map/map-constants";
 import { StringDictionary } from "../../data/interfaces/common/dictionaries";
 import { TileBackgroundContainer } from "./tile-background-container";
 import { ITileObjectInstance } from "../../data/interfaces/map/tile-object-instance";
+import { ICoordinate } from "../../data/interfaces/map/coordinate";
+import { ITile } from "../../data/interfaces/map/tile";
 
 export class SegmentContainer extends Container {
   
@@ -150,12 +152,11 @@ export class SegmentContainer extends Container {
     //Offset x by the segment's horizontal displacement
     x += this.segment.horizontalTileRangeWithinMap.start.value - 1;
 
-    const container: TileContainer | undefined = 
-      Object.values(this.tileContainers)
-            .find(c => c.tile.coordinate.x === x && c.tile.coordinate.y === y);
-
-    if (container === undefined) return;
-    this.eventService?.updateHighlightedTile(container.tile);
+    const coord: ICoordinate = { x: x, y: y, asText: '' };
+    const tile: ITile | undefined = this.teamDataService?.getTileByCoordinate(coord);
+    
+    if (tile !== undefined)
+      this.eventService?.updateHighlightedTile(tile);
   }
 
   // #endregion Event Handling

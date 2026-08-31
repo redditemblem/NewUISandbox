@@ -11,6 +11,20 @@ import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance
 })
 export class MapEventService {
 
+  /** Fully resets values stored in the event service back to their default state. */
+  public reset() {
+    this.uPinStates.set({});
+    this.toPinStates.set({});
+    this.tileStates.set({});
+
+    this.segment.set(undefined);
+    this.tile.set(undefined);
+
+    this.paintMode.set(false);
+    this.penColor.set("#000000");
+    this.penWidth.set(2);
+  }
+
   // #region Pin Actions
 
   @Output() switchDisplayToUnit = new EventEmitter<IUnit>();

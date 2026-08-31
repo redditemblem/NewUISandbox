@@ -4,10 +4,12 @@ import { TeamDataService } from '../../../services/team-data-service';
 import { MatDivider } from "@angular/material/divider";
 import { TextFieldsWithLabeledHeader } from "../../text-fields-with-labeled-header/text-fields-with-labeled-header";
 import { ITile } from '../../../data/interfaces/map/tile';
+import { TileTerrainType } from '../../tile-terrain-type/tile-terrain-type';
+import { TileObjectInstance } from '../../tile-object-instance/tile-object-instance';
 
 @Component({
   selector: 'map-tiles-sidenav',
-  imports: [MatDivider, TextFieldsWithLabeledHeader],
+  imports: [MatDivider, TextFieldsWithLabeledHeader, TileTerrainType, TileObjectInstance],
   templateUrl: './map-tiles-sidenav.html',
   styleUrl: './map-tiles-sidenav.scss',
 })
