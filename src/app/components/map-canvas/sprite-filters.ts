@@ -1,9 +1,12 @@
 import { GlowFilter } from "pixi-filters";
-import { ColorMatrixFilter } from "pixi.js";
+import { ColorMatrixFilter, FillInput } from "pixi.js";
 import { StringDictionary } from "../../data/interfaces/common/dictionaries";
 
 /** Static functions for retrieving common sprite filters */
 export abstract class SpriteFilters {
+
+  /** Fill color used in place of sprites that failed to load/render. */
+  public static readonly missingSpriteFill: FillInput = { color: "fuchsia", alpha: 0.9 };
 
   //Use a singleton model so we don't keep redefining filters
   private static grayscaleFilter : ColorMatrixFilter;

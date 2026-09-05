@@ -68,7 +68,7 @@ export class TileObjectContainer extends Container {
         if (this.sprite === undefined) {
             const rect = new Graphics()
                 .rect(0, 0, this.objectDimensions, this.objectDimensions)
-                .fill("fuchsia");
+                .fill(SpriteFilters.missingSpriteFill);
             this.addChild(rect);
 
             return;
@@ -77,10 +77,7 @@ export class TileObjectContainer extends Container {
         this.addChild(this.sprite);
         this.sprite.label = 'tile_object_sprite';
         this.sprite.anchor.set(0.5); //manipulate sprite relative to its center
-        this.sprite.position.set(
-          this.objectDimensions / 2, //horizonal center
-          this.objectDimensions - (this.sprite.height / 2)
-        );
+        this.sprite.position.set(this.objectDimensions / 2); //horizontal + vertical centers
     }
 
     private async renderHealthBar() {
@@ -101,7 +98,7 @@ export class TileObjectContainer extends Container {
 
     private getUnitHpBarGradient(hpPercentage: number) : FillGradient 
     { 
-        //Primary and secondary color hexes should match the ones from unit-hp-bar.ts
+        //Primary and secondary color hexes should match the ones from tile-object-hp-bar.ts
         let primaryColor: string, secondaryColor: string;
         if(hpPercentage > 100){
             primaryColor = "#992DE4";

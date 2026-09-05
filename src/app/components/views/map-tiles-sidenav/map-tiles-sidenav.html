@@ -26,7 +26,7 @@
       <tile-terrain-type [name]="tile.terrainType" [isWarp]="tile.warpData?.inWarpGroup ?? false" />
       @if (tile.warpData?.inWarpGroup ?? false) {
         @let warpTypeDesc = getWarpTypeDescription(terrainTypeData?.warpType ?? 0);
-        <text-fields-with-labeled-header label="Warp" [title]="warpTypeDesc" />
+        <text-fields-with-labeled-header label="Warp" [title]="warpTypeDesc" [textFields]="[`Connected Tiles: ${tile.warpData?.warpGroupCoordinates ?? ''}`]" />
       }
       @for (id of tile.tileObjectInstanceIDs; track id) {
         <tile-object-instance [id]="id" [coordinate]="tile.coordinate" />

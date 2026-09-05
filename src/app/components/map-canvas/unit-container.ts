@@ -84,7 +84,7 @@ export class UnitContainer extends Container {
     if (this.sprite === undefined) {
       const rect = new Graphics({ label: "unit_sprite" })
         .rect(0, 0, this.unitDimensions, this.unitDimensions)
-        .fill("fuchsia");
+        .fill(SpriteFilters.missingSpriteFill);
       this.addChild(rect);
       
       return;
@@ -259,7 +259,7 @@ export class UnitContainer extends Container {
     if (useLoadFailedGraphic) {
       const rect = new Graphics({ visible: !shouldRotateSprites })
         .rect(0, 0, this.SPRITE_MAX_DIMENSIONS, this.SPRITE_MAX_DIMENSIONS)
-        .fill("fuchsia");
+        .fill(SpriteFilters.missingSpriteFill);
       statusContainer.addChild(rect);
     }
 
@@ -323,7 +323,7 @@ export class UnitContainer extends Container {
     if (useLoadFailedGraphic) {
       const rect = new Graphics({ visible: !shouldRotateSprites })
         .rect(0, 0, this.SPRITE_MAX_DIMENSIONS, this.SPRITE_MAX_DIMENSIONS)
-        .fill("fuchsia");
+        .fill(SpriteFilters.missingSpriteFill);
       tagsContainer.addChild(rect);
       rect.position.x = tagsContainer.width - rect.width;
     }
