@@ -24,7 +24,8 @@ export class TileCursorSprite extends NineSliceSprite {
             width: tileDimensions + 2,
             anchor: 0.5, //manipulate relative to center
             interactive: false,
-            interactiveChildren: false
+            interactiveChildren: false,
+            eventMode: 'none'
         });
 
         //Set up animation interval

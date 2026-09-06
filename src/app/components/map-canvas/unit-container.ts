@@ -38,7 +38,8 @@ export class UnitContainer extends Container {
     super({
       label: unitName,
       interactive: false,
-      interactiveChildren: false
+      interactiveChildren: false,
+      eventMode: 'none'
     });
     
     runInInjectionContext(injector, () => {
@@ -183,6 +184,7 @@ export class UnitContainer extends Container {
     const numbersContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
+      eventMode: 'none',
       zIndex: this.OVERLAY_Z_INDEX
     });
 
@@ -246,6 +248,7 @@ export class UnitContainer extends Container {
     const statusContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
+      eventMode: 'none',
       zIndex: this.OVERLAY_Z_INDEX
     });
     
@@ -309,6 +312,7 @@ export class UnitContainer extends Container {
     const tagsContainer: Container = new Container({
       interactive: false,
       interactiveChildren: false,
+      eventMode: 'none',
       zIndex: this.OVERLAY_Z_INDEX
     });
     

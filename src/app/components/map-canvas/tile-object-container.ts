@@ -30,7 +30,8 @@ export class TileObjectContainer extends Container {
         super({
             label: `tile object ${tileObjectInstance.id}`,
             interactive: false,
-            interactiveChildren: false
+            interactiveChildren: false,
+            eventMode: 'none'
         });
 
         this.tileObjectInstance = tileObjectInstance;

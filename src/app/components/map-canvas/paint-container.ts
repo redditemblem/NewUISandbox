@@ -41,6 +41,7 @@ export class PaintContainer extends Container {
     this.visible = true;
     this.interactive = true;
     this.interactiveChildren = true;
+    this.eventMode = 'static';
   }
 
   /** Makes the container invisible and disables interaction. */
@@ -48,6 +49,7 @@ export class PaintContainer extends Container {
     this.visible = false;
     this.interactive = false;
     this.interactiveChildren = false;
+    this.eventMode = 'none';
   }
 
   public async clearGraphicsBuffer() {
@@ -71,9 +73,9 @@ export class PaintContainer extends Container {
     this.userIsDrawing = true;
 
     const newLine = new Graphics({
-      eventMode: 'static',
       interactive: false,
-      interactiveChildren: false
+      interactiveChildren: false,
+      eventMode: 'none'
     });
     newLine.moveTo(event.screen.x, event.screen.y);
 

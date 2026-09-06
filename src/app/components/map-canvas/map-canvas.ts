@@ -121,6 +121,7 @@ export class MapCanvas {
       backgroundAlpha: 0
     });
     this.pixiApp.canvas.id = 'pixiCanvas';
+    this.pixiApp.canvas.style.touchAction = "auto"; //allows mobile users to scroll
 
     appContainer.appendChild(this.pixiApp.canvas);
   }

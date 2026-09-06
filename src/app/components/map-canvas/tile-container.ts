@@ -33,6 +33,7 @@ export class TileContainer extends Container {
       label: tile.coordinate.asText,
       interactive: false,
       interactiveChildren: false,
+      eventMode: 'none',
       zIndex: ((tile.coordinate.y - 1) * segmentWidth) + tile.coordinate.x - segmentXOffset
     });
 

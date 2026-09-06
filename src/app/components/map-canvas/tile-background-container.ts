@@ -19,7 +19,8 @@ export class TileBackgroundContainer extends Container {
             label: `${coordinate.asText} background`,
             visible: false,
             interactive: false,
-            interactiveChildren: false
+            interactiveChildren: false,
+            eventMode: 'none'
         });
 
         this.tintGraphic = this.createTint();
@@ -43,7 +44,8 @@ export class TileBackgroundContainer extends Container {
         return new Graphics({
             visible: false,
             interactive: false,
-            interactiveChildren: false
+            interactiveChildren: false,
+            eventMode: 'none'
         })
         .rect(1, 1, this.dimensions-1, this.dimensions-1)
         .fill({
@@ -56,7 +58,8 @@ export class TileBackgroundContainer extends Container {
         return new Graphics({
             visible: false,
             interactive: false,
-            interactiveChildren: false
+            interactiveChildren: false,
+            eventMode: 'none'
         })
         .rect(2, 1, this.dimensions-2, this.dimensions-2)
         .stroke({
