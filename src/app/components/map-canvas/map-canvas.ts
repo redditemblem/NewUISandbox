@@ -200,11 +200,15 @@ export class MapCanvas {
       this.activePaintContainer = this.paintContainers[segmentName];
       this.activePaintContainer?.show();
       this.activeSegment?.allowInteraction(false);
+
+      this.pixiApp.canvas.style.touchAction = "none"; //prevent scrolling on mobile so users can paint
     }
     else {
       this.activePaintContainer?.hide();
       this.activePaintContainer = undefined;
       this.activeSegment?.allowInteraction(true);
+
+      this.pixiApp.canvas.style.touchAction = "auto"; //allow mobile users to scroll
     }
   }
 
