@@ -32,39 +32,39 @@
         <mat-icon>menu</mat-icon>
     </button>
     <mat-sidenav-container>
-        <mat-sidenav #sidenav opened [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
+        <mat-sidenav #sidenav [opened]="!breakpointService.isSmallWidth()" [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
             <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination (selectedTabChange)="SidebarTabs_selectedTabChange($event)"> 
                 <mat-tab aria-label="Units">
                     <ng-template mat-tab-label>
-                        <img src="img/units_icon.png" height="32" width="32" aria-hidden="true" />
+                      <img src="img/units_icon.png" height="32" width="32" aria-hidden="true" />
                     </ng-template>
                     <map-units-sidenav />
                 </mat-tab>
                 <mat-tab aria-label="Tiles">
                     <ng-template mat-tab-label>
-                        <img src="img/tile_icon.png" height="32" width="32" aria-hidden="true" />
+                      <img src="img/tile_icon.png" height="32" width="32" aria-hidden="true" />
                     </ng-template>
                     <map-tiles-sidenav />
                 </mat-tab>
                 <mat-tab aria-label="Paintbrush">
                     <ng-template mat-tab-label>
-                        <img src="img/paint_icon.png" height="32" width="32" aria-hidden="true" />
+                      <img src="img/paint_icon.png" height="32" width="32" aria-hidden="true" />
                     </ng-template>
                     <map-paint-sidenav />
                 </mat-tab>
                 <mat-tab aria-label="Links">
                     <ng-template mat-tab-label>
-                        <img src="img/links_icon.png" height="32" width="32" aria-hidden="true" />
+                      <img src="img/links_icon.png" height="32" width="32" aria-hidden="true" />
                     </ng-template>
                     <links-sidenav [googleWorksheetID]="this.teamDataService.getWorksheetID()"
-                                [chapterPostUrl]="this.teamDataService.getChapterPostUrl()"
-                                [showConvoyLink]="this.teamDataService.isConvoyConfigured()"
-                                [showShopLink]="this.teamDataService.isShopConfigured()"
-                                [showMapAnalyzerLink]="true" />
+                                   [chapterPostUrl]="this.teamDataService.getChapterPostUrl()"
+                                   [showConvoyLink]="this.teamDataService.isConvoyConfigured()"
+                                   [showShopLink]="this.teamDataService.isShopConfigured()"
+                                   [showMapAnalyzerLink]="true" />
                 </mat-tab>
                 <mat-tab aria-label="Dice roller">
                     <ng-template mat-tab-label>
-                        <img src="img/die_icon.png" height="32" width="32" aria-hidden="true" />
+                      <img src="img/die_icon.png" height="32" width="32" aria-hidden="true" />
                     </ng-template>
                     <map-dice-roller-sidenav />
                 </mat-tab>

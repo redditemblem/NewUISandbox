@@ -16,21 +16,32 @@
                 <img src="img/star_icon.png" height="20" width="20" matTooltip="Engaged" matTooltipPosition="left" />
             }
         </div>
-        <mat-divider />
-        <div class="bondLevelRow">
-            <p>
-                @if((emblem().bondLevel ?? 0) > 0) {
+        @let bondLevel = emblem().bondLevel ?? 0;
+        @let meterCount = emblem().engageMeterCount ?? 0;
+        @let textFields = systemData()?.textFields ?? [];
+        @if (bondLevel > 0 || meterCount > 0 || (isExpanded() && textFields.length > 0)) {
+          <mat-divider />
+          @if (bondLevel > 0 || meterCount > 0) {
+            <div class="bondLevelRow">
+              <p>
+                  @if(bondLevel > 0) {
                     Bond Lvl. {{emblem().bondLevel}}
-                }
-            </p>
-            <p>
-                Engage Meter {{(emblem().engageMeterCount ?? 0) > 0 ? (emblem().engageMeterCount ?? 0) : 0}}
-            </p>
-        </div>
-        @if(isExpanded() && (systemData()?.textFields ?? []).length > 0) {
-            @for(text of systemData()?.textFields; track $index) {
+                  }
+              </p>
+              <p>
+                @if (meterCount > 0) {
+                  Engage Meter {{meterCount}}
+                }    
+              </p>
+            </div>
+          }
+          @if(isExpanded() && textFields.length > 0) {
+            <div class="textFieldContainer">
+              @for(text of textFields; track $index) {
                 <p>{{text}}</p>
-            }
+              }
+            </div>
+          }
         }
         <mat-divider />
         @if((emblem().syncSkills ?? []).length > 0) {

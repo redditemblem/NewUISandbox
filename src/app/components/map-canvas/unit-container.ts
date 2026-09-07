@@ -9,6 +9,7 @@ import { IAffiliation } from "../../data/interfaces/system/affiliation";
 import { IStatusCondition } from "../../data/interfaces/system/status-condition";
 import { ITag } from "../../data/interfaces/system/tag";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
+import { IHpBarColorSet, UnitHpBar } from "../unit-hp-bar/unit-hp-bar";
 
 export class UnitContainer extends Container {
 
@@ -36,7 +37,7 @@ export class UnitContainer extends Container {
 
   constructor(private readonly injector: Injector, public readonly unitName: string, private readonly isBackOfPair: boolean) {
     super({
-      label: unitName,
+      label: `unit ${unitName}`,
       interactive: false,
       interactiveChildren: false,
       eventMode: 'none'
@@ -51,7 +52,7 @@ export class UnitContainer extends Container {
     //Attempt to load the unit by its name
     this.unit = this.teamDataService?.getUnitByName(this.unitName);
     if(this.unit === undefined) {
-      console.error(`Failed to locate unit name ${this.unitName}.`);
+      console.error(`Failed to locate unit name '${this.unitName}'.`);
       return;
     }
 
@@ -77,8 +78,8 @@ export class UnitContainer extends Container {
   private async loadUnitSprite() {
     if (this.unit === undefined) return;
 
-    const url = this.unit.sprite.spriteURL ?? "";
-    const assetAlias = `unit ${this.unit.normalizedName}`;
+    const url: string = this.unit.sprite.spriteURL ?? "";
+    const assetAlias: string = `unit ${this.unit.normalizedName}`;
     this.sprite = await SpriteLoader.getExternalSpriteByExtension(assetAlias, url);
 
     //If we failed to load the unit's sprite, use a placeholder instead
@@ -121,56 +122,35 @@ export class UnitContainer extends Container {
   private async renderHealthBar() {
     if (this.unit === undefined) return;
 
-    const healthBarGradient = this.getUnitHpBarGradient(this.unit.stats.hp.percentage);
-    const healthBar = new Graphics()
-      .rect(2, this.unitDimensions - 4, this.unitDimensions - 3, 3)
+    const healthBarGradient = this.getHealthBarGradient(this.unit.stats.hp.percentage);
+    const healthBar = new Graphics({ zIndex: this.OVERLAY_Z_INDEX })
+      .rect(2, this.unitDimensions - 4, this.unitDimensions - 2, 3)
       .fill(healthBarGradient)
       .stroke({ width: 1, color: 0x000000, pixelLine: true });
-
-    healthBar.zIndex = this.OVERLAY_Z_INDEX;
 
     this.addChild(healthBar);
   }
 
   /**
-   * Determine the colors codes appropriate for the unit's current hpPercentage
+   * Determine the colors codes appropriate for the unit's current `hpPercentage`.
    * 
-   * @returns A new FillGradient with a linear left-right gradient utilizes the color codes
+   * @returns A new FillGradient containing a linear left-right gradient
    */
-  private getUnitHpBarGradient(hpPercentage: number) : FillGradient 
-  { 
+  private getHealthBarGradient(hpPercentage: number) : FillGradient { 
     //Primary and secondary color hexes should match the ones from unit-hp-bar.ts
-    let primaryColor: string, secondaryColor: string;
-    if(hpPercentage > 100){
-      primaryColor = "#992DE4";
-      secondaryColor = "#d9cce3";
-    } 
-    else if(hpPercentage <= 100 && hpPercentage > 50)
-    {
-      primaryColor = "#3CD66F";
-      secondaryColor = "#d3efdd";
-    } 
-    else if(hpPercentage <= 50 && hpPercentage > 25)
-    {
-      primaryColor = "#FFC107";
-      secondaryColor = "#fff4d4";
-    }
-    else
-    {
-      primaryColor = "#F13535";
-      secondaryColor = "#efd1d1";
-    }
+    const colorSet: IHpBarColorSet = UnitHpBar.getHpBarColorSet(hpPercentage);
 
     //Prevent overfilled HP from going above 1.0
-    const hpFraction = Math.min(hpPercentage / 100, 1.0);
+    const hpFraction: number = Math.min(hpPercentage / 100, 1.0);
+
     return new FillGradient({
       type: 'linear',
       start: { x: 0, y: 0.5 }, //linear left-to-right gradient
       end: { x: 1, y: 0.5 },
       colorStops: [
         //Transition colors immediately at the hpFraction
-        { offset: hpFraction, color: primaryColor },
-        { offset: hpFraction, color: secondaryColor },
+        { offset: hpFraction, color: colorSet.primary },
+        { offset: hpFraction, color: colorSet.secondary },
       ],
     });
   }
@@ -178,7 +158,7 @@ export class UnitContainer extends Container {
   private async renderUnitNumber() {
     if (this.unit === undefined) return;
 
-    const unitNumber = this.unit.unitNumber ?? "";
+    const unitNumber: string = this.unit.unitNumber ?? "";
     if(unitNumber.length < 1) return;
 
     const numbersContainer: Container = new Container({

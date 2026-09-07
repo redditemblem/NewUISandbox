@@ -8,7 +8,7 @@ import { StringDictionary } from '../../data/interfaces/common/dictionaries';
 
 @Component({
   selector: 'tile-terrain-type',
-  imports: [TextFieldsWithLabeledHeader, KeyValuePipe],
+  imports: [TextFieldsWithLabeledHeader, KeyValuePipe ],
   templateUrl: './tile-terrain-type.html',
   styleUrl: './tile-terrain-type.scss',
 })
@@ -21,7 +21,7 @@ export class TileTerrainType implements OnChanges {
   //Internal attributes
   protected systemData = signal<ITerrainType | undefined>(undefined);
 
-  constructor(protected readonly teamDataService: TeamDataService) {
+  constructor(private readonly teamDataService: TeamDataService) {
     this.teamDataService = inject(TeamDataService);
   }
 

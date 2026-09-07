@@ -44,7 +44,7 @@ export class MapDiceRollerSidenav {
       if (ctx.valueOf(schemaPath.maximum) <= ctx.valueOf(schemaPath.minimum)) {
         return {
           kind: 'min',
-          message: 'Must be > lowest',
+          message: 'Must be > low',
           fieldTree: ctx.fieldTree,
         };
       }

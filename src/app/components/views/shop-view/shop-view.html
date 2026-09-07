@@ -20,7 +20,7 @@
       <mat-icon>menu</mat-icon>
   </button>
   <mat-sidenav-container>
-      <mat-sidenav #sidenav opened [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
+      <mat-sidenav #sidenav [opened]="!breakpointService.isSmallWidth()" [mode]="breakpointService.isSmallWidth() ? 'over' : 'side'">
           <mat-tab-group class="sideNavTabs" mat-stretch-tabs disablePagination> 
               <mat-tab aria-label="Filters">
                   <ng-template mat-tab-label>

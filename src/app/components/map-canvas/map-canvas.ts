@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
+import { Application, Assets, ImageLike, TextureSource } from 'pixi.js';
 import { Component, effect, inject, Injector } from '@angular/core';
 import { IMapSegment } from '../../data/interfaces/map/map-segment';
-import { Application, Assets, ImageLike, TextureSource } from 'pixi.js';
 import { TeamDataService } from '../../services/team-data-service';
 import { StringDictionary } from '../../data/interfaces/common/dictionaries';
 import { MapEventService } from '../../services/map-event-service';
@@ -120,6 +120,7 @@ export class MapCanvas {
     await this.pixiApp.init({ 
       backgroundAlpha: 0
     });
+
     this.pixiApp.canvas.id = 'pixiCanvas';
     this.pixiApp.canvas.style.touchAction = "auto"; //allows mobile users to scroll
 
@@ -193,20 +194,23 @@ export class MapCanvas {
   }
 
   private updatePaintState(inPaintMode: boolean) {
+    if (this.activeSegment === undefined)
+      return;
+
     if (inPaintMode) {
-      const segmentName: string = this.activeSegment?.segment.title ?? "";
+      const segmentName: string = this.activeSegment.segment.title ?? "";
       if (segmentName.length < 1) return;
 
       this.activePaintContainer = this.paintContainers[segmentName];
       this.activePaintContainer?.show();
-      this.activeSegment?.allowInteraction(false);
+      this.activeSegment.allowInteraction(false);
 
       this.pixiApp.canvas.style.touchAction = "none"; //prevent scrolling on mobile so users can paint
     }
     else {
       this.activePaintContainer?.hide();
       this.activePaintContainer = undefined;
-      this.activeSegment?.allowInteraction(true);
+      this.activeSegment.allowInteraction(true);
 
       this.pixiApp.canvas.style.touchAction = "auto"; //allow mobile users to scroll
     }

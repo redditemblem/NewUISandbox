@@ -3,14 +3,14 @@
         <h1>Dice Roller</h1>
         <div id="formInputsRow">
             <mat-form-field [style.width]="'30%'">
-                <mat-label>Lowest Value</mat-label>
+                <mat-label>Low Value</mat-label>
                 <input matInput [formField]="customDiceRollForm.minimum" type="number" step="number" />
                 @for (error of customDiceRollForm.minimum().errors(); track error) {
                     <mat-error>{{error.message}}</mat-error>
                 }
             </mat-form-field>
             <mat-form-field [style.width]="'30%'">
-                <mat-label>Highest Value</mat-label>
+                <mat-label>High Value</mat-label>
                 <input matInput [formField]="customDiceRollForm.maximum" type="number" step="number" />
                 @for (error of customDiceRollForm.maximum().errors(); track error) {
                     <mat-error>{{error.message}}</mat-error>
