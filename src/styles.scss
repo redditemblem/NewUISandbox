@@ -13,6 +13,10 @@ $secondary-theme-color-dim-dark: #4e6922;
 $tertiary-theme-color-dark: #1c9164;
 $tertiary-theme-color-dim-dark: #0a5538;
 
+$warning-color: #f58300;
+$warning-color-dark: #ffa500;
+$error-color: crimson;
+
 html {
   height: 100%;
   @include mat.theme(
@@ -30,6 +34,8 @@ html {
   --secondary-theme-color-dim: #{light-dark($secondary-theme-color-dim-light, $secondary-theme-color-dim-dark)};
   --tertiary-theme-color: #{light-dark($tertiary-theme-color-light, $tertiary-theme-color-dark)};
   --tertiary-theme-color-dim: #{light-dark($tertiary-theme-color-dim-light, $tertiary-theme-color-dim-dark)};
+  --warning-color: #{light-dark($warning-color, $warning-color-dark)};
+  --error-color: #{light-dark($error-color, $error-color)};
 
   //Create global font size variables
   --h1-pixel-font-size: 1.5rem;
@@ -166,10 +172,10 @@ img.flipHorz {
     font-family: macExtMinecraft;
 
     &.error {
-      color: crimson;
+      color: var(--error-color);
     }
     &.warning {
-      color: orange;
+      color: var(--warning-color);
     }
   }
 

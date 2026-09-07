@@ -83,7 +83,7 @@
                 </div>
             }
         }
-        @if ((unit().stats.experience ?? 0) > 0) {
+        @if ((unit().stats.experience ?? -1) > -1) {
             <div class="looseStatsItem">
                 <p>Exp</p>
                 <p>{{unit().stats.experience}}</p>
