@@ -7,6 +7,7 @@ import { StringDictionary } from '../../data/interfaces/common/dictionaries';
 import { MapEventService } from '../../services/map-event-service';
 import { SegmentContainer } from './segment-container';
 import { PaintContainer } from './paint-container';
+import { ITile } from '../../data/interfaces/map/tile';
 
 @Component({
   selector: 'map-canvas',
@@ -52,6 +53,11 @@ export class MapCanvas {
     //Watch for changes in the selected segment
     effect(() => {
       this.updateActiveSegment(this.eventService.selectedSegment());
+    });
+
+    //Watch for changes in the selected tile
+    effect(() => {
+      this.updateCanvasTitle(this.eventService?.highlightedTile());
     });
 
     //Watch for changes in the paint mode
@@ -191,6 +197,18 @@ export class MapCanvas {
       container.segment.widthInPixels,
       container.segment.heightInPixels
     );
+  }
+
+  private updateCanvasTitle(tile: ITile | undefined) {
+    if (tile === undefined) return;
+
+    let title: string = `[${tile.coordinate.asText}] ${tile.terrainType}`;
+
+    const unitName: string = tile.unitData.occupyingUnitName ?? "";
+    if (unitName.length > 0)
+      title += ` | ${unitName}`;
+
+    this.pixiApp.canvas.title = title;
   }
 
   private updatePaintState(inPaintMode: boolean) {

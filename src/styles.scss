@@ -159,18 +159,18 @@ img.flipHorz {
   row-gap: 8px;
 
   h1 {
-      margin: 0px 0px 8px 0px;
-      font-style: normal;
-      font-weight: normal;
-      line-height: 2.5rem;
-      font-family: macExtMinecraft;
+    margin: 0px 0px 8px 0px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 2.5rem;
+    font-family: macExtMinecraft;
 
-      &.error {
-        color: crimson;
-      }
-      &.warning {
-        color: orange;
-      }
+    &.error {
+      color: crimson;
+    }
+    &.warning {
+      color: orange;
+    }
   }
 
   p { 
@@ -187,8 +187,8 @@ mat-sidenav-container {
 
 mat-sidenav {
   @include mat.sidenav-overrides((
-      container-shape: var(--mat-sys-corner-none),
-      container-width: min(calc(100vw - 58px), 450px)
+    container-shape: var(--mat-sys-corner-none),
+    container-width: min(calc(100vw - 58px), 450px)
   ));
 
   anchor-name: --sidenav-anchor;
