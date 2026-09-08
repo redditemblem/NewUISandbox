@@ -1,6 +1,6 @@
 import { initDevtools } from '@pixi/devtools';
 import { Application, Assets, ImageLike, TextureSource } from 'pixi.js';
-import { Component, effect, inject, Injector } from '@angular/core';
+import { Component, effect, inject, Injector, OnDestroy, OnInit } from '@angular/core';
 import { IMapSegment } from '../../data/interfaces/map/map-segment';
 import { TeamDataService } from '../../services/team-data-service';
 import { StringDictionary } from '../../data/interfaces/common/dictionaries';
@@ -21,7 +21,7 @@ import { ITile } from '../../data/interfaces/map/tile';
     }
   `,
 })
-export class MapCanvas {
+export class MapCanvas implements OnInit, OnDestroy {
 
   //Constants
   private readonly PAINT_CONTAINER_Z_INDEX: number = 1;
@@ -91,6 +91,11 @@ export class MapCanvas {
     ]);
     
     this.updateActiveSegment(this.eventService.selectedSegment());
+  }
+
+  ngOnDestroy() {
+    //Completely destroys the canvas, all children, etc.
+    this.pixiApp.destroy(true, true);
   }
 
   /** Loads common sprites from the `img` folder. */

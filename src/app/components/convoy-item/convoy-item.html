@@ -1,127 +1,129 @@
 <div class="convoyItemContainer primaryColorCard" (click)="isExpanded.set(!isExpanded())">
-    <div class="itemHeaderRow">
-        <div class="headerTextContainer">
-            <div class="name">
-                @if((systemData()?.spriteURL ?? "").length > 0){
-                    <img [src]="systemData()?.spriteURL" />
-                }
+    <div class="headerRow">
+        <div class="titleColumn">
+            <div class="titleRow">
+              @if ((systemData()?.spriteURL ?? "").length > 0) {
                 <div>
-                    {{item().name}} @if(item().uses > 0){ ({{item().uses}}) }
+                  <img [src]="systemData()?.spriteURL" class="sprite" [aria-label]="`${item().name} sprite`" />
                 </div>
+              }
+              <div class="title">
+                <p>
+                  {{buildTitle()}}
+                </p>
                 @if (item().engravings.length > 0) {
-                    @for(engraving of item().engravings; track engraving) {
-                        @if((getEngravingByName(engraving)?.spriteURL ?? "").length > 0) {
-                            <img [src]="getEngravingByName(engraving)?.spriteURL" [title]="engraving" />
-                        }
+                  @for (engraving of item().engravings; track engraving) {
+                    @let engravingData = getEngravingByName(engraving);
+                    @if ((engravingData?.spriteURL ?? "").length > 0) {
+                      <img [src]="engravingData?.spriteURL" class="sprite" [title]="engraving" />
                     }
+                  }
                 }
                 @if (item().tags.length > 0) {
-                    @for(tag of item().tags; track tag) {
-                        @if((getTagByName(tag)?.spriteURL ?? "").length > 0) {
-                            <img [src]="getTagByName(tag)?.spriteURL" [title]="tag" />
-                        }
+                  @for(tag of item().tags; track tag) {
+                    @let tagData = getTagByName(tag);
+                    @if((tagData?.spriteURL ?? "").length > 0) {
+                      <img [src]="tagData?.spriteURL" class="sprite" [title]="tag" />
                     }
+                  }
                 }
+              </div>
             </div>
-            <div class="rankCategory">
-                @if((systemData()?.weaponRank ?? "").length > 0)
-                { 
-                    {{systemData()?.weaponRank}} - 
-                }
-                {{systemData()?.category}} {{formatUtilizedStatsText()}}
-            </div>
+            @let subtitle = buildSubtitle();
+            @if (subtitle.length > 0) {
+              <p class="subtitleRow">{{subtitle}}</p>
+            }
         </div>
-        <div class="convoyTextContainer">
-            @if (item().quantity > 1) {
-                <p>{{item().quantity}} Available</p>
-            }
-            @if(item().owner.length > 0) {
-                <p>Owned by {{item().owner}}</p>
-            }
+        <div class="convoyTextColumn">
+          @if (item().quantity > 1) {
+            <p>{{item().quantity}} Available</p>
+          }
+          @if (item().owner.length > 0) {
+            <p>Owned by {{item().owner}}</p>
+          }
+          @if (item().value > -1) {
+            <p>Sells for</p>&nbsp;<currency [amount]="item().value" [dataService]="convoyDataService" />
+          }
         </div>
     </div>
     @if (expand() || isExpanded()) {
-        @if (item().uses > 0 || (systemData()?.maxUses ?? 0) > 0 || (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0)
-        {
-            <mat-divider />
-            <div class="itemStatsContainer">
-                @if ((systemData()?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
-                {
-                    @for (stat of item().stats | keyvalue: sortStats; track stat.key) {
-                        <div class="stat">
-                            <div>{{stat.key}}</div>
-                            <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" [height]="12" />
-                        </div>
-                    }
+      @if (item().uses > 0 || (systemData()?.maxUses ?? 0) > 0 || (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0) {
+        <mat-divider />
+        <div class="statsContainer">
+          @if ((systemData()?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
+          {
+            @for (stat of item().stats | keyvalue: doNotSortByKey; track stat.key) {
+              <div class="stat">
+                <div>{{stat.key}}</div>
+                <stat-with-buff-icon [base]="stat.value.baseValue" [final]="stat.value.finalValue" [invertColors]="stat.value.invertModifiedDisplayColors ?? false" [height]="12" />
+              </div>
+            }
+          }
+          @let minimumRange = systemData()?.range?.minimum ?? 0;
+          @if (minimumRange > 0 || (systemData()?.range?.minimumRequiresCalculation ?? false)) {
+            @let maximumRange = systemData()?.range?.maximum ?? 0;
+            <div class="stat">
+              <div>Rng</div>
+              <div class="statValue">
+                <p>{{minimumRange > 0 ? minimumRange : "?"}}</p>
+                @if (minimumRange !== maximumRange || (systemData()?.range?.maximumRequiresCalculation ?? false)) {
+                  &nbsp;-&nbsp;{{maximumRange > 0 ? maximumRange : "?"}}
                 }
-                @if ((systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.range?.minimumRequiresCalculation ?? false))
-                {
-                    <div class="stat">
-                        <div>Rng</div>
-                        <div class="statValue">
-                            @if ((systemData()?.range?.minimum ?? 0) > 0) {
-                                <stat-with-buff-icon [base]="systemData()?.range?.minimum ?? 0" [final]="systemData()?.range?.minimum ?? 0" [height]="12" />
-                            }
-                            @else {
-                                <p>?</p>
-                            }
-                            @if ((systemData()?.range?.minimum ?? 0) !== (systemData()?.range?.maximum ?? 0) || (systemData()?.range?.maximumRequiresCalculation ?? false))
-                            {
-                                <p>&nbsp;-&nbsp;</p>
-                                @if ((systemData()?.range?.maximum ?? 0) > 0) {
-                                    <stat-with-buff-icon [base]="systemData()?.range?.maximum ?? 0" [final]="systemData()?.range?.maximum ?? 0" [height]="12" />
-                                }
-                                @else {
-                                    <p>?</p>
-                                }
-                            }
-                        </div>
-                    </div>
-                }
-                @if ((systemData()?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
-                {
-                    <div class="stat">
-                        <div>Shp</div>
-                        <div>
-                            @switch (systemData()?.range?.shape)
-                            {
-                                @case (ItemRangeShape.Square) { Square }
-                                @case (ItemRangeShape.Cross) { Cross }
-                                @case (ItemRangeShape.Saltire) { Saltire }
-                                @case (ItemRangeShape.Star) { Star }
-                            }
-                        </div>
-                    </div>
-                }
-                @if (item().uses > 0 || (systemData()?.maxUses ?? 0) > 0)
-                {
-                    <div class="stat">
-                        <p>
-                            @if(item().uses > 0 && (systemData()?.maxUses ?? 0) === 0) { Quantity }
-                            @else { Uses }
-                        </p>
-                        <div class="statValue">
-                            @if(item().uses > 0) { {{item().uses}} }
-                            @if((systemData()?.maxUses ?? 0) > 0) {
-                                @if(item().uses > 0) { /&nbsp; } 
-                                <stat-with-buff-icon [base]="systemData()?.maxUses ?? 0" [final]="systemData()?.maxUses ?? 0" [invertColors]="false" [height]="12" />
-                            }
-                        </div>
-                    </div>
-                }
+              </div>
             </div>
+          }
+          @if ((systemData()?.range?.shape ?? ItemRangeShape.Standard) !== ItemRangeShape.Standard)
+          {
+            <div class="stat">
+              <div>Shp</div>
+              <div>
+                @switch (systemData()?.range?.shape)
+                {
+                  @case (ItemRangeShape.Square) { Square }
+                  @case (ItemRangeShape.Cross) { Cross }
+                  @case (ItemRangeShape.Saltire) { Saltire }
+                  @case (ItemRangeShape.Star) { Star }
+                }
+              </div>
+            </div>
+          }
+          @if (item().uses > 0 || (systemData()?.maxUses ?? 0) > 0)
+          {
+            <div class="stat">
+              <div>
+                @if(item().uses > 0 && (systemData()?.maxUses ?? 0) === 0) { Quantity }
+                @else { Uses }
+              </div>
+              <div class="statValue">
+                @if(item().uses > 0) { {{item().uses}} }
+                @if((systemData()?.maxUses ?? 0) > 0) {
+                  @if(item().uses > 0) { /&nbsp; } 
+                  {{systemData()?.maxUses ?? 0}}
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+      @let textFields = systemData()?.textFields ?? [];
+      @let graphicUrl = systemData()?.graphicURL ?? "";
+      @let engravings = item().engravings;
+      @if (textFields.length > 0 || graphicUrl.length > 0 || engravings.length > 0) {
+        <mat-divider />
+        @for (text of textFields; track $index) {
+          <p>{{text}}</p>
         }
-        @if ((systemData()?.textFields ?? []).length > 0 || (systemData()?.graphicURL ?? "").length > 0) {
-            <mat-divider />
-            @for (engraving of item().engravings; track engraving) {
-                <engraving [name]="engraving" [dataService]="convoyDataService" />
-            }
-            @for (text of systemData()?.textFields; track $index) {
-                <p>{{text}}</p>
-            }
-            @if ((systemData()?.graphicURL ?? "").length > 0) {
-                <img class="itemGraphic" [src]="systemData()?.graphicURL" />
-            }
+        @if (graphicUrl.length > 0) {
+          <div class="graphicRow"> 
+            <img [src]="systemData()?.graphicURL" class="graphic" [aria-label]="`${item().name} graphic`" />
+          </div>
         }
+        @for (engraving of engravings; track engraving) {
+          <engraving [name]="engraving" [dataService]="convoyDataService" />
+        }
+      }
+    }
+    @for(skill of systemData()?.equippedSkills; track skill) {
+      <unit-skill [skill]="skill" [dataService]="convoyDataService" [expanded]="isExpanded()" />
     }
 </div>

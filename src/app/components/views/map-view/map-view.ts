@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MapDiceRollerSidenav } from '../map-dice-roller-sidenav/map-dice-roller-sidenav';
@@ -23,7 +23,7 @@ import { LoadingIcon } from "../../loading-icon/loading-icon";
   templateUrl: './map-view.html',
   styleUrl: './map-view.scss',
 })
-export class MapView implements OnInit {
+export class MapView implements OnInit, OnDestroy {
   
   //Internal attributes
   protected isLoading = signal<boolean>(true);
@@ -37,8 +37,6 @@ export class MapView implements OnInit {
   }
 
   ngOnInit() {
-    this.eventService.reset();
-
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     this.teamDataService.loadDataForTeam(teamName)
       .then(() => {
@@ -49,6 +47,10 @@ export class MapView implements OnInit {
       .finally(() => {
         this.isLoading.set(false);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.eventService.reset();
   }
 
   protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {

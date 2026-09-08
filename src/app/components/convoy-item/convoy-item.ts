@@ -9,10 +9,12 @@ import { KeyValuePipe } from '@angular/common';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 import { ItemRangeShape } from '../../data/interfaces/system/item-range';
 import { Engraving } from "../engraving/engraving";
+import { Currency } from "../currency/currency";
+import { UnitSkill } from "../unit-skill/unit-skill";
 
 @Component({
   selector: 'convoy-item',
-  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, Engraving],
+  imports: [MatDivider, KeyValuePipe, StatWithBuffIcon, Engraving, Currency, UnitSkill],
   templateUrl: './convoy-item.html',
   styleUrl: './convoy-item.scss',
 })
@@ -46,25 +48,40 @@ export class ConvoyItem implements OnChanges {
     return this.convoyDataService.getTagByName(name);
   }
 
-  protected formatUtilizedStatsText() : string {
-    const utilized = this.systemData()?.utilizedStats ?? [];
-    const targeted = this.systemData()?.targetedStats ?? [];
+  protected buildTitle() : string {
+    const uses: number = this.item().uses ?? 0;
+    
+    if (uses > 0)
+      return `${this.item().name} (${uses})`;
+    return this.item().name;
+  }
 
-    if(utilized.length < 1)
-      return "";
+  protected buildSubtitle() : string {
+    let subtitle: string = "";
+
+    const weaponRank: string = this.systemData()?.weaponRank ?? "";
+    const category: string = this.systemData()?.category ?? "";
+
+    if (weaponRank.length > 0)
+      subtitle += `${weaponRank} - ${category}`;
+    else
+      subtitle += `${category}`;
+
+    const utilized: string[] = this.systemData()?.utilizedStats ?? [];
+    const targeted: string[] = this.systemData()?.targetedStats ?? [];
     
     let stats : string = utilized.join("/");
     if(targeted.length > 0)
-      stats += " » " + targeted.join("/");
+      stats += ` » ${targeted.join("/")}`;
+    if(stats.length > 0)
+      stats = `(${stats})`;
 
-    return "(" + stats + ")";
+    return `${subtitle} ${stats}`.trimEnd();
   }
 
   protected hasNonZeroStatValue() : boolean {
     return Object.values(this.item().stats ?? {}).some(s => s.finalValue !== 0);
   }
 
-  protected sortStats() : number {
-    return 0;
-  }
+  protected doNotSortByKey() : number { return 0; }
 }

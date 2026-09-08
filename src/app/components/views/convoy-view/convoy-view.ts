@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatTabsModule } from "@angular/material/tabs";
@@ -21,7 +21,7 @@ import { ThemeService } from '../../../services/theme-service';
   templateUrl: './convoy-view.html',
   styleUrl: './convoy-view.scss',
 })
-export class ConvoyView implements OnInit {
+export class ConvoyView implements OnInit, OnDestroy {
 
   //Internal attributes
   protected isLoading = signal<boolean>(true);
@@ -40,6 +40,10 @@ export class ConvoyView implements OnInit {
       .finally(() => {
         this.isLoading.set(false);
       });
+  }
+
+  ngOnDestroy() {
+    this.convoyEventService.reset();
   }
 
   protected calculateNumberOfStripes() : number {
@@ -93,7 +97,7 @@ export class ConvoyView implements OnInit {
     if(sortValueB.length === 0) return -1;
 
     //If sort values are equal, subsort by name
-    if(sortValueA === sortValueB) 
+    if(sortValueA === sortValueB)
       return convoyItemA.name.toLowerCase().localeCompare(convoyItemB.name.toLowerCase());
     
     return sortValueA < sortValueB ? -1 : 1;

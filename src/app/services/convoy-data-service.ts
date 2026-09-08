@@ -10,11 +10,13 @@ import { IItemSort } from '../data/interfaces/storage/item-sort';
 import { IEngravingLookupService } from './interfaces/engraving-lookup-service';
 import { ISkillLookupService } from './interfaces/skill-lookup-service';
 import { lastValueFrom } from 'rxjs';
+import { ICurrencyConstantsLookupService } from './interfaces/currency-constants-lookup-service';
+import { ICurrencyConstants } from '../data/interfaces/system/currency-constants';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ConvoyDataService implements IEngravingLookupService, ISkillLookupService {
+export class ConvoyDataService implements ICurrencyConstantsLookupService, IEngravingLookupService, ISkillLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/convoy/';
 
@@ -61,6 +63,10 @@ export class ConvoyDataService implements IEngravingLookupService, ISkillLookupS
 
   public getWorksheetID() : string | undefined { return this.convoyData()?.workbookID ?? ''; }
   public isShopConfigured() : boolean { return this.convoyData()?.showShopLink ?? false; }
+
+  public getCurrencyConstants() : ICurrencyConstants | undefined {
+    return this.convoyData()?.currency;
+  } 
 
   public getConvoyItemsList() : IConvoyItem[] {
     return this.convoyData()?.convoyItems ?? [];
