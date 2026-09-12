@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ShopDataService } from '../../../services/shop-data-service';
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -21,7 +21,7 @@ import { ThemeService } from '../../../services/theme-service';
   templateUrl: './shop-view.html',
   styleUrl: './shop-view.scss',
 })
-export class ShopView implements OnInit {
+export class ShopView implements OnInit, OnDestroy {
 
   //Internal attributes
   protected isLoading = signal<boolean>(true);
@@ -40,6 +40,10 @@ export class ShopView implements OnInit {
       .finally(() => {
         this.isLoading.set(false);
       });
+  }
+
+  ngOnDestroy() {
+    this.shopEventService.reset();
   }
 
   protected calculateNumberOfStripes() : number {

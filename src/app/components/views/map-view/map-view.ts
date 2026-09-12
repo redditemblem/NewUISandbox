@@ -25,7 +25,11 @@ import { LoadingIcon } from "../../loading-icon/loading-icon";
 })
 export class MapView implements OnInit, OnDestroy {
   
+  //Constants
+  private readonly PAINT_TAB_INDEX: number = 2;
+
   //Internal attributes
+  protected selectedTabIndex = signal<number>(0);
   protected isLoading = signal<boolean>(true);
 
   constructor(private readonly route: ActivatedRoute, protected readonly breakpointService: BreakpointService, private readonly themeService: ThemeService, protected readonly teamDataService: TeamDataService, protected readonly eventService: MapEventService) {
@@ -54,7 +58,8 @@ export class MapView implements OnInit, OnDestroy {
   }
 
   protected SidebarTabs_selectedTabChange(event: MatTabChangeEvent) {
-    this.eventService.updatePaintMode(event.tab.ariaLabel === "Paintbrush");
+    this.selectedTabIndex.set(event.index);
+    this.eventService.updatePaintMode(event.index === this.PAINT_TAB_INDEX);
   }
 
   protected SegmentTabs_selectedTabChange(event: MatTabChangeEvent) {

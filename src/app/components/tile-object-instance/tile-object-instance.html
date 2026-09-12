@@ -8,10 +8,16 @@
         }
       </div>
     }
+    @let moveCostOverride = systemData()?.movementCostOverride ?? 0;
+    @if (moveCostOverride >= 99) {
+      <p>Prevents units from traversing this tile.</p>
+    } @else if (moveCostOverride > 0) {
+      <p>Allows this tile to be traversed for {{moveCostOverride}} movement cost.</p>
+    }
     @let hp = instanceData()?.hp;
     @let minRange = systemData()?.range?.minimum ?? 0;
     @let maxRange = systemData()?.range?.maximum ?? 0;
-    @if (hp !== undefined || minRange > 0 || maxRange > 0) {
+    @if (hp !== undefined || minRange > 0 || maxRange > 0 ) {
       <div class="statsContainer">
         @if (hp !== undefined) {
           <div class="hpStatContainer">
@@ -40,26 +46,31 @@
         }
       </div>
     }
-    @if (systemData()?.hpModifier !== 0 || dictHasKeys(systemData()?.combatStatModifiers) || dictHasKeys(systemData()?.statModifiers)) {
-      <div class="statsContainer">
-        @if (systemData()?.hpModifier !== 0) {
-          <div class="stat">
-            <p>HP</p>
-            <p>{{(systemData()?.hpModifier ?? 0) > 0 ? "+" : ""}}{{systemData()?.hpModifier}}%</p>
-          </div>
-        }
-        @for (stat of systemData()?.combatStatModifiers | keyvalue: doNotSortByKey; track stat.key) {
-          <div class="stat">
-            <p>{{stat.key}}</p>
-            <p>{{stat.value > 0 ? "+" : ""}}{{stat.value}}</p>
-          </div>
-        }
-        @for (stat of systemData()?.statModifiers | keyvalue: doNotSortByKey; track stat.key) {
-          <div class="stat">
-            <p>{{stat.key}}</p>
-            <p>{{stat.value > 0 ? "+" : ""}}{{stat.value}}</p>
-          </div>
-        }
+    @let hpModifier = systemData()?.hpModifier ?? 0;
+    @let hasCombatStatMods = dictHasKeys(systemData()?.combatStatModifiers);
+    @let hasStatMods = dictHasKeys(systemData()?.statModifiers);
+    @if (hpModifier !== 0 || hasCombatStatMods || hasStatMods ) {
+      <div class="primaryColorCard statsCard">
+        <div class="statsContainer">
+          @if (systemData()?.hpModifier !== 0) {
+            <div class="stat">
+              <p>HP</p>
+              <p>{{hpModifier > 0 ? "+" : ""}}{{hpModifier}}%</p>
+            </div>
+          }
+          @for (stat of systemData()?.combatStatModifiers | keyvalue: doNotSortByKey; track stat.key) {
+            <div class="stat">
+              <p>{{stat.key}}</p>
+              <p>{{stat.value > 0 ? "+" : ""}}{{stat.value}}</p>
+            </div>
+          }
+          @for (stat of systemData()?.statModifiers | keyvalue: doNotSortByKey; track stat.key) {
+            <div class="stat">
+              <p>{{stat.key}}</p>
+              <p>{{stat.value > 0 ? "+" : ""}}{{stat.value}}</p>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

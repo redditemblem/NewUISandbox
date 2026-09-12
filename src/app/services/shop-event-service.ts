@@ -8,6 +8,16 @@ import { StringDictionary } from '../data/interfaces/common/dictionaries';
 })
 export class ShopEventService {
 
+  /** Fully resets values stored in the event service back to their default state. */
+  public reset() {
+    this.sortItemsBy.set(undefined);
+    this.showExpandedItemData.set(false);
+
+    this.selectedItemCategories.set({});
+    this.selectedUtilizedStats.set({});
+    this.selectedTargetedStats.set({});
+  }
+
   public sortItemsBy = signal<IItemSort | undefined>(undefined);
   public showExpandedItemData = signal<boolean>(false);
   

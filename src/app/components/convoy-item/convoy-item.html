@@ -35,14 +35,16 @@
             }
         </div>
         <div class="convoyTextColumn">
-          @if (item().quantity > 1) {
-            <p>{{item().quantity}} Available</p>
-          }
           @if (item().owner.length > 0) {
             <p>Owned by {{item().owner}}</p>
           }
+          @if (item().quantity > 1) {
+            <p>{{item().quantity}} Available</p>
+          }
           @if (item().value > -1) {
-            <p>Sells for</p>&nbsp;<currency [amount]="item().value" [dataService]="convoyDataService" />
+            <div class="saleValue">
+              Sells for&nbsp;<currency [amount]="item().value" [dataService]="convoyDataService" />
+            </div>
           }
         </div>
     </div>

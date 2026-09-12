@@ -53,6 +53,11 @@ div.convoyTextColumn {
   flex-flow: column nowrap;
   align-items: end;
   font-size: var(--card-subheader-pixel-font-size);
+
+  div.saleValue {
+    display: flex;
+    flex-flow: row nowrap;
+  }
 }
 
 div.statsContainer {

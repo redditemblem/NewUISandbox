@@ -13,6 +13,14 @@
   row-gap: 8px;
 }
 
+div.statsCard {
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: 8px;
+  padding: 8px;
+  font-size: 0.8rem;
+}
+
 div.statsContainer {
   display: flex;
   flex-flow: row wrap;

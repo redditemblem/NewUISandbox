@@ -10,10 +10,11 @@ import { MatDivider } from "@angular/material/divider";
 import { KeyValuePipe } from '@angular/common';
 import { StatWithBuffIcon } from "../stat-with-buff-icon/stat-with-buff-icon";
 import { Currency } from "../currency/currency";
+import { UnitSkill } from '../unit-skill/unit-skill';
 
 @Component({
   selector: 'shop-item',
-  imports: [Engraving, MatDivider, KeyValuePipe, StatWithBuffIcon, Currency],
+  imports: [Engraving, MatDivider, KeyValuePipe, StatWithBuffIcon, Currency, UnitSkill],
   templateUrl: './shop-item.html',
   styleUrl: './shop-item.scss',
 })
@@ -47,25 +48,36 @@ export class ShopItem implements OnChanges {
     return this.shopDataService.getTagByName(name);
   }
 
-  protected formatUtilizedStatsText() : string {
-    const utilized = this.systemData()?.utilizedStats ?? [];
-    const targeted = this.systemData()?.targetedStats ?? [];
+  protected buildTitle() : string {
+    return this.item().name;
+  }
 
-    if(utilized.length < 1)
-      return "";
+  protected buildSubtitle() : string {
+    let subtitle: string = "";
+
+    const weaponRank: string = this.systemData()?.weaponRank ?? "";
+    const category: string = this.systemData()?.category ?? "";
+
+    if (weaponRank.length > 0)
+      subtitle += `${weaponRank} - ${category}`;
+    else
+      subtitle += `${category}`;
+
+    const utilized: string[] = this.systemData()?.utilizedStats ?? [];
+    const targeted: string[] = this.systemData()?.targetedStats ?? [];
     
     let stats : string = utilized.join("/");
     if(targeted.length > 0)
-      stats += " » " + targeted.join("/");
+      stats += ` » ${targeted.join("/")}`;
+    if(stats.length > 0)
+      stats = `(${stats})`;
 
-    return `(${stats})`;
+    return `${subtitle} ${stats}`.trimEnd();
   }
 
   protected hasNonZeroStatValue() : boolean {
     return Object.values(this.item().stats ?? {}).some(s => s.finalValue !== 0);
   }
 
-  protected sortStats() : number {
-    return 0;
-  }
+  protected doNotSortByKey() : number { return 0; }
 }

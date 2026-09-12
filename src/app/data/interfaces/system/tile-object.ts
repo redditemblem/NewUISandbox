@@ -11,6 +11,7 @@ export interface ITileObject {
     hpModifier?: number,
     combatStatModifiers?: StringDictionary<number>,
     statModifiers?: StringDictionary<number>,
+    movementCostOverride?: number,
     textFields?: string[]
 }
 
