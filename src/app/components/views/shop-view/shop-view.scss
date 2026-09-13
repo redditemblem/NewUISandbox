@@ -70,6 +70,14 @@ div.bannerStripe {
   }
 }
 
+#itemCountRow { 
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: end;
+  font-family: macExtMinecraft;
+  font-size: 0.8rem;
+}
+
 #emptyShopItemsContainer {
   display: flex;
   flex-flow: column nowrap;

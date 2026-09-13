@@ -3,6 +3,18 @@
     <loading-icon />
   </div>
 }
+@else if (!shopDataService.isShopConfigured()) {
+  <div class="loadingErrorBackground">
+      <div class="errorRow">
+          <div class="errorColumn">
+              <h1 class="warning">Whoops, you don't have access.</h1>
+              @for (error of shopDataService.errorMessages(); track $index) {
+                <p>{{error}}</p>
+              }
+          </div>
+      </div>
+  </div>
+}
 @else if (shopDataService.errorMessages().length > 0) {
   <div class="loadingErrorBackground">
     <div class="errorRow">
@@ -53,8 +65,13 @@
         <img id="shopLabel" src="img/shop_logo.png" alt="Shop logo" />
       </div>
       <div id="shopItemsContainer">
-        @if (shopDataService.getShopItemsList().length > 0) {
-          @for(item of getFilteredShopItemsList(); track $index) {
+        @let shopItemCount = shopDataService.getShopItemsList().length;
+        @if (shopItemCount > 0) {
+          @let filteredItemsList = getFilteredShopItemsList();
+          <div id="itemCountRow">
+            <b>{{filteredItemsList.length}} of {{shopItemCount}} items visible</b>
+          </div>
+          @for(item of filteredItemsList; track $index) {
             <shop-item [item]="item" [expand]="shopEventService.showExpandedItemData()" />
           }
           @empty {

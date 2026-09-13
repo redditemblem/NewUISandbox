@@ -23,6 +23,9 @@ export class ConvoyDataService implements ICurrencyConstantsLookupService, IEngr
   private errors = signal<string[]>([]);
   public readonly errorMessages = this.errors.asReadonly();
 
+  private convoyConfigured = signal<boolean>(true);
+  public readonly isConvoyConfigured = this.convoyConfigured.asReadonly();
+
   private convoy = signal<IConvoyData | undefined>(undefined);
   public readonly convoyData = this.convoy.asReadonly();
 
@@ -32,6 +35,7 @@ export class ConvoyDataService implements ICurrencyConstantsLookupService, IEngr
 
   public async loadDataForTeam(teamName: string) {
     this.errors.set([]);
+    this.convoyConfigured.set(true);
     this.convoy.set(undefined);
 
     await lastValueFrom(this.http.get<IConvoyData>(`${this.apiUrl}${teamName}`, {responseType: 'json'}))
@@ -43,10 +47,12 @@ export class ConvoyDataService implements ICurrencyConstantsLookupService, IEngr
           this.errors.set(["HTTP request failed. Unable to contact the API endpoint."]);
         }
         else {
+          this.convoyConfigured.set(response.status !== 403);
+
           const nestedErrors: string[] = this.flattenNestedErrorMessages(response.error, []);
           this.errors.set(nestedErrors);
-        }
-      });
+       }
+    });
   }
 
   /** Recursively loops through nested exceptions and flattens their messages into a string array. */

@@ -10,6 +10,24 @@
   <mat-slide-toggle (change)="shopEventService.showExpandedItemData.set(!shopEventService.showExpandedItemData())">
     Expand all shop item information
   </mat-slide-toggle>
+  <mat-divider />
+  <ul>
+    <li>
+      <mat-checkbox (change)="newItemsCheckbox_OnChange($event)">
+        New
+      </mat-checkbox>
+    </li>
+    <li>
+      <mat-checkbox (change)="onSaleItemsCheckbox_OnChange($event)">
+        On Sale
+      </mat-checkbox>
+    </li>
+    <li>
+      <mat-checkbox (change)="outOfStockItemsCheckbox_OnChange($event)">
+        Out of Stock
+      </mat-checkbox>
+    </li>
+  </ul>
   @let categories = shopDataService.getShopItemCategories();
   @if (categories.length > 0) {
     <mat-divider />
@@ -21,7 +39,7 @@
                     (change)="itemCategoryCheckbox_OnChange($event)">
           All
       </mat-checkbox>
-      <ul>
+      <ul class="padChildren">
         @for (category of shopDataService.getShopItemCategories(); track category) {
           <li>
             <mat-checkbox checked 
@@ -48,7 +66,7 @@
                       (change)="utilizedStatCheckbox_OnChange($event)">
             All
         </mat-checkbox>
-        <ul>
+        <ul class="padChildren">
           @for (stat of shopDataService.getShopItemUtilizedStats(); track stat) {
             <li>
               <mat-checkbox checked
@@ -71,7 +89,7 @@
                       (change)="targetedStatCheckbox_OnChange($event)">
             All
         </mat-checkbox>
-        <ul>
+        <ul class="padChildren">
           @for (stat of shopDataService.getShopItemTargetedStats(); track stat) {
             <li>
               <mat-checkbox checked

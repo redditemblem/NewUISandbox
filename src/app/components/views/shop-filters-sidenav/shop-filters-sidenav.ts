@@ -16,9 +16,6 @@ import { MatDivider } from "@angular/material/divider";
 })
 export class ShopFiltersSidenav implements OnInit {
 
-  protected sortBy = signal<IItemSort | undefined>(undefined);
-  protected ownedBy = signal<string | undefined>(undefined);
-
   constructor(protected shopDataService: ShopDataService, protected shopEventService: ShopEventService) {
     this.shopDataService = inject(ShopDataService);
     this.shopEventService = inject(ShopEventService);
@@ -28,6 +25,18 @@ export class ShopFiltersSidenav implements OnInit {
     const sorts = this.shopDataService.getShopItemSorts();
     if(sorts.length > 0)
       this.shopEventService.sortItemsBy.set(sorts[0]);
+  }
+
+  protected newItemsCheckbox_OnChange(event: MatCheckboxChange) {
+    this.shopEventService.showNew.set(!this.shopEventService.showNew());
+  }
+
+  protected onSaleItemsCheckbox_OnChange(event: MatCheckboxChange) {
+    this.shopEventService.showOnSale.set(!this.shopEventService.showOnSale());
+  }
+
+  protected outOfStockItemsCheckbox_OnChange(event: MatCheckboxChange) {
+    this.shopEventService.showOutOfStock.set(!this.shopEventService.showOutOfStock());
   }
 
   protected itemCategoryCheckbox_OnChange(event: MatCheckboxChange) {

@@ -53,7 +53,8 @@
         </div>
     </div>
     @if (expand() || isExpanded()) {
-      @if ((systemData()?.maxUses ?? 0) > 0 || (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.utilizedStats ?? []).length > 0) {
+      @let hasRange = (systemData()?.range?.minimum ?? 0) > 0 || (systemData()?.range?.minimumRequiresCalculation ?? false);
+      @if ((systemData()?.maxUses ?? 0) > 0 || hasRange || (systemData()?.utilizedStats ?? []).length > 0) {
         <mat-divider />
         <div class="statsContainer">
           @if ((systemData()?.utilizedStats ?? []).length > 0 || hasNonZeroStatValue())
@@ -65,8 +66,8 @@
               </div>
             }
           }
-          @let minimumRange = systemData()?.range?.minimum ?? 0;
-          @if (minimumRange > 0 || (systemData()?.range?.minimumRequiresCalculation ?? false)) {
+          @if (hasRange) {
+            @let minimumRange = systemData()?.range?.minimum ?? 0;
             @let maximumRange = systemData()?.range?.maximum ?? 0;
             <div class="stat">
               <div>Rng</div>

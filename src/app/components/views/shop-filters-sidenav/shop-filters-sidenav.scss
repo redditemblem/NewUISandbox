@@ -21,6 +21,11 @@ div.shopFiltersContainer {
   ul {
     list-style-type: none;
     margin: 0px;
+    padding: 0px;
+
+    &.padChildren {
+      padding-left: 24px;
+    }
   }
 }
 
@@ -64,8 +69,4 @@ mat-checkbox {
     selected-checkmark-color: var(--tertiary-theme-color-dim),
     label-text-font: macExtMinecraft
   ));
-}
-
-ul {
-  padding-left: 24px;
 }

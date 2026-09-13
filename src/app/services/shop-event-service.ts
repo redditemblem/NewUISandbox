@@ -12,6 +12,9 @@ export class ShopEventService {
   public reset() {
     this.sortItemsBy.set(undefined);
     this.showExpandedItemData.set(false);
+    this.showNew.set(false);
+    this.showOnSale.set(false);
+    this.showOutOfStock.set(false);
 
     this.selectedItemCategories.set({});
     this.selectedUtilizedStats.set({});
@@ -20,7 +23,11 @@ export class ShopEventService {
 
   public sortItemsBy = signal<IItemSort | undefined>(undefined);
   public showExpandedItemData = signal<boolean>(false);
-  
+
+  public showNew = signal<boolean>(false);
+  public showOnSale = signal<boolean>(false);
+  public showOutOfStock = signal<boolean>(false);
+
   // #region Item Category Filter
 
   private selectedItemCategories = signal<StringDictionary<boolean>>({});

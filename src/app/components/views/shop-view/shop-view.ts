@@ -55,7 +55,10 @@ export class ShopView implements OnInit, OnDestroy {
 
   protected getFilteredShopItemsList(): IShopItem[] {
     return this.shopDataService.getShopItemsList()
-      .filter(item => this.itemCategoryMatchesFilter(item)
+      .filter(item => this.itemHasStock(item)
+        && this.itemMeetsNewRestrictions(item)
+        && this.itemMeetsSaleRestrictions(item)
+        && this.itemCategoryMatchesFilter(item)
         && this.itemUtilizedStatsMatchFilter(item)
         && this.itemTargetedStatsMatchFilter(item)
       )
@@ -99,6 +102,20 @@ export class ShopView implements OnInit, OnDestroy {
       return shopItemA.name.toLowerCase().localeCompare(shopItemB.name.toLowerCase());
     
     return sortValueA < sortValueB ? -1 : 1;
+  }
+
+  private itemHasStock(item: IShopItem) : boolean {
+    if (this.shopEventService.showOutOfStock())
+      return item.stock === 0;
+    return item.stock > 0;
+  }
+
+  private itemMeetsNewRestrictions(item: IShopItem) : boolean {
+    return !this.shopEventService.showNew() || item.isNew;
+  }
+
+  private itemMeetsSaleRestrictions(item: IShopItem) : boolean {
+    return !this.shopEventService.showOnSale() || item.salePrice !== item.price;
   }
 
   private itemCategoryMatchesFilter(item: IShopItem) : boolean {

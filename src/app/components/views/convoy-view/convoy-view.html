@@ -3,6 +3,18 @@
     <loading-icon />
   </div>
 }
+@else if (!convoyDataService.isConvoyConfigured()) {
+  <div class="loadingErrorBackground">
+      <div class="errorRow">
+          <div class="errorColumn">
+              <h1 class="warning">Whoops, you don't have access.</h1>
+              @for (error of convoyDataService.errorMessages(); track $index) {
+                <p>{{error}}</p>
+              }
+          </div>
+      </div>
+  </div>
+}
 @else if (convoyDataService.errorMessages().length > 0) {
   <div class="loadingErrorBackground">
     <div class="errorRow">
@@ -54,8 +66,13 @@
         <img id="convoyLabel" src="img/convoy_logo.png" alt="Convoy logo" />
       </div>
       <div id="convoyItemsContainer">
-        @if (convoyDataService.getConvoyItemsList().length > 0) {
-          @for(item of getFilteredConvoyItemsList(); track $index) {
+        @let convoyItemCount = convoyDataService.getConvoyItemsList().length;
+        @if (convoyItemCount > 0) {
+          @let filteredItemsList = getFilteredConvoyItemsList();
+          <div id="itemCountRow">
+            <b>{{filteredItemsList.length}} of {{convoyItemCount}} items visible</b>
+          </div>
+          @for(item of filteredItemsList; track $index) {
             <convoy-item [item]="item" [expand]="convoyEventService.showExpandedItemData()" />
           }
           @empty {

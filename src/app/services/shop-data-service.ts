@@ -23,6 +23,9 @@ export class ShopDataService implements ICurrencyConstantsLookupService, IEngrav
   private errors = signal<string[]>([]);
   public readonly errorMessages = this.errors.asReadonly();
 
+  private shopConfigured = signal<boolean>(true);
+  public readonly isShopConfigured = this.shopConfigured.asReadonly();
+
   private shop = signal<IShopData | undefined>(undefined);
   public readonly shopData = this.shop.asReadonly();
 
@@ -32,6 +35,7 @@ export class ShopDataService implements ICurrencyConstantsLookupService, IEngrav
 
   public async loadDataForTeam(teamName: string) {
     this.errors.set([]);
+    this.shopConfigured.set(true);
     this.shop.set(undefined);
 
     await firstValueFrom(this.http.get<IShopData>(`${this.apiUrl}${teamName}`, {responseType: 'json'}))
@@ -43,6 +47,8 @@ export class ShopDataService implements ICurrencyConstantsLookupService, IEngrav
           this.errors.set(["HTTP request failed. Unable to contact the API endpoint."]);
         }
         else {
+          this.shopConfigured.set(response.status !== 403);
+
           const nestedErrors: string[] = this.flattenNestedErrorMessages(response.error, []);
           this.errors.set(nestedErrors);
         }
