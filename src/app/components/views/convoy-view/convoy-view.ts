@@ -2,12 +2,12 @@ import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BreakpointService } from '../../../services/breakpoint-service';
 import { MatTabsModule } from "@angular/material/tabs";
-import { LinksSidenav } from "../links-sidenav/links-sidenav";
+import { LinksSidenav } from "../../sidenavs/links-sidenav/links-sidenav";
 import { ConvoyDataService } from '../../../services/convoy-data-service';
 import { ActivatedRoute } from '@angular/router';
 import { ConvoyItem } from '../../convoy-item/convoy-item';
 import { IConvoyItem } from '../../../data/interfaces/storage/convoy/convoy-item';
-import { ConvoyFiltersSidenav } from "../convoy-filters-sidenav/convoy-filters-sidenav";
+import { ConvoyFiltersSidenav } from "../../sidenavs/convoy-filters-sidenav/convoy-filters-sidenav";
 import { MatButtonModule } from '@angular/material/button';
 import { ConvoyEventService } from '../../../services/convoy-event-service';
 import { IItem } from '../../../data/interfaces/system/item';
