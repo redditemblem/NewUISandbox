@@ -2,6 +2,13 @@ import { inject, Injectable, signal } from '@angular/core';
 import { IMapData } from '../data/interfaces/map/map-data';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { IMapSegment } from '../data/interfaces/map/map-segment';
+import { ITile } from '../data/interfaces/map/tile';
+
+export interface IAnalysisWarpGroup {
+  groupNumber: number,
+  coordinates: string
+};
 
 @Injectable({
   providedIn: 'root',
@@ -62,4 +69,29 @@ export class MapAnalysisDataService {
   public isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
   public getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
 
+  public getWarpGroupsList() : IAnalysisWarpGroup[] {
+    const segments: IMapSegment[] = this.mapData()?.map?.segments ?? [];
+    const warpGroups: IAnalysisWarpGroup[] = [];
+
+    for (const segment of segments) {
+      for (const row of segment.tiles) {
+        
+        //Search row of tiles for any in a warp group
+        const tilesInWarpGroup: ITile[] = row.filter(t => (t.warpData?.inWarpGroup ?? false) && (t.warpData?.warpGroupNumber ?? 0) > 0);
+        for (const tile of tilesInWarpGroup) {
+          
+          //If we haven't cataloged this warp group number yet, add it to our list
+          if (!warpGroups.some(g => g.groupNumber === (tile.warpData?.warpGroupNumber ?? 0))) {
+            warpGroups.push({
+              groupNumber: tile.warpData?.warpGroupNumber ?? 0,
+              coordinates: tile.warpData?.warpGroupCoordinates ?? ""
+            });
+          }
+        }
+
+      }
+    }
+
+    return warpGroups;
+  }
 }

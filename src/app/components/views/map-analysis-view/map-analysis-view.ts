@@ -11,10 +11,11 @@ import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { LinksSidenav } from '../../sidenavs/links-sidenav/links-sidenav';
 import { IMapSegment } from '../../../data/interfaces/map/map-segment';
 import { MatFabButton } from '@angular/material/button';
+import { MapAnalysisOptionsSidenav } from '../../sidenavs/map-analysis-options-sidenav/map-analysis-options-sidenav';
 
 @Component({
   selector: 'map-analysis-view',
-  imports: [LoadingIcon, MatIconModule, MatSidenavModule, MatTabsModule, LinksSidenav, MatFabButton],
+  imports: [LoadingIcon, MatIconModule, MatSidenavModule, MatTabsModule, LinksSidenav, MatFabButton, MapAnalysisOptionsSidenav],
   templateUrl: './map-analysis-view.html',
   styleUrl: './map-analysis-view.scss',
 })
@@ -34,6 +35,11 @@ export class MapAnalysisView implements OnInit, OnDestroy {
   ngOnInit() {
     const teamName = this.route.snapshot.paramMap.get("teamName") ?? "";
     this.analysisDataService.loadDataForTeam(teamName)
+      .then(() => {
+        const segment: IMapSegment | undefined = this.analysisDataService.mapData().map?.segments.at(0);
+        if(segment !== undefined)
+          this.eventService.updateSelectedSegment(segment);
+      })
       .finally(() => {
         this.isLoading.set(false);
       });
