@@ -29,11 +29,12 @@ import { ITileObjectInstance } from '../data/interfaces/map/tile-object-instance
 import { ITileObject } from '../data/interfaces/system/tile-object';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { ITile } from '../data/interfaces/map/tile';
+import { ITerrainTypeLookupService } from './interfaces/terrain-type-lookup-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TeamDataService implements ICurrencyConstantsLookupService, IEngravingLookupService, ISkillLookupService {
+export class TeamDataService implements ICurrencyConstantsLookupService, IEngravingLookupService, ISkillLookupService, ITerrainTypeLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/';
 

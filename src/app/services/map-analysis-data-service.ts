@@ -1,9 +1,12 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { IMapData } from '../data/interfaces/map/map-data';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { first, firstValueFrom } from 'rxjs';
 import { IMapSegment } from '../data/interfaces/map/map-segment';
 import { ITile } from '../data/interfaces/map/tile';
+import { ITerrainType } from '../data/interfaces/system/terrain-type';
+import { StringDictionary } from '../data/interfaces/common/dictionaries';
+import { ITerrainTypeLookupService } from './interfaces/terrain-type-lookup-service';
 
 export interface IAnalysisWarpGroup {
   groupNumber: number,
@@ -13,7 +16,7 @@ export interface IAnalysisWarpGroup {
 @Injectable({
   providedIn: 'root',
 })
-export class MapAnalysisDataService {
+export class MapAnalysisDataService implements ITerrainTypeLookupService {
 
   private readonly apiUrl = 'https://2zxk6z36pe.execute-api.us-east-2.amazonaws.com/Prod/api/map/analyze/';
 
@@ -68,6 +71,43 @@ export class MapAnalysisDataService {
   public isConvoyConfigured() : boolean { return this.mapData().showConvoyLink ?? false; }
   public isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
   public getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
+
+  public getTerrainTypeByName(name: string) : ITerrainType | undefined {
+    const dict = this.mapData().system?.terrainTypes;
+    if(!dict || !name) return undefined;
+    else return dict[name];
+  }
+
+  public getMovementTypes() : string[] {
+    const terrainTypes: StringDictionary<ITerrainType> = this.mapData()?.system?.terrainTypes ?? {};
+    const keys: string[] = Object.keys(terrainTypes);
+
+    if (keys.length < 1) return [];
+    
+    const firstType: ITerrainType = terrainTypes[keys[0]];
+    if ((firstType?.statGroups?.length ?? 0) < 1)
+      return [];
+
+    const costs: string[] = Object.keys(firstType.statGroups![0].movementCosts);
+    return costs.sort();
+  }
+
+  public getTerrainTypes() : string[] {
+    const terrainTypes: string[] = Object.keys(this.mapData()?.system?.terrainTypes ?? {});
+    return terrainTypes.sort();
+  }
+
+  public getTerrainTypeAffiliationGroupings() : string[] {
+    const affiliationGroups: string[] = [ "No Filter / Default" ];
+
+    const terrainTypes: StringDictionary<ITerrainType> = this.mapData()?.system?.terrainTypes ?? {};
+    const typesWithStatGroups: ITerrainType[] = Object.values(terrainTypes).filter(t => (t.statGroups?.length ?? 0) > 1);
+
+    const affiliations: string[] = typesWithStatGroups.flatMap(t => t.statGroups?.flatMap(g => g.affiliationNames ?? []) ?? []);
+    affiliationGroups.push(...[...new Set(affiliations)]);
+
+    return affiliationGroups;
+  }
 
   public getWarpGroupsList() : IAnalysisWarpGroup[] {
     const segments: IMapSegment[] = this.mapData()?.map?.segments ?? [];

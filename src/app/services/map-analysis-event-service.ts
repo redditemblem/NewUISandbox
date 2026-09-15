@@ -15,6 +15,9 @@ export class MapAnalysisEventService {
     this.mode.set("moveCost");
     this.segment.set(undefined);
 
+    this.movementType.set(undefined);
+    this.affiliationGroup.set(undefined);
+    this.terrainType.set(undefined);
     this.warpGroup.set(undefined);
     this.specialtyMode.set(undefined);
   }
@@ -31,6 +34,19 @@ export class MapAnalysisEventService {
   }
 
   // #endregion Selected Segment and Tile
+
+  // #region Movement Type
+
+  public movementType = signal<string | undefined>(undefined);
+  public affiliationGroup = signal<string | undefined>(undefined);
+
+  // #endregion Movement Type
+
+  // #region Terrain Type
+
+  public terrainType = signal<string | undefined>(undefined);
+
+  // #endregion Terrain Type
 
   // #region Warp Groups
 

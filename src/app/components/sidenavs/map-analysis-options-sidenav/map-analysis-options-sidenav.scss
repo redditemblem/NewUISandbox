@@ -3,10 +3,16 @@
 div.optionsContainer {
   display: flex;
   flex-flow: column nowrap;
-  row-gap: 12px;
+  row-gap: 24px;
   padding: 8px;
 
   p { margin: 0px; }
+}
+
+div.modeContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: 12px;
 }
 
 mat-form-field {

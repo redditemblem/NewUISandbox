@@ -23,7 +23,7 @@
         <text-fields-with-labeled-header label="Unit" [title]="unitNames" />
       }
       @let terrainTypeData = this.teamDataService.getTerrainTypeByName(tile.terrainType);
-      <tile-terrain-type [name]="tile.terrainType" [isWarp]="tile.warpData?.inWarpGroup ?? false" />
+      <tile-terrain-type [name]="tile.terrainType" [isWarp]="tile.warpData?.inWarpGroup ?? false" [dataService]="teamDataService" />
       @if (tile.warpData?.inWarpGroup ?? false) {
         @let warpTypeDesc = getWarpTypeDescription(terrainTypeData?.warpType ?? 0);
         <text-fields-with-labeled-header label="Warp" [title]="warpTypeDesc" [textFields]="[`Connected Tiles: ${tile.warpData?.warpGroupCoordinates ?? ''}`]" />

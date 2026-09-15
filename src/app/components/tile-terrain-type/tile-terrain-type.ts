@@ -1,10 +1,10 @@
-import { Component, inject, input, OnChanges, signal } from '@angular/core';
-import { TeamDataService } from '../../services/team-data-service';
+import { Component, input, OnChanges, signal } from '@angular/core';
 import { ITerrainType } from '../../data/interfaces/system/terrain-type';
 import { TextFieldsWithLabeledHeader } from "../text-fields-with-labeled-header/text-fields-with-labeled-header";
 import { ITerrainTypeStats } from '../../data/interfaces/system/terrain-type-stats';
 import { KeyValuePipe } from '@angular/common';
 import { StringDictionary } from '../../data/interfaces/common/dictionaries';
+import { ITerrainTypeLookupService } from '../../services/interfaces/terrain-type-lookup-service';
 
 @Component({
   selector: 'tile-terrain-type',
@@ -17,16 +17,13 @@ export class TileTerrainType implements OnChanges {
   //External inputs
   public name = input.required<string>();
   public isWarp = input.required<boolean>();
+  public dataService = input.required<ITerrainTypeLookupService>();
 
   //Internal attributes
   protected systemData = signal<ITerrainType | undefined>(undefined);
 
-  constructor(private readonly teamDataService: TeamDataService) {
-    this.teamDataService = inject(TeamDataService);
-  }
-
   ngOnChanges() {
-    this.systemData.set(this.teamDataService.getTerrainTypeByName(this.name()));
+    this.systemData.set(this.dataService().getTerrainTypeByName(this.name()));
   }
 
   protected buildStatGroupTitle(statGroup: ITerrainTypeStats) : string {
