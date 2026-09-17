@@ -1,5 +1,7 @@
 <div class="terrainTypeContainer">
-  <text-fields-with-labeled-header label="Terrain" [title]="name()" [textFields]="systemData()?.textFields" />
+  @if (includeHeader()) {
+    <text-fields-with-labeled-header label="Terrain" [title]="name()" [textFields]="systemData()?.textFields" />
+  }
   <div class="indentedContent">
     @for (statGroup of systemData()?.statGroups; track $index) {
       <div class="primaryColorCard statGroupContainer">

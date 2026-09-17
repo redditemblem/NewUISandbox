@@ -7,6 +7,7 @@ import { ITile } from '../data/interfaces/map/tile';
 import { ITerrainType } from '../data/interfaces/system/terrain-type';
 import { StringDictionary } from '../data/interfaces/common/dictionaries';
 import { ITerrainTypeLookupService } from './interfaces/terrain-type-lookup-service';
+import { IMapConstants } from '../data/interfaces/map/map-constants';
 
 export interface IAnalysisWarpGroup {
   groupNumber: number,
@@ -72,6 +73,10 @@ export class MapAnalysisDataService implements ITerrainTypeLookupService {
   public isShopConfigured() : boolean { return this.mapData().showShopLink ?? false; }
   public getChapterPostUrl() : string | undefined { return this.mapData().map?.chapterPostURL; }
 
+  public getMapConstants() : IMapConstants | undefined {
+    return this.mapData().map?.constants;
+  }
+
   public getTerrainTypeByName(name: string) : ITerrainType | undefined {
     const dict = this.mapData().system?.terrainTypes;
     if(!dict || !name) return undefined;
@@ -132,6 +137,6 @@ export class MapAnalysisDataService implements ITerrainTypeLookupService {
       }
     }
 
-    return warpGroups;
+    return warpGroups.sort((a, b) => a.groupNumber - b.groupNumber);
   }
 }

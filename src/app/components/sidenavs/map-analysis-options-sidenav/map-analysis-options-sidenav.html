@@ -14,7 +14,6 @@
       <mat-option value="specialty">Specialty Settings</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-divider />
   <div class="modeContainer">
     @if (eventService.mode() === "moveCost") {
       <p>Movement Costs mode will highlight all terrain traversable by the selected Movement Type and display its movement cost.</p>
@@ -46,7 +45,7 @@
         </mat-select>
       </mat-form-field>
       @if (eventService.terrainType() !== undefined) {
-        <tile-terrain-type [name]="eventService.terrainType()!" [isWarp]="false" [dataService]="analysisDataService" />
+        <tile-terrain-type [name]="eventService.terrainType()!" [isWarp]="false" [dataService]="analysisDataService" [includeHeader]="false" />
       }
     }
     @else if (eventService.mode() === "warpGroup") {

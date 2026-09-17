@@ -18,6 +18,7 @@ export class TileTerrainType implements OnChanges {
   public name = input.required<string>();
   public isWarp = input.required<boolean>();
   public dataService = input.required<ITerrainTypeLookupService>();
+  public includeHeader = input<boolean>(true);
 
   //Internal attributes
   protected systemData = signal<ITerrainType | undefined>(undefined);
