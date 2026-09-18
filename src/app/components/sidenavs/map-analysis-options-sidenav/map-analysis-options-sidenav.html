@@ -25,14 +25,16 @@
           }
         </mat-select>
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>Affiliation Filter</mat-label>
-        <mat-select [(value)]="eventService.affiliationGroup">
-          @for (group of affiliationGroupsList; track group) {
-            <mat-option [value]="group">{{group}}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      @if (affiliationGroupsList.length > 1) {
+        <mat-form-field>
+          <mat-label>Affiliation Filter</mat-label>
+          <mat-select [(value)]="eventService.affiliationGroup">
+            @for (group of affiliationGroupsList; track group) {
+              <mat-option [value]="group">{{group}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
     }
     @else if (eventService.mode() === "terrainType") {
       <p>Terrain Types mode will highlight all terrain of the selected Terrain Type.</p>

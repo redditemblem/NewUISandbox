@@ -53,11 +53,7 @@ export class MapAnalysisCanvas implements OnInit, OnDestroy {
       crossOrigin: '*'
     });
 
-    await Promise.all([
-      this.loadCommonAssets(),
-      this.initializePixiApp(pixiContainer)
-    ]);
-
+    await this.initializePixiApp(pixiContainer);
     await this.createSegmentContainers();
     
     this.updateActiveSegment(this.eventService.selectedSegment());
@@ -66,15 +62,6 @@ export class MapAnalysisCanvas implements OnInit, OnDestroy {
   ngOnDestroy() {
     //Completely destroys the canvas, all children, etc.
     this.pixiApp.destroy(true, true);
-  }
-
-  private async loadCommonAssets() {
-    await Assets.load({
-      src: 'fonts/macExtendedMinecraft.woff2',
-      data: {
-        family: 'macExtendedMinecraft'
-      }
-    });
   }
 
   /**

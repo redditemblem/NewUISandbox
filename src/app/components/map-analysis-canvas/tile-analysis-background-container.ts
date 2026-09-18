@@ -1,9 +1,11 @@
 import { effect, inject, Injector, runInInjectionContext } from "@angular/core";
 import { Container, Graphics, Text } from "pixi.js";
-import { MapAnalysisEventService, MapAnalysisMode } from "../../services/map-analysis-event-service";
+import { MapAnalysisEventService, MapAnalysisMode, MapAnalysisSpecialtyMode } from "../../services/map-analysis-event-service";
 import { ITile } from "../../data/interfaces/map/tile";
-import { ITerrainType } from "../../data/interfaces/system/terrain-type";
-import { MapAnalysisDataService } from "../../services/map-analysis-data-service";
+import { ITerrainType, WarpType } from "../../data/interfaces/system/terrain-type";
+import { IAnalysisWarpGroup, MapAnalysisDataService } from "../../services/map-analysis-data-service";
+import { ITerrainTypeStats } from "../../data/interfaces/system/terrain-type-stats";
+import { ITileWarpData } from "../../data/interfaces/map/tile-warp-data";
 
 export class TileAnalysisBackgroundContainer extends Container {
   
@@ -13,8 +15,8 @@ export class TileAnalysisBackgroundContainer extends Container {
   private readonly HIGH_MOVE_COST_COLOR = "#db1212";
   private readonly EXTREME_MOVE_COST_COLOR = "#992DE4";
 
-  private readonly WHITE_STROKE_COLOR = "#ffffff";
-  private readonly BLACK_STROKE_COLOR = "#000000";
+  private readonly WHITE_SHADOW_COLOR = "#ffffff";
+  private readonly BLACK_SHADOW_COLOR = "#000000";
 
   //Internal attributes
   private eventService: MapAnalysisEventService | undefined;
@@ -64,16 +66,21 @@ export class TileAnalysisBackgroundContainer extends Container {
   }
 
   private createText(): Text {
-    const tileMidpoint: number = this.dimensions / 2;
+    const tileMidpoint: number = Math.ceil(this.dimensions / 2);
     return new Text({
       text: "1",
       style: {
         fontSize: Math.floor(this.dimensions * 0.75),
+        fontWeight: 'bold',
         fill: this.LOW_MOVE_COST_COLOR,
-        stroke: {
-          color: this.WHITE_STROKE_COLOR,
-          width: 2
+        dropShadow: {
+          color: this.WHITE_SHADOW_COLOR,
+          blur: 0,
+          distance: 2
         }
+      },
+      textureStyle: {
+        scaleMode: 'nearest', //make the text crisp
       },
       anchor: 0.5,
       x: tileMidpoint,
@@ -86,6 +93,8 @@ export class TileAnalysisBackgroundContainer extends Container {
   }
 
   private updateState(mode: MapAnalysisMode) {
+    this.hideChildren();
+
     switch (mode) {
       case "moveCost": this.updateMovementCostState(); break;
       case "terrainType": this.updateTerrainTypeState(); break;
@@ -102,9 +111,18 @@ export class TileAnalysisBackgroundContainer extends Container {
   }
 
   private updateMovementCostState() {
-    const movementType: string = this.eventService?.movementType() ?? "";
-    const movementCost: number = this.terrainType?.statGroups![0].movementCosts[movementType] ?? -1;
+    //If we've selected an actual affiliation group filter, locate the first stat group with that
+    //affiliation group name in its list.
+    const affiliationGroup: string = this.eventService?.affiliationGroup() ?? "";
 
+    let statGroup: ITerrainTypeStats | undefined;
+    if (affiliationGroup.length > 0 && affiliationGroup !== "No Filter / Default")
+      statGroup = this.terrainType?.statGroups?.find(g => g.affiliationNames?.some(aff => aff === affiliationGroup));
+    else
+      statGroup = this.terrainType?.statGroups?.find(g => (g.affiliationNames?.length ?? 0) === 0);
+
+    const movementType: string = this.eventService?.movementType() ?? "";
+    const movementCost: number = statGroup?.movementCosts[movementType] ?? -1;
     if (movementCost < 0 || movementCost >= 99) {
       this.hideChildren();
       return;
@@ -115,7 +133,7 @@ export class TileAnalysisBackgroundContainer extends Container {
 
     this.text.text = movementCost;
     this.text.style.fill = this.getMovementCostTextColor(movementCost);
-    this.text.style.stroke = { color: this.getMovementCostTextStrokeColor(movementCost), width: 2 };
+    this.text.style.dropShadow.color = this.getMovementCostTextShadowColor(movementCost);
   }
 
   private getMovementCostTextColor(cost: number) : string {
@@ -129,37 +147,72 @@ export class TileAnalysisBackgroundContainer extends Container {
     return this.LOW_MOVE_COST_COLOR;
   }
 
-  private getMovementCostTextStrokeColor(cost: number) {
+  private getMovementCostTextShadowColor(cost: number) {
     if (cost >= 2)
-      return this.BLACK_STROKE_COLOR;
+      return this.BLACK_SHADOW_COLOR;
 
-    return this.WHITE_STROKE_COLOR;
+    return this.WHITE_SHADOW_COLOR;
   }
 
   private updateTerrainTypeState() {
-    if (this.terrainType === undefined) {
+    const terrainType: string = this.eventService?.terrainType() ?? "";
+    if (terrainType.length < 1 || this.terrainType?.name !== terrainType) {
       this.hideChildren();
       return;
     }
 
-    this.tintGraphic.visible = false;
+    this.tintGraphic.visible = true;
   }
 
   private updateWarpGroupState() {
-    if (this.terrainType === undefined) {
+    const warpGroup: IAnalysisWarpGroup | undefined = this.eventService?.warpGroup();
+    const tileWarpData: ITileWarpData | undefined = this.tile.warpData;
+
+    if (warpGroup === undefined || this.terrainType === undefined || warpGroup.groupNumber !== tileWarpData?.warpGroupNumber) {
       this.hideChildren();
       return;
     }
 
-    this.tintGraphic.visible = false;
+    this.tintGraphic.visible = true;
+    this.text.visible = true;
+
+    const warpCost: number = this.terrainType?.warpCost ?? -1;
+    const warpType: WarpType = this.terrainType?.warpType ?? WarpType.None;
+    const directionSymbol: string = this.getWarpTypeDirectionSymbol(warpType);
+
+    this.text.text = `${directionSymbol}${warpCost > -1 ? warpCost : "--"}`;
+    this.text.style.fill = this.LOW_MOVE_COST_COLOR;
+    this.text.style.dropShadow.color = this.WHITE_SHADOW_COLOR;
+  }
+
+  private getWarpTypeDirectionSymbol(type: WarpType) : string {
+    switch (type) {
+      case WarpType.Dual: return "↕";
+      case WarpType.Entrance: return "↑";
+      case WarpType.Exit: return "↓";
+      default: return "";
+    }
   }
 
   private updateSpecialtyState() {
-    if (this.terrainType === undefined) {
+    const specialty: MapAnalysisSpecialtyMode | undefined = this.eventService?.specialtyMode();
+
+    let hasSpecialty: boolean = false;
+    if (specialty === "cannotStopOn") {
+      hasSpecialty = this.terrainType?.cannotStopOn ?? false;
+    }
+    else if (specialty === "blocksItems") {
+      hasSpecialty = this.terrainType?.blocksItems ?? false;
+    }
+    else if (specialty === "restrictAff") {
+      hasSpecialty = this.terrainType?.canRestrictAffiliations ?? false;
+    }
+
+    if (!hasSpecialty) {
       this.hideChildren();
       return;
     }
 
-    this.tintGraphic.visible = false;
+    this.tintGraphic.visible = true;
   }
 }
