@@ -61,7 +61,7 @@ export class TileAnalysisBackgroundContainer extends Container {
     .rect(1, 1, this.dimensions-1, this.dimensions-1)
     .fill({
       color: "#ffffff",
-      alpha: 0.5
+      alpha: 0.6
     });
   }
 
@@ -188,8 +188,8 @@ export class TileAnalysisBackgroundContainer extends Container {
   private getWarpTypeDirectionSymbol(type: WarpType) : string {
     switch (type) {
       case WarpType.Dual: return "↕";
-      case WarpType.Entrance: return "↑";
-      case WarpType.Exit: return "↓";
+      case WarpType.Entrance: return "↓";
+      case WarpType.Exit: return "↑";
       default: return "";
     }
   }

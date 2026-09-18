@@ -52,8 +52,10 @@
     }
     @else if (eventService.mode() === "warpGroup") {
       <p>Warps mode will highlight all warp points assigned to the selected Warp Group on the map. For warp points that can be entered, the warp cost value will be displayed.</p>
-      <p>↑ - Unit can ENTER warp point</p>
-      <p>↓ - Unit can EXIT warp point</p>
+      <div>
+        <p>↓ - Unit can ENTER warp point</p>
+        <p>↑ - Unit can EXIT warp point</p>
+      </div>
       <mat-form-field>
         <mat-label>Warp Group</mat-label>
         <mat-select [(value)]="eventService.warpGroup">
@@ -63,8 +65,10 @@
         </mat-select>
       </mat-form-field>
       @if (eventService.warpGroup() !== undefined) {
-        <b>Coordinates:</b>
-        <p>{{eventService.warpGroup()?.coordinates}}</p>
+        <div>
+          <b class="pixelFont" [style.font-size]="'0.7rem'">Warp Group Coordinates</b>
+          <p>{{eventService.warpGroup()?.coordinates}}</p>
+        </div>
       }
     }
     @else if (eventService.mode() === "specialty") {
