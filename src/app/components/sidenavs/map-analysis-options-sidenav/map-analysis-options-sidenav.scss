@@ -4,7 +4,16 @@ div.optionsContainer {
   display: flex;
   flex-flow: column nowrap;
   row-gap: 24px;
-  padding: 8px;
+  padding: 16px 16px 0px 16px;
+
+  h1 {
+    margin: 0px;
+    font-family: macExtMinecraft;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.5rem;
+    line-height: 1.65rem;
+  }
 
   p { margin: 0px; }
 }
@@ -13,7 +22,6 @@ div.modeContainer {
   display: flex;
   flex-flow: column nowrap;
   row-gap: 12px;
-  padding-left: 12px;
 }
 
 mat-form-field {

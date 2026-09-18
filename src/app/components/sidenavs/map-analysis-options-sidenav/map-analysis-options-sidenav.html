@@ -1,4 +1,5 @@
 <div class="optionsContainer">
+  <h1>Analysis Options</h1>
   @let movementTypesList = analysisDataService.getMovementTypes();
   @let terrainTypesList = analysisDataService.getTerrainTypes();
   @let affiliationGroupsList = analysisDataService.getTerrainTypeAffiliationGroupings();
@@ -14,6 +15,7 @@
       <mat-option value="specialty">Specialty Settings</mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-divider />
   <div class="modeContainer">
     @if (eventService.mode() === "moveCost") {
       <p>Movement Costs mode will highlight all terrain traversable by the selected Movement Type and display its movement cost.</p>
